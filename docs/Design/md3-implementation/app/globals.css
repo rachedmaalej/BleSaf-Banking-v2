@@ -1,0 +1,289 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Material Symbols font */
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+@layer base {
+  :root {
+    /* MD3 Color tokens - Light theme */
+    --md3-primary: 103 80 164;
+    --md3-on-primary: 255 255 255;
+    --md3-primary-container: 234 221 255;
+    --md3-on-primary-container: 33 0 93;
+
+    --md3-secondary: 98 91 113;
+    --md3-on-secondary: 255 255 255;
+    --md3-secondary-container: 232 222 248;
+    --md3-on-secondary-container: 29 25 43;
+
+    --md3-tertiary: 125 82 96;
+    --md3-on-tertiary: 255 255 255;
+    --md3-tertiary-container: 255 216 228;
+    --md3-on-tertiary-container: 49 17 29;
+
+    --md3-error: 179 38 30;
+    --md3-on-error: 255 255 255;
+    --md3-error-container: 249 222 220;
+    --md3-on-error-container: 65 14 11;
+
+    --md3-background: 255 251 254;
+    --md3-on-background: 28 27 31;
+
+    --md3-surface: 255 251 254;
+    --md3-on-surface: 28 27 31;
+    --md3-surface-variant: 231 224 236;
+    --md3-on-surface-variant: 73 69 79;
+
+    --md3-surface-container-lowest: 255 255 255;
+    --md3-surface-container-low: 247 242 250;
+    --md3-surface-container: 243 237 247;
+    --md3-surface-container-high: 236 230 240;
+    --md3-surface-container-highest: 230 224 233;
+
+    --md3-outline: 121 116 126;
+    --md3-outline-variant: 202 196 208;
+
+    --md3-inverse-surface: 49 48 51;
+    --md3-inverse-on-surface: 244 239 244;
+    --md3-inverse-primary: 208 188 255;
+
+    --md3-shadow: 0 0 0;
+    --md3-scrim: 0 0 0;
+    --md3-surface-tint: 103 80 164;
+
+    /* State layer opacity */
+    --md3-state-hover: 0.08;
+    --md3-state-focus: 0.12;
+    --md3-state-pressed: 0.12;
+    --md3-state-dragged: 0.16;
+
+    /* Legacy shadcn variables for backward compatibility */
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 224 71.4% 4.1%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* MD3 Color tokens - Dark theme */
+    --md3-primary: 208 188 255;
+    --md3-on-primary: 56 30 114;
+    --md3-primary-container: 79 55 139;
+    --md3-on-primary-container: 234 221 255;
+
+    --md3-secondary: 204 194 220;
+    --md3-on-secondary: 51 45 65;
+    --md3-secondary-container: 74 68 88;
+    --md3-on-secondary-container: 232 222 248;
+
+    --md3-tertiary: 239 184 200;
+    --md3-on-tertiary: 73 37 50;
+    --md3-tertiary-container: 99 59 72;
+    --md3-on-tertiary-container: 255 216 228;
+
+    --md3-error: 242 184 181;
+    --md3-on-error: 96 20 16;
+    --md3-error-container: 140 29 24;
+    --md3-on-error-container: 249 222 220;
+
+    --md3-background: 28 27 31;
+    --md3-on-background: 230 225 229;
+
+    --md3-surface: 28 27 31;
+    --md3-on-surface: 230 225 229;
+    --md3-surface-variant: 73 69 79;
+    --md3-on-surface-variant: 202 196 208;
+
+    --md3-surface-container-lowest: 15 13 19;
+    --md3-surface-container-low: 29 27 32;
+    --md3-surface-container: 33 31 38;
+    --md3-surface-container-high: 43 41 48;
+    --md3-surface-container-highest: 54 52 59;
+
+    --md3-outline: 147 143 153;
+    --md3-outline-variant: 73 69 79;
+
+    --md3-inverse-surface: 230 225 229;
+    --md3-inverse-on-surface: 49 48 51;
+    --md3-inverse-primary: 103 80 164;
+
+    --md3-shadow: 0 0 0;
+    --md3-scrim: 0 0 0;
+    --md3-surface-tint: 208 188 255;
+
+    /* Legacy shadcn variables for backward compatibility */
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 216 12.2% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-outline;
+  }
+  body {
+    @apply bg-background text-on-background;
+  }
+}
+
+@layer utilities {
+  /* MD3 Typography utilities */
+  .md3-display-large {
+    font-size: 57px;
+    line-height: 64px;
+    font-weight: 400;
+    letter-spacing: -0.25px;
+  }
+
+  .md3-display-medium {
+    font-size: 45px;
+    line-height: 52px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-display-small {
+    font-size: 36px;
+    line-height: 44px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-headline-large {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-headline-medium {
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-headline-small {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-title-large {
+    font-size: 22px;
+    line-height: 28px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  .md3-title-medium {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+  }
+
+  .md3-title-small {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+  }
+
+  .md3-body-large {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+
+  .md3-body-medium {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    letter-spacing: 0.25px;
+  }
+
+  .md3-body-small {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+    letter-spacing: 0.4px;
+  }
+
+  .md3-label-large {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+  }
+
+  .md3-label-medium {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .md3-label-small {
+    font-size: 11px;
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* State layer utilities */
+  .md3-state-layer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .md3-state-layer::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: currentColor;
+    opacity: 0;
+    transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .md3-state-layer:hover::before {
+    opacity: var(--md3-state-hover);
+  }
+
+  .md3-state-layer:focus-visible::before {
+    opacity: var(--md3-state-focus);
+  }
+
+  .md3-state-layer:active::before {
+    opacity: var(--md3-state-pressed);
+  }
+}

@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teller Screen - 3 Alternatives (FIFO Queue)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      font-family: 'Inter', sans-serif;
+      background: #E0E0E0;
+      min-height: 100vh;
+    }
+
+    /* Design Tokens */
+    :root {
+      /* Service Colors */
+      --retrait-bg: #DBECF4;
+      --retrait-accent: #0891B2;
+      --retrait-text: #164E63;
+
+      --depot-bg: #DEF5B7;
+      --depot-accent: #65A30D;
+      --depot-text: #365314;
+
+      --ouverture-bg: #FFE9B7;
+      --ouverture-accent: #D97706;
+      --ouverture-text: #92400E;
+
+      --autres-bg: #E8E8E8;
+      --autres-accent: #6B7280;
+      --autres-text: #374151;
+
+      /* Status Colors */
+      --status-serving: #22C55E;
+      --status-serving-bg: #DCFCE7;
+      --status-called: #F59E0B;
+      --status-called-bg: #FEF3C7;
+
+      /* MD3 Surfaces */
+      --md3-surface: #FFFFFF;
+      --md3-surface-variant: #F5F5F5;
+      --md3-on-surface: #1C1B1F;
+      --md3-on-surface-variant: #49454F;
+      --md3-outline: #79747E;
+      --md3-outline-variant: #CAC4D0;
+      --md3-error: #B3261E;
+      --md3-primary: #6750A4;
+
+      /* MD3 Shadows */
+      --md3-shadow-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+      --md3-shadow-2: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+
+      /* Radius */
+      --md3-radius-small: 8px;
+      --md3-radius-medium: 12px;
+      --md3-radius-large: 16px;
+      --md3-radius-xl: 28px;
+    }
+
+    /* Option Selector */
+    .option-selector {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: white;
+      border-radius: var(--md3-radius-large);
+      box-shadow: var(--md3-shadow-2);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option-selector h3 {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .option-btn {
+      padding: 10px 16px;
+      border: 2px solid var(--md3-outline-variant);
+      background: white;
+      border-radius: var(--md3-radius-medium);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--md3-on-surface);
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover {
+      background: var(--md3-surface-variant);
+    }
+
+    .option-btn.active {
+      border-color: var(--md3-primary);
+      background: #F3E8FF;
+      color: var(--md3-primary);
+    }
+
+    /* Material Icon */
+    .material-icon {
+      font-family: 'Material Symbols Outlined';
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    /* Service Colors */
+    .retrait { --service-bg: var(--retrait-bg); --service-accent: var(--retrait-accent); --service-text: var(--retrait-text); }
+    .depot { --service-bg: var(--depot-bg); --service-accent: var(--depot-accent); --service-text: var(--depot-text); }
+    .ouverture { --service-bg: var(--ouverture-bg); --service-accent: var(--ouverture-accent); --service-text: var(--ouverture-text); }
+    .autres { --service-bg: var(--autres-bg); --service-accent: var(--autres-accent); --service-text: var(--autres-text); }
+
+    /* Mockup Container */
+    .mockup-container {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      background: var(--md3-surface);
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .mockup-container.active {
+      display: flex;
+    }
+
+    /* Shared Header */
+    .teller-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--md3-surface);
+      border-bottom: 1px solid var(--md3-outline-variant);
+      flex-shrink: 0;
+    }
+
+    .teller-header .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .teller-header .brand img {
+      height: 48px;
+      width: auto;
+    }
+
+    .teller-header .counter-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--md3-on-surface);
+    }
+
+    .teller-header .right-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .teller-header .time-value {
+      font-size: 20px;
+      font-weight: 300;
+      color: var(--md3-on-surface);
+    }
+
+    .teller-header .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid var(--md3-outline-variant);
+      border-radius: var(--md3-radius-xl);
+      background: white;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--md3-on-surface-variant);
+    }
+
+    .teller-header .user-btn .material-icon {
+      font-size: 20px;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--md3-radius-xl);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.serving {
+      background: var(--status-serving-bg);
+      color: #166534;
+    }
+
+    .status-badge.called {
+      background: var(--status-called-bg);
+      color: #92400E;
+    }
+
+    .status-badge .material-icon {
+      font-size: 16px;
+    }
+
+    /* Service Tag */
+    .service-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--md3-radius-xl);
+      font-size: 14px;
+      font-weight: 500;
+      background: var(--service-bg);
+      color: var(--service-text);
+    }
+
+    .service-tag .material-icon {
+      font-size: 18px;
+      color: var(--service-accent);
+    }
+
+    /* Action Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: var(--md3-radius-xl);
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn .material-icon {
+      font-size: 20px;
+    }
+
+    .btn-primary {
+      background: var(--md3-primary);
+      color: white;
+      box-shadow: var(--md3-shadow-1);
+    }
+
+    .btn-primary:hover {
+      box-shadow: var(--md3-shadow-2);
+    }
+
+    .btn-success {
+      background: var(--status-serving);
+      color: white;
+      box-shadow: var(--md3-shadow-1);
+    }
+
+    .btn-danger {
+      background: var(--md3-error);
+      color: white;
+      box-shadow: var(--md3-shadow-1);
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--md3-on-surface);
+      border: 2px solid var(--md3-outline-variant);
+    }
+
+    .btn-outline:hover {
+      background: var(--md3-surface-variant);
+    }
+
+    /* ========================================
+       OPTION A: Hero Card Focus
+       ======================================== */
+    .option-a .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 32px;
+      gap: 24px;
+      background: var(--md3-surface-variant);
+    }
+
+    .option-a .hero-card {
+      flex: 1;
+      background: var(--md3-surface);
+      border-radius: var(--md3-radius-xl);
+      box-shadow: var(--md3-shadow-2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px;
+      text-align: center;
+      position: relative;
+      border-bottom: 6px solid var(--service-accent);
+    }
+
+    .option-a .hero-status {
+      margin-bottom: 16px;
+    }
+
+    .option-a .hero-timer {
+      font-size: 48px;
+      font-weight: 300;
+      color: var(--md3-on-surface-variant);
+      margin-bottom: 24px;
+    }
+
+    .option-a .hero-ticket {
+      font-size: 96px;
+      font-weight: 900;
+      color: var(--md3-on-surface);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .option-a .hero-service {
+      margin-bottom: 32px;
+    }
+
+    .option-a .hero-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .option-a .next-preview {
+      background: var(--md3-surface);
+      border-radius: var(--md3-radius-large);
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--md3-shadow-1);
+    }
+
+    .option-a .next-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .option-a .next-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .option-a .next-ticket {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--md3-on-surface);
+    }
+
+    .option-a .queue-count {
+      font-size: 14px;
+      color: var(--md3-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .option-a .call-section {
+      display: flex;
+      justify-content: center;
+    }
+
+    .option-a .btn-call {
+      padding: 18px 48px;
+      font-size: 18px;
+    }
+
+    /* Empty state for Option A */
+    .option-a .hero-card.empty {
+      border-bottom-color: var(--md3-outline-variant);
+    }
+
+    .option-a .empty-icon {
+      font-size: 64px;
+      color: var(--md3-outline-variant);
+      margin-bottom: 16px;
+    }
+
+    .option-a .empty-text {
+      font-size: 18px;
+      color: var(--md3-on-surface-variant);
+    }
+
+    /* ========================================
+       OPTION B: Split Panel
+       ======================================== */
+    .option-b .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .option-b .panels {
+      flex: 1;
+      display: flex;
+    }
+
+    .option-b .panel {
+      flex: 1;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .option-b .panel-left {
+      background: var(--md3-surface);
+      border-right: 1px solid var(--md3-outline-variant);
+    }
+
+    .option-b .panel-right {
+      background: var(--md3-surface-variant);
+    }
+
+    .option-b .panel-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-b .panel-title .material-icon {
+      font-size: 18px;
+      color: var(--md3-primary);
+    }
+
+    .option-b .ticket-card {
+      flex: 1;
+      background: var(--md3-surface);
+      border-radius: var(--md3-radius-xl);
+      box-shadow: var(--md3-shadow-2);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-bottom: 5px solid var(--service-accent);
+    }
+
+    .option-b .ticket-card.next {
+      background: var(--md3-surface);
+    }
+
+    .option-b .card-status {
+      margin-bottom: 12px;
+    }
+
+    .option-b .card-timer {
+      font-size: 36px;
+      font-weight: 300;
+      color: var(--md3-on-surface-variant);
+      margin-bottom: 16px;
+    }
+
+    .option-b .card-ticket {
+      font-size: 64px;
+      font-weight: 900;
+      color: var(--md3-on-surface);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .option-b .card-service {
+      margin-bottom: 24px;
+    }
+
+    .option-b .card-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .option-b .position-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: var(--md3-surface-variant);
+      border-radius: var(--md3-radius-medium);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      margin-bottom: 16px;
+    }
+
+    .option-b .queue-bar {
+      padding: 16px 32px;
+      background: var(--md3-surface);
+      border-top: 1px solid var(--md3-outline-variant);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .option-b .queue-flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-b .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--md3-on-surface);
+    }
+
+    .option-b .queue-item .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--service-accent);
+    }
+
+    .option-b .queue-arrow {
+      color: var(--md3-outline);
+      font-size: 16px;
+    }
+
+    .option-b .queue-total {
+      font-size: 14px;
+      color: var(--md3-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ========================================
+       OPTION C: Compact Timeline
+       ======================================== */
+    .option-c .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 32px;
+      background: var(--md3-surface);
+      overflow: hidden;
+    }
+
+    .option-c .timeline-section {
+      flex-shrink: 0;
+    }
+
+    .option-c .section-header {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--md3-outline-variant);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .option-c .section-header .material-icon {
+      font-size: 16px;
+      color: var(--md3-primary);
+    }
+
+    .option-c .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .option-c .timeline-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--status-serving);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .option-c .timeline-dot.next {
+      background: var(--md3-outline-variant);
+      border: 3px solid var(--md3-primary);
+    }
+
+    .option-c .timeline-content {
+      flex: 1;
+    }
+
+    .option-c .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .option-c .timeline-ticket {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--md3-on-surface);
+    }
+
+    .option-c .timeline-meta {
+      font-size: 13px;
+      color: var(--md3-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .option-c .timeline-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .option-c .timeline-arrow {
+      display: flex;
+      justify-content: center;
+      padding: 4px 0;
+      color: var(--md3-outline);
+      flex-shrink: 0;
+    }
+
+    /* Queue bar at bottom (horizontal) */
+    .option-c .queue-bar {
+      margin-top: auto;
+      padding: 12px 0;
+      border-top: 1px solid var(--md3-outline-variant);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .option-c .queue-bar-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--md3-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .option-c .queue-bar-label .material-icon {
+      font-size: 16px;
+      color: var(--md3-primary);
+    }
+
+    .option-c .queue-flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .option-c .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--md3-on-surface);
+    }
+
+    .option-c .queue-item .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--service-accent);
+    }
+
+    .option-c .queue-arrow {
+      color: var(--md3-outline);
+      font-size: 14px;
+    }
+
+    .option-c .queue-total {
+      font-size: 13px;
+      color: var(--md3-on-surface-variant);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Option Selector -->
+  <div class="option-selector">
+    <h3>Teller Screen Options</h3>
+    <button class="option-btn active" onclick="showOption('a')">A: Hero Card Focus</button>
+    <button class="option-btn" onclick="showOption('b')">B: Split Panel</button>
+    <button class="option-btn" onclick="showOption('c')">C: Compact Timeline</button>
+  </div>
+
+  <!-- ========================================
+       OPTION A: Hero Card Focus
+       ======================================== -->
+  <div id="option-a" class="mockup-container option-a active">
+    <header class="teller-header">
+      <div class="brand">
+        <img src="Design/uib-logo.jpg" alt="UIB">
+        <span class="counter-label">Guichet 3</span>
+      </div>
+      <div class="right-section">
+        <span class="time-value">14:35</span>
+        <button class="user-btn">
+          <span class="material-icon">person</span>
+          Ahmed B.
+          <span class="material-icon">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <!-- Hero Card - Current Ticket -->
+      <div class="hero-card retrait">
+        <div class="hero-status">
+          <span class="status-badge serving">
+            <span class="material-icon">radio_button_checked</span>
+            En service
+          </span>
+        </div>
+        <div class="hero-timer">05:23</div>
+        <div class="hero-ticket">A-009</div>
+        <div class="hero-service">
+          <span class="service-tag retrait">
+            <span class="material-icon">local_atm</span>
+            Retrait
+          </span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-success">
+            <span class="material-icon">check_circle</span>
+            Terminer
+          </button>
+          <button class="btn btn-outline">
+            <span class="material-icon">cancel</span>
+            Non présenté
+          </button>
+        </div>
+      </div>
+
+      <!-- Next Preview -->
+      <div class="next-preview">
+        <div class="next-info">
+          <span class="next-label">Prochain</span>
+          <span class="next-ticket">D-004</span>
+          <span class="service-tag depot" style="padding: 4px 10px; font-size: 12px;">
+            <span class="material-icon" style="font-size: 14px;">savings</span>
+            Dépôt
+          </span>
+        </div>
+        <div class="queue-count">
+          <span class="material-icon">groups</span>
+          8 personnes en attente
+        </div>
+      </div>
+
+      <!-- Call Next Button -->
+      <div class="call-section">
+        <button class="btn btn-primary btn-call">
+          <span class="material-icon">campaign</span>
+          Appeler suivant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       OPTION B: Split Panel
+       ======================================== -->
+  <div id="option-b" class="mockup-container option-b">
+    <header class="teller-header">
+      <div class="brand">
+        <img src="Design/uib-logo.jpg" alt="UIB">
+        <span class="counter-label">Guichet 3</span>
+      </div>
+      <div class="right-section">
+        <span class="time-value">14:35</span>
+        <button class="user-btn">
+          <span class="material-icon">person</span>
+          Ahmed B.
+          <span class="material-icon">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="panels">
+        <!-- Left Panel: Current -->
+        <div class="panel panel-left">
+          <div class="panel-title">
+            <span class="material-icon">radio_button_checked</span>
+            En service
+          </div>
+          <div class="ticket-card retrait">
+            <div class="card-status">
+              <span class="status-badge serving">
+                <span class="material-icon">timer</span>
+                05:23
+              </span>
+            </div>
+            <div class="card-ticket">A-009</div>
+            <div class="card-service">
+              <span class="service-tag retrait">
+                <span class="material-icon">local_atm</span>
+                Retrait
+              </span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-success">
+                <span class="material-icon">check_circle</span>
+                Terminer
+              </button>
+              <button class="btn btn-outline">
+                <span class="material-icon">cancel</span>
+                Non prés.
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Next -->
+        <div class="panel panel-right">
+          <div class="panel-title">
+            <span class="material-icon">schedule</span>
+            Prochain
+          </div>
+          <div class="ticket-card next depot">
+            <div class="position-badge">
+              <span class="material-icon" style="font-size: 14px;">looks_one</span>
+              #1 dans la file
+            </div>
+            <div class="card-ticket">D-004</div>
+            <div class="card-service">
+              <span class="service-tag depot">
+                <span class="material-icon">savings</span>
+                Dépôt
+              </span>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-primary" style="width: 100%;">
+                <span class="material-icon">campaign</span>
+                Appeler
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Queue Bar -->
+      <div class="queue-bar">
+        <div class="queue-flow">
+          <span style="font-size: 12px; color: var(--md3-on-surface-variant); text-transform: uppercase; letter-spacing: 1px; margin-right: 8px;">File:</span>
+          <div class="queue-item retrait"><span class="dot"></span>A-010</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item depot"><span class="dot"></span>D-005</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item ouverture"><span class="dot"></span>C-001</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item retrait"><span class="dot"></span>A-011</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item depot"><span class="dot"></span>D-006</div>
+        </div>
+        <div class="queue-total">
+          <span class="material-icon">groups</span>
+          8 total
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       OPTION C: Compact Timeline
+       ======================================== -->
+  <div id="option-c" class="mockup-container option-c">
+    <header class="teller-header">
+      <div class="brand">
+        <img src="Design/uib-logo.jpg" alt="UIB">
+        <span class="counter-label">Guichet 3</span>
+      </div>
+      <div class="right-section">
+        <span class="time-value">14:35</span>
+        <button class="user-btn">
+          <span class="material-icon">person</span>
+          Ahmed B.
+          <span class="material-icon">logout</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <!-- MAINTENANT Section -->
+      <div class="timeline-section">
+        <div class="section-header">
+          <span class="material-icon">radio_button_checked</span>
+          Maintenant
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-row">
+              <span class="timeline-ticket">A-009</span>
+              <span class="service-tag retrait" style="padding: 4px 10px; font-size: 12px;">
+                <span class="material-icon" style="font-size: 14px;">local_atm</span>
+                Retrait
+              </span>
+            </div>
+            <div class="timeline-meta">
+              <span class="material-icon">timer</span>
+              05:23 de service
+            </div>
+            <div class="timeline-actions">
+              <button class="btn btn-success" style="padding: 10px 20px; font-size: 14px;">
+                <span class="material-icon" style="font-size: 18px;">check_circle</span>
+                Terminer
+              </button>
+              <button class="btn btn-outline" style="padding: 10px 20px; font-size: 14px;">
+                <span class="material-icon" style="font-size: 18px;">cancel</span>
+                Non présenté
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-arrow">
+        <span class="material-icon" style="font-size: 24px;">arrow_downward</span>
+      </div>
+
+      <!-- SUIVANT Section -->
+      <div class="timeline-section">
+        <div class="section-header">
+          <span class="material-icon">schedule</span>
+          Suivant
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot next"></div>
+          <div class="timeline-content">
+            <div class="timeline-row">
+              <span class="timeline-ticket">D-004</span>
+              <span class="service-tag depot" style="padding: 4px 10px; font-size: 12px;">
+                <span class="material-icon" style="font-size: 14px;">savings</span>
+                Dépôt
+              </span>
+            </div>
+            <div class="timeline-meta">
+              <span class="material-icon">hourglass_empty</span>
+              ~5 min d'attente
+            </div>
+            <div class="timeline-actions">
+              <button class="btn btn-primary" style="padding: 12px 32px; font-size: 14px;">
+                <span class="material-icon" style="font-size: 18px;">campaign</span>
+                Appeler suivant
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Horizontal Queue Bar at Bottom -->
+      <div class="queue-bar">
+        <div class="queue-bar-label">
+          <span class="material-icon">groups</span>
+          En file:
+        </div>
+        <div class="queue-flow">
+          <div class="queue-item ouverture"><span class="dot"></span>C-001</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item retrait"><span class="dot"></span>A-011</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item depot"><span class="dot"></span>D-006</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item retrait"><span class="dot"></span>A-012</div>
+          <span class="material-icon queue-arrow">chevron_right</span>
+          <div class="queue-item autres"><span class="dot"></span>X-001</div>
+        </div>
+        <div class="queue-total">
+          <span class="material-icon" style="font-size: 16px;">more_horiz</span>
+          8 total
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showOption(option) {
+      // Hide all mockups
+      document.querySelectorAll('.mockup-container').forEach(el => {
+        el.classList.remove('active');
+      });
+
+      // Deactivate all buttons
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected mockup
+      document.getElementById('option-' + option).classList.add('active');
+
+      // Activate selected button
+      event.target.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

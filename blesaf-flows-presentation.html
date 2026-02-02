@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BléSaf — Parcours Utilisateurs MVP</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --primary: #0f4c81;
+    --primary-light: #1a6bb5;
+    --accent: #e8a838;
+    --accent-light: #f5c563;
+    --dark: #1a1a2e;
+    --text: #2d3748;
+    --text-light: #718096;
+    --bg: #f7f8fc;
+    --card: #ffffff;
+    --success: #38a169;
+    --info: #3182ce;
+    --warning: #d69e2e;
+    --danger: #e53e3e;
+    --purple: #6b46c1;
+    --teal: #319795;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+    color: white;
+    padding: 80px 40px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 70%, rgba(232,168,56,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    animation: float 20s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(-2%, 2%) rotate(1deg); }
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(232,168,56,0.2);
+    border: 1px solid rgba(232,168,56,0.4);
+    color: var(--accent-light);
+    padding: 6px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 56px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-subtitle {
+    font-size: 22px;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-bottom: 12px;
+  }
+  .hero-tagline {
+    font-size: 15px;
+    opacity: 0.6;
+    max-width: 600px;
+    margin: 0 auto 40px;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .hero-stat-label {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+
+  /* Layout */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* Section intro */
+  .section-intro {
+    text-align: center;
+    padding: 64px 24px 40px;
+  }
+  .section-intro h2 {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 12px;
+  }
+  .section-intro p {
+    font-size: 17px;
+    color: var(--text-light);
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  /* Flow cards */
+  .flows {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding: 0 24px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .flow-card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    min-height: 420px;
+    transition: box-shadow 0.3s;
+  }
+  .flow-card:hover {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.08);
+  }
+
+  .flow-visual {
+    padding: 40px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .flow-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    filter: grayscale(0);
+  }
+
+  .flow-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 8px;
+  }
+  .flow-visual h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+    line-height: 1.3;
+  }
+  .flow-visual-tag {
+    margin-top: 16px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
+  /* Color themes for each flow */
+  .flow-a .flow-visual { background: linear-gradient(135deg, #1a6bb5, #0f4c81); }
+  .flow-b .flow-visual { background: linear-gradient(135deg, #6b46c1, #44337a); }
+  .flow-c .flow-visual { background: linear-gradient(135deg, #38a169, #276749); }
+  .flow-d .flow-visual { background: linear-gradient(135deg, #d69e2e, #b7791f); }
+  .flow-e .flow-visual { background: linear-gradient(135deg, #319795, #234e52); }
+  .flow-f .flow-visual { background: linear-gradient(135deg, #e53e3e, #9b2c2c); }
+
+  .flow-content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .flow-content .flow-desc {
+    font-size: 15px;
+    color: var(--text-light);
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+
+  /* Steps */
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 20px;
+  }
+  .flow-step:last-child { padding-bottom: 0; }
+  .flow-step:last-child .step-line { display: none; }
+
+  .step-marker {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .step-line {
+    position: absolute;
+    left: 17px;
+    top: 36px;
+    bottom: 0;
+    width: 2px;
+    background: #e2e8f0;
+  }
+
+  .flow-a .step-marker { background: var(--primary); }
+  .flow-b .step-marker { background: var(--purple); }
+  .flow-c .step-marker { background: var(--success); }
+  .flow-d .step-marker { background: var(--warning); }
+  .flow-e .step-marker { background: var(--teal); }
+  .flow-f .step-marker { background: var(--danger); }
+
+  .step-text {
+    padding-top: 6px;
+  }
+  .step-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 2px;
+  }
+  .step-text span {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* Mockup previews inside flow visual */
+  .mini-mockup {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 16px;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+  }
+  .mini-mockup-title {
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.6;
+    margin-bottom: 10px;
+  }
+  .mock-ticket {
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .mock-ticket-num {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+  .mock-ticket-info {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 4px;
+  }
+
+  .mock-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .mock-display-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+  .mock-display-counter {
+    font-size: 10px;
+    opacity: 0.6;
+  }
+  .mock-display-ticket {
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .mock-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .mock-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .mock-btn.active {
+    background: rgba(255,255,255,0.35);
+  }
+
+  .mock-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .mock-stat-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+  .mock-stat-val {
+    font-size: 20px;
+    font-weight: 800;
+  }
+  .mock-stat-lbl {
+    font-size: 9px;
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  .mock-notif {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mock-notif-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+  }
+  .mock-notif-icon {
+    font-size: 16px;
+  }
+
+  .mock-branches {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mock-branch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  .mock-branch-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .mock-branch-status.green { background: #68d391; }
+  .mock-branch-status.yellow { background: #f6e05e; }
+  .mock-branch-status.red { background: #fc8181; }
+
+  /* Footer */
+  .footer {
+    background: var(--dark);
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 48px 24px;
+  }
+  .footer-brand {
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 4px;
+  }
+  .footer-brand span { color: var(--accent); }
+  .footer p {
+    font-size: 14px;
+    margin-top: 8px;
+  }
+  .footer-note {
+    margin-top: 24px;
+    font-size: 12px;
+    opacity: 0.4;
+  }
+
+  /* Summary section */
+  .summary {
+    background: white;
+    padding: 64px 24px;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .summary-item {
+    text-align: center;
+    padding: 32px 20px;
+    border-radius: 16px;
+    background: var(--bg);
+  }
+  .summary-item-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  .summary-item h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .summary-item p {
+    font-size: 13px;
+    color: var(--text-light);
+    line-height: 1.5;
+  }
+
+  /* Dual option layout */
+  .flow-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 8px;
+  }
+  .flow-option {
+    background: #f0f4f8;
+    border-radius: 14px;
+    padding: 24px 20px 20px;
+    position: relative;
+  }
+  .flow-option-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .flow-option-badge.opt-b {
+    background: var(--teal);
+  }
+  .flow-option h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .flow-option .flow-steps {
+    margin-top: 12px;
+  }
+  .flow-option .flow-step {
+    padding-bottom: 14px;
+  }
+  .flow-option .step-marker {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  .flow-option .step-line {
+    left: 13px;
+    top: 28px;
+  }
+  .flow-option .step-text {
+    padding-top: 3px;
+  }
+  .flow-option .step-text strong {
+    font-size: 13px;
+  }
+  .flow-option .step-text span {
+    font-size: 12px;
+  }
+  .flow-converge {
+    background: linear-gradient(90deg, var(--primary), var(--teal));
+    color: white;
+    border-radius: 10px;
+    padding: 14px 20px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+  .flow-converge span {
+    opacity: 0.8;
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .flow-card.flow-a-wide {
+    grid-template-columns: 280px 1fr;
+  }
+  .flow-card.flow-a-wide .flow-content {
+    padding: 32px 36px;
+  }
+
+  .mock-ticket-qr {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .mock-qr-box {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .mock-qr-grid {
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    gap: 1px;
+    width: 30px;
+    height: 30px;
+  }
+  .mock-qr-grid span {
+    background: #1a1a2e;
+    border-radius: 1px;
+  }
+  .mock-qr-grid span:nth-child(2), .mock-qr-grid span:nth-child(4),
+  .mock-qr-grid span:nth-child(8), .mock-qr-grid span:nth-child(11),
+  .mock-qr-grid span:nth-child(14), .mock-qr-grid span:nth-child(17),
+  .mock-qr-grid span:nth-child(22) {
+    background: transparent;
+  }
+  .mock-ticket-right {
+    text-align: left;
+  }
+
+  .mock-two-paths {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .mock-path-item {
+    flex: 1;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    font-size: 11px;
+  }
+  .mock-path-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+  .mock-path-label {
+    opacity: 0.8;
+    font-size: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .flow-options {
+      grid-template-columns: 1fr;
+    }
+    .flow-card.flow-a-wide {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .flow-card {
+      grid-template-columns: 1fr;
+    }
+    .flow-visual {
+      padding: 32px 24px;
+    }
+    .hero h1 { font-size: 40px; }
+    .hero-stats { gap: 24px; }
+    .summary-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">Proposition MVP 2025</div>
+  <h1>Blé<span>Saf</span></h1>
+  <div class="hero-subtitle">Gestion intelligente des files d'attente bancaires</div>
+  <p class="hero-tagline"></p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-value">6</div>
+      <div class="hero-stat-label">Parcours utilisateurs</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">100%</div>
+      <div class="hero-stat-label">Cloud / Sans matériel</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">AR + FR</div>
+      <div class="hero-stat-label">Bilingue natif</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-value">Temps réel</div>
+      <div class="hero-stat-label">WebSocket live</div>
+    </div>
+  </div>
+</header>
+
+<!-- SECTION INTRO -->
+<div class="section-intro">
+  <h2>Les 6 Parcours Utilisateurs</h2>
+  <p>Chaque parcours représente un acteur clé du système. Ensemble, ils couvrent l'expérience complète de la gestion de file d'attente bancaire.</p>
+</div>
+
+<!-- FLOW CARDS -->
+<div class="flows">
+
+  <!-- FLOW A: Check-in (2 options) -->
+  <div class="flow-card flow-a flow-a-wide">
+    <div class="flow-visual">
+      <div class="flow-icon">🏦</div>
+      <div class="flow-label">Parcours A</div>
+      <h3>Enregistrement Client</h3>
+      <div class="flow-visual-tag">2 modes d'accès</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">Ticket imprimé avec QR</div>
+        <div class="mock-ticket-qr">
+          <div class="mock-qr-box">
+            <div class="mock-qr-grid">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="mock-ticket-right">
+            <div class="mock-ticket-num" style="font-size:22px">A-042</div>
+            <div class="mock-ticket-info">Retrait &middot; Pos : 3 &middot; ~12 min</div>
+          </div>
+        </div>
+        <div class="mock-two-paths">
+          <div class="mock-path-item">
+            <div class="mock-path-icon">🖥️</div>
+            <div class="mock-path-label">Borne tactile</div>
+          </div>
+          <div class="mock-path-item">
+            <div class="mock-path-icon">📱</div>
+            <div class="mock-path-label">QR Code mobile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Le client a <strong>deux façons</strong> de rejoindre la file d'attente en arrivant à l'agence. Dans les deux cas, il peut suivre sa position en temps réel sur son mobile.</p>
+      <div class="flow-options">
+        <!-- Option 1: Kiosk -->
+        <div class="flow-option">
+          <div class="flow-option-badge">Option 1</div>
+          <h4>Borne tactile (kiosque)</h4>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-marker">1</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Toucher l'écran</strong>
+                <span>Le client touche la tablette kiosque. Interface bilingue arabe / français.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker">2</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Choix du service</strong>
+                <span>Grille de catégories : Dépôts, Retraits, Ouverture de compte, Crédit, Change.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker">3</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Ticket imprimé</strong>
+                <span>Un ticket est imprimé avec : numéro de ticket, type de service, position, temps d'attente estimé.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker">4</div>
+              <div class="step-text">
+                <strong>QR code sur le ticket</strong>
+                <span>Le ticket contient un QR code que le client scanne avec son mobile pour suivre sa position en temps réel.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Option 2: QR Code -->
+        <div class="flow-option">
+          <div class="flow-option-badge opt-b">Option 2</div>
+          <h4>QR Code mobile (sans borne)</h4>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-marker" style="background:var(--teal)">1</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Scanner le QR code</strong>
+                <span>Un QR code est affiché à l'entrée de l'agence. Le client le scanne avec son téléphone.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker" style="background:var(--teal)">2</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Choix du service sur mobile</strong>
+                <span>La page mobile affiche les catégories de service. Le client sélectionne son besoin.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker" style="background:var(--teal)">3</div>
+              <div class="step-line"></div>
+              <div class="step-text">
+                <strong>Ticket virtuel</strong>
+                <span>Le mobile affiche : numéro de ticket, position dans la file, temps d'attente estimé.</span>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="step-marker" style="background:var(--teal)">4</div>
+              <div class="step-text">
+                <strong>Suivi en temps réel</strong>
+                <span>La page se met à jour automatiquement. Le client peut s'éloigner et suivre sa position en direct.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flow-converge">
+        Les deux options convergent vers la même file d'attente<br>
+        <span>Le client suit sa position en temps réel sur son mobile dans les deux cas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW B: Queue Display -->
+  <div class="flow-card flow-b">
+    <div class="flow-visual">
+      <div class="flow-icon">📺</div>
+      <div class="flow-label">Parcours B</div>
+      <h3>Affichage File d'Attente<br>(TV / Écran)</h3>
+      <div class="flow-visual-tag">Salle d'attente</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">En cours de service</div>
+        <div class="mock-display">
+          <div class="mock-display-item">
+            <div class="mock-display-counter">Guichet 1</div>
+            <div class="mock-display-ticket">A-039</div>
+          </div>
+          <div class="mock-display-item">
+            <div class="mock-display-counter">Guichet 2</div>
+            <div class="mock-display-ticket">B-015</div>
+          </div>
+          <div class="mock-display-item">
+            <div class="mock-display-counter">Guichet 3</div>
+            <div class="mock-display-ticket">A-040</div>
+          </div>
+          <div class="mock-display-item">
+            <div class="mock-display-counter">Guichet 4</div>
+            <div class="mock-display-ticket">C-008</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Un grand écran dans la salle d'attente affiche en temps réel les tickets en cours de service, les prochains appels, et les temps d'attente estimés.</p>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Panneau "En cours de service"</strong>
+            <span>Affichage clair : numéro de guichet &harr; numéro de ticket en cours. Grande police, lisible de loin.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>File d'attente suivante</strong>
+            <span>Les 5 à 10 prochains tickets par catégorie de service sont visibles pour que les clients puissent estimer leur attente.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Alerte audio et visuelle</strong>
+            <span>Quand un ticket est appelé : signal sonore (carillon) + clignotement du numéro de ticket sur l'écran.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-text">
+            <strong>Mise à jour en temps réel</strong>
+            <span>Connexion WebSocket permanente. L'affichage se met à jour instantanément sans rechargement de page.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW C: Teller Dashboard -->
+  <div class="flow-card flow-c">
+    <div class="flow-visual">
+      <div class="flow-icon">👨‍💼</div>
+      <div class="flow-label">Parcours C</div>
+      <h3>Tableau de Bord<br>Agent / Guichetier</h3>
+      <div class="flow-visual-tag">Navigateur desktop</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">Actions rapides</div>
+        <div class="mock-buttons">
+          <div class="mock-btn active">Appeler suivant</div>
+          <div class="mock-btn">Terminer</div>
+          <div class="mock-btn">Absent</div>
+          <div class="mock-btn">Transférer</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Chaque agent se connecte avec ses propres identifiants. Toutes ses actions sont enregistrées pour alimenter les statistiques individuelles (clients servis, temps moyen de service, etc.).</p>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Connexion avec identifiants personnels</strong>
+            <span>L'agent saisit son email et mot de passe. Le système identifie son rôle, son agence et ses guichets assignés. Toutes les actions sont tracées sous son profil.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Visualisation du ticket en cours</strong>
+            <span>L'agent voit le ticket qu'il sert actuellement, avec un chronomètre de durée de service.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>"Appeler Suivant"</strong>
+            <span>Un clic appelle le prochain client. L'écran d'affichage et les notifications SMS/WhatsApp se mettent à jour automatiquement.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Gestion du service</strong>
+            <span>"Terminer" quand le service est fini, "Absent" si le client ne se présente pas, "Transférer" vers un autre service.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">5</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Aperçu de la file</strong>
+            <span>Voir les 3-5 prochains tickets dans ses catégories de service assignées.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">6</div>
+          <div class="step-text">
+            <strong>Options avancées</strong>
+            <span>Ajouter des notes, marquer un client VIP, ou rediriger vers un autre service.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW D: Branch Manager -->
+  <div class="flow-card flow-d">
+    <div class="flow-visual">
+      <div class="flow-icon">📊</div>
+      <div class="flow-label">Parcours D</div>
+      <h3>Tableau de Bord<br>Chef d'Agence</h3>
+      <div class="flow-visual-tag">Supervision en temps réel</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">Métriques live</div>
+        <div class="mock-stats">
+          <div class="mock-stat-item">
+            <div class="mock-stat-val">23</div>
+            <div class="mock-stat-lbl">En attente</div>
+          </div>
+          <div class="mock-stat-item">
+            <div class="mock-stat-val">8 min</div>
+            <div class="mock-stat-lbl">Attente moy.</div>
+          </div>
+          <div class="mock-stat-item">
+            <div class="mock-stat-val">6/8</div>
+            <div class="mock-stat-lbl">Guichets actifs</div>
+          </div>
+          <div class="mock-stat-item">
+            <div class="mock-stat-val">142</div>
+            <div class="mock-stat-lbl">Servis aujourd'hui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Le chef d'agence supervise en temps réel toute l'activité de sa succursale : guichets, files, temps d'attente, et performance individuelle de chaque agent.</p>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Vue d'ensemble en temps réel</strong>
+            <span>Tous les guichets, toutes les files, métriques live : clients en attente, temps d'attente moyen, guichets actifs.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Performance par agent</strong>
+            <span>Grâce à la connexion individuelle de chaque agent, le manager voit : nombre de clients servis, temps moyen de service, taux d'absence, et productivité — par agent et par jour.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Gestion des guichets</strong>
+            <span>Ouvrir / fermer des guichets, réassigner les catégories de service, équilibrer la charge.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Alertes intelligentes</strong>
+            <span>Notifications quand le temps d'attente dépasse un seuil, quand un guichet est inactif, ou quand la file est anormalement longue.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">5</div>
+          <div class="step-text">
+            <strong>Bilan quotidien</strong>
+            <span>Résumé de la journée : clients servis, temps d'attente moyen, heures de pointe, taux d'absence.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW E: Notifications SMS/WhatsApp -->
+  <div class="flow-card flow-e">
+    <div class="flow-visual">
+      <div class="flow-icon">📱</div>
+      <div class="flow-label">Parcours E</div>
+      <h3>Notifications<br>SMS & WhatsApp</h3>
+      <div class="flow-visual-tag">Communication client</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">Messages envoyés</div>
+        <div class="mock-notif">
+          <div class="mock-notif-item">
+            <div class="mock-notif-icon">✅</div>
+            <span>Ticket A-042 confirmé. Position : 3</span>
+          </div>
+          <div class="mock-notif-item">
+            <div class="mock-notif-icon">⏳</div>
+            <span>Bientôt votre tour ! Plus que 2 avant vous</span>
+          </div>
+          <div class="mock-notif-item">
+            <div class="mock-notif-icon">🔔</div>
+            <span>C'est votre tour ! Guichet 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Le client reçoit des notifications à chaque étape clé de son attente. Double canal SMS + WhatsApp avec basculement automatique en cas d'échec.</p>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Inscription au kiosque</strong>
+            <span>Lors de l'enregistrement, le client saisit son numéro et choisit : SMS ou WhatsApp.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Confirmation du ticket</strong>
+            <span>Message immédiat avec le numéro de ticket, la position dans la file, et le temps d'attente estimé.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Alerte "Bientôt votre tour"</strong>
+            <span>Quand il ne reste que 2 personnes avant le client (seuil configurable), envoi d'une alerte.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Appel au guichet</strong>
+            <span>"C'est votre tour ! Présentez-vous au Guichet 3." Notification immédiate.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">5</div>
+          <div class="step-text">
+            <strong>Basculement automatique</strong>
+            <span>Si WhatsApp échoue, le système renvoie automatiquement par SMS. Aucune intervention nécessaire.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW F: HQ Admin -->
+  <div class="flow-card flow-f">
+    <div class="flow-visual">
+      <div class="flow-icon">🏛️</div>
+      <div class="flow-label">Parcours F</div>
+      <h3>Portail Siège /<br>Administration Banque</h3>
+      <div class="flow-visual-tag">Multi-agences</div>
+      <div class="mini-mockup">
+        <div class="mini-mockup-title">Statut des agences</div>
+        <div class="mock-branches">
+          <div class="mock-branch-row">
+            <span>Agence Lac 1</span>
+            <span>12 en attente</span>
+            <span class="mock-branch-status green"></span>
+          </div>
+          <div class="mock-branch-row">
+            <span>Agence Menzah</span>
+            <span>28 en attente</span>
+            <span class="mock-branch-status yellow"></span>
+          </div>
+          <div class="mock-branch-row">
+            <span>Agence Bardo</span>
+            <span>45 en attente</span>
+            <span class="mock-branch-status red"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-content">
+      <p class="flow-desc">Le siège de la banque supervise l'ensemble du réseau d'agences. Vue centralisée, analytique comparative, et gestion de la configuration.</p>
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-marker">1</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Vue d'ensemble multi-agences</strong>
+            <span>Carte ou liste de toutes les agences avec indicateurs live : statut, temps d'attente, alertes (files longues, guichets inactifs).</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">2</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Analytique historique</strong>
+            <span>Comparaison entre agences, tendances sur la durée, conformité aux SLA (temps d'attente max).</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">3</div>
+          <div class="step-line"></div>
+          <div class="step-text">
+            <strong>Configuration centralisée</strong>
+            <span>Gestion des catégories de service, configuration des agences, gestion des utilisateurs et des rôles.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-marker">4</div>
+          <div class="step-text">
+            <strong>Administration du tenant</strong>
+            <span>Personnalisation de la marque (logo, couleurs), paramètres linguistiques, journal d'audit des actions.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <div class="section-intro" style="padding-top: 0;">
+    <h2>Avantages Clés du MVP</h2>
+    <p>Ce que BléSaf apporte dès la première version</p>
+  </div>
+  <div class="summary-grid">
+    <div class="summary-item">
+      <div class="summary-item-icon">☁️</div>
+      <h4>100% Cloud</h4>
+      <p>Aucun matériel spécialisé requis. Tablette + TV + navigateur web suffisent pour démarrer.</p>
+    </div>
+    <div class="summary-item">
+      <div class="summary-item-icon">🌐</div>
+      <h4>Bilingue Natif</h4>
+      <p>Arabe (RTL) et Français intégrés nativement. Conçu pour le marché tunisien et nord-africain.</p>
+    </div>
+    <div class="summary-item">
+      <div class="summary-item-icon">⚡</div>
+      <h4>Temps Réel</h4>
+      <p>Mise à jour instantanée des écrans, notifications, et tableaux de bord via WebSocket.</p>
+    </div>
+    <div class="summary-item">
+      <div class="summary-item-icon">📱</div>
+      <h4>SMS + WhatsApp</h4>
+      <p>Double canal de notification avec basculement automatique. Le client reste informé à chaque étape.</p>
+    </div>
+    <div class="summary-item">
+      <div class="summary-item-icon">🏢</div>
+      <h4>Multi-Agences</h4>
+      <p>Architecture multi-tenant conçue pour gérer 100+ agences par banque avec isolation des données.</p>
+    </div>
+    <div class="summary-item">
+      <div class="summary-item-icon">📈</div>
+      <h4>Analytique</h4>
+      <p>Statistiques détaillées : temps d'attente, heures de pointe, performance par agence et par agent.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">Blé<span>Saf</span></div>
+  <p>Gestion intelligente des files d'attente bancaires</p>
+  <p>SaaS Cloud &middot; Arabe + Français &middot; Conçu pour les banques tunisiennes</p>
+  <div class="footer-note">Document de validation MVP &mdash; Usage interne</div>
+</footer>
+
+</body>
+</html>

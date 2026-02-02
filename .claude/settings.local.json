@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wc:*)",
+      "Bash(pnpm --filter @blesaf/api exec prisma db push:*)",
+      "Bash(pnpm db:seed:*)",
+      "Bash(pnpm dev:api:*)",
+      "Bash(pnpm dev:web:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(pnpm --filter @blesaf/web exec tsc:*)",
+      "Bash(npx prisma db execute:*)",
+      "Bash(pnpm --filter @blesaf/shared build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(timeout:*)",
+      "WebFetch(domain:nemo-q.com)",
+      "WebFetch(domain:www.nngroup.com)",
+      "Bash(copy \"c:\\\\Users\\\\rache\\\\CCProjects\\\\BléSaf - Banking\\\\docs\\\\Design\\\\uib-logo.jpg\" \"c:\\\\Users\\\\rache\\\\CCProjects\\\\BléSaf - Banking\\\\apps\\\\web\\\\public\\\\uib-logo.jpg\")",
+      "Bash(pnpm run build:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}
