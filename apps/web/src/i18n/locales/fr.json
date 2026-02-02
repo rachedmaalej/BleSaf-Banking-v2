@@ -21,7 +21,8 @@
     "minutes": "min",
     "position": "Position",
     "waitTime": "Temps d'attente",
-    "estimatedWait": "Attente estimée"
+    "estimatedWait": "Attente estimée",
+    "copied": "Copié !"
   },
   "auth": {
     "login": "Connexion",
@@ -53,7 +54,8 @@
     "newTicket": "Nouveau ticket",
     "printTicket": "Imprimer le ticket",
     "done": "Terminé",
-    "positionInQueue": "Votre position dans la file"
+    "positionInQueue": "Votre position dans la file",
+    "copyLink": "Copier le lien"
   },
   "mobile": {
     "scanSuccess": "QR code scanné avec succès",
@@ -64,7 +66,7 @@
   "status": {
     "yourTicket": "Votre ticket",
     "position": "Position",
-    "waitingAhead": "{{count}} personne(s) avant vous",
+    "waitingAhead": "personne(s) avant vous",
     "estimatedWait": "Attente estimée",
     "serviceType": "Service",
     "branchName": "Agence",

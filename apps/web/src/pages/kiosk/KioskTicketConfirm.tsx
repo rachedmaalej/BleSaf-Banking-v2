@@ -5,12 +5,13 @@ import { QRCodeSVG } from 'qrcode.react';
 import { queueApi } from '@/lib/api';
 import { queueOfflineCheckin } from '@/lib/offlineQueue';
 
-// Service colors (background + accent for text/icons)
-const SERVICE_COLORS: Record<string, { bg: string; accent: string }> = {
-  'Retrait': { bg: '#DBECF4', accent: '#0891B2' },
-  'Dépôt': { bg: '#DEF5B7', accent: '#65A30D' },
-  'Ouverture de compte': { bg: '#FFE9B7', accent: '#D97706' },
-  'Autres': { bg: '#E8E8E8', accent: '#6B7280' },
+// Service colors - Subtle Elegance (SG Refined Aesthetic)
+// bg = light tint for badges/backgrounds, accent = service color for text/icons
+const SERVICE_COLORS: Record<string, { bg: string; accent: string; tint: string }> = {
+  'Retrait': { bg: '#FEE2E2', accent: '#E9041E', tint: '#FEF7F7' },       // SG Red
+  'Dépôt': { bg: '#F0F0F0', accent: '#1A1A1A', tint: '#F5F5F5' },         // Black
+  'Ouverture de compte': { bg: '#FCE8EB', accent: '#D66874', tint: '#FDF5F6' },  // Rose
+  'Autres': { bg: '#F0F0F0', accent: '#666666', tint: '#F5F5F5' },        // Gray
 };
 
 // Service icon mapping
@@ -50,6 +51,7 @@ export default function KioskTicketConfirm() {
   const [error, setError] = useState('');
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Update clock every minute
   useEffect(() => {
@@ -205,13 +207,16 @@ export default function KioskTicketConfirm() {
   const serviceIcon = SERVICE_ICONS[serviceName] || 'category';
   const serviceColors = SERVICE_COLORS[serviceName] || SERVICE_COLORS['Autres'];
 
+  // SG Red for primary CTA buttons (Subtle Elegance style)
+  const SG_RED = '#E9041E';
+
   if (ticket) {
     return (
       <div
         className="h-screen flex items-center justify-center overflow-hidden"
         style={{
           padding: 'clamp(16px, 3vmin, 32px)',
-          backgroundColor: serviceColors.accent,
+          backgroundColor: serviceColors.tint,
         }}
       >
         <div
@@ -284,6 +289,23 @@ export default function KioskTicketConfirm() {
               <p className="text-xs text-gray-500 mt-1">
                 {t('kiosk.scanQR')}
               </p>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(statusUrl);
+                  setLinkCopied(true);
+                  setTimeout(() => setLinkCopied(false), 2000);
+                }}
+                className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                style={{
+                  background: linkCopied ? '#DCFCE7' : '#F5F5F5',
+                  color: linkCopied ? '#166534' : '#666',
+                }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
+                  {linkCopied ? 'check' : 'content_copy'}
+                </span>
+                {linkCopied ? t('common.copied') : t('kiosk.copyLink')}
+              </button>
             </div>
           )}
 
@@ -337,7 +359,7 @@ export default function KioskTicketConfirm() {
               {t('common.back')}
             </button>
             <div className="w-px h-6 sm:h-8 bg-gray-200" />
-            <img src="/uib-logo.jpg" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
+            <img src="/uib-logo.png" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
             <span className="text-xs sm:text-sm hidden sm:inline" style={{ color: '#49454F' }}>{branchName}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
@@ -448,7 +470,7 @@ export default function KioskTicketConfirm() {
                 disabled={isCreating}
                 className="inline-flex items-center justify-center gap-2 px-8 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium text-white transition-all disabled:opacity-50"
                 style={{
-                  backgroundColor: '#22C55E',
+                  backgroundColor: SG_RED,
                   boxShadow: '0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15)',
                 }}
               >
@@ -460,7 +482,7 @@ export default function KioskTicketConfirm() {
               <button
                 onClick={handleSkip}
                 disabled={isCreating}
-                className="px-6 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-medium text-gray-500 border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="px-6 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-medium text-gray-600 hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
                 {t('kiosk.skipPhone')}
               </button>

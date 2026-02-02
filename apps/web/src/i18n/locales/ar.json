@@ -21,7 +21,8 @@
     "minutes": "دقيقة",
     "position": "الموقف",
     "waitTime": "وقت الانتظار",
-    "estimatedWait": "الانتظار المتوقع"
+    "estimatedWait": "الانتظار المتوقع",
+    "copied": "تم النسخ!"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -53,7 +54,8 @@
     "newTicket": "تذكرة جديدة",
     "printTicket": "طباعة التذكرة",
     "done": "تم",
-    "positionInQueue": "موقفك في الطابور"
+    "positionInQueue": "موقفك في الطابور",
+    "copyLink": "نسخ الرابط"
   },
   "mobile": {
     "scanSuccess": "تم مسح رمز QR بنجاح",
@@ -64,7 +66,7 @@
   "status": {
     "yourTicket": "تذكرتك",
     "position": "الموقف",
-    "waitingAhead": "{{count}} شخص قبلك",
+    "waitingAhead": "شخص قبلك",
     "estimatedWait": "الانتظار المتوقع",
     "serviceType": "الخدمة",
     "branchName": "الفرع",

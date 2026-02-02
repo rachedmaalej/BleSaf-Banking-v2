@@ -129,6 +129,7 @@ export default function QueueDisplay() {
     ticketNumber: ticket.ticketNumber,
     serviceName: ticket.serviceName,
     position: idx + 1,
+    estimatedWaitMins: ticket.estimatedWaitMins,
   }));
 
   // Get first 6 for display
@@ -182,32 +183,36 @@ export default function QueueDisplay() {
           color: #49454F;
         }
 
-        /* MD3 Design Tokens */
+        /* MD3 Design Tokens - Monochrome Banking (SG Red + Dark Gray) */
         .tv-display {
-          --retrait-bg: #DBECF4;
-          --retrait-accent: #0891B2;
-          --retrait-text: #164E63;
+          /* Retrait: SG Red */
+          --retrait-bg: #FDECEE;
+          --retrait-accent: #E9041E;
+          --retrait-text: #E9041E;
 
-          --depot-bg: #DEF5B7;
-          --depot-accent: #65A30D;
-          --depot-text: #365314;
+          /* Dépôt: Neutral Gray */
+          --depot-bg: #F3F4F6;
+          --depot-accent: #6B7280;
+          --depot-text: #6B7280;
 
-          --ouverture-bg: #FFE9B7;
-          --ouverture-accent: #D97706;
-          --ouverture-text: #92400E;
+          /* Ouverture: Dark Gray */
+          --ouverture-bg: #F5F5F5;
+          --ouverture-accent: #2D2D2D;
+          --ouverture-text: #2D2D2D;
 
-          --autres-bg: #E8E8E8;
-          --autres-accent: #6B7280;
-          --autres-text: #374151;
+          /* Autres: Light Gray */
+          --autres-bg: #F9FAFB;
+          --autres-accent: #9CA3AF;
+          --autres-text: #9CA3AF;
 
-          --md3-primary: #6750A4;
+          --md3-primary: #E9041E;
           --md3-surface: #FFFFFF;
           --md3-surface-variant: #F5F5F5;
           --md3-on-surface: #1C1B1F;
           --md3-on-surface-variant: #49454F;
           --md3-outline: #79747E;
           --md3-outline-variant: #CAC4D0;
-          --md3-error: #B3261E;
+          --md3-error: #E9041E;
 
           --md3-shadow-1: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
           --md3-shadow-2: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
@@ -328,7 +333,7 @@ export default function QueueDisplay() {
           min-width: 200px;
           position: relative;
           box-shadow: var(--md3-shadow-2);
-          border-bottom: 5px solid var(--service-accent);
+          border-bottom: 4px solid var(--service-accent);
         }
 
         .tv-hero-card.is-new {
@@ -539,7 +544,7 @@ export default function QueueDisplay() {
         {/* Header */}
         <header className="tv-header">
           <div className="brand">
-            <img src="/uib-logo.jpg" alt="UIB" />
+            <img src="/uib-logo.png" alt="UIB" />
             <span className="branch">{branchStatus.branchName}</span>
           </div>
           <div className="time-value">{timeString}</div>
@@ -589,7 +594,8 @@ export default function QueueDisplay() {
             <div className="tv-queue-flow">
               {visibleQueue.map((item, index) => {
                 const serviceConfig = getServiceConfig(item.serviceName);
-                const waitMins = (index + 1) * AVG_SERVICE_TIME_MINS;
+                // Use backend-calculated wait time for consistency with customer status page
+                const waitMins = item.estimatedWaitMins;
                 const rankIcon = RANK_ICONS[index] || 'more_horiz';
 
                 return (

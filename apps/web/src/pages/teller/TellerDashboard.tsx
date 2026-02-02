@@ -18,21 +18,29 @@ const SERVICE_ICONS: Record<string, string> = {
   'Autres': 'more_horiz',
 };
 
-// Service color classes
+// Service colors - Refined Simplicity (SG Aesthetic)
+// Service color shown as thin horizontal line, not background fills
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; text: string }> = {
-  'Retrait': { bg: '#DBECF4', accent: '#0891B2', text: '#164E63' },
-  'Dépôt': { bg: '#DEF5B7', accent: '#65A30D', text: '#365314' },
-  'Ouverture de compte': { bg: '#FFE9B7', accent: '#D97706', text: '#92400E' },
-  'Autres': { bg: '#E8E8E8', accent: '#6B7280', text: '#374151' },
+  'Retrait': { bg: '#FFFFFF', accent: '#E9041E', text: '#1A1A1A' },       // SG Red
+  'Dépôt': { bg: '#FFFFFF', accent: '#1A1A1A', text: '#1A1A1A' },         // Black
+  'Ouverture de compte': { bg: '#FFFFFF', accent: '#D66874', text: '#1A1A1A' },  // Rose
+  'Autres': { bg: '#FFFFFF', accent: '#666666', text: '#1A1A1A' },        // Gray
 };
+
+// SG Red for primary CTA (Call Next button)
+const SG_RED = '#E9041E';
 
 const getServiceColors = (serviceName: string) => {
   return SERVICE_COLORS[serviceName] || SERVICE_COLORS['Autres'];
 };
 
+// getServiceIcon used in queue footer
 const getServiceIcon = (serviceName: string) => {
   return SERVICE_ICONS[serviceName] || SERVICE_ICONS['Autres'];
 };
+
+// Unused but kept for potential future use
+void getServiceIcon;
 
 export default function TellerDashboard() {
   const { t, i18n } = useTranslation();
@@ -84,11 +92,23 @@ export default function TellerDashboard() {
 
     connectSocket();
     const socket = getSocket();
+
+    // Join branch room (handles connection timing internally)
     joinBranchRoom(branch.id);
 
     // Listen for all queue-affecting events to keep display in sync
-    const refreshQueue = () => fetchTellerQueue(branch.id);
+    const refreshQueue = () => {
+      console.log('[TellerDashboard] Socket event received, refreshing queue');
+      fetchTellerQueue(branch.id);
+    };
 
+    // Re-join room on reconnect to ensure we receive events
+    const onConnect = () => {
+      console.log('[TellerDashboard] Socket connected/reconnected, joining branch room');
+      joinBranchRoom(branch.id);
+    };
+
+    socket.on('connect', onConnect);
     socket.on(SOCKET_EVENTS.TICKET_CREATED, refreshQueue);
     socket.on(SOCKET_EVENTS.TICKET_CALLED, refreshQueue);
     socket.on(SOCKET_EVENTS.TICKET_SERVING, refreshQueue);
@@ -97,7 +117,20 @@ export default function TellerDashboard() {
     socket.on(SOCKET_EVENTS.TICKET_TRANSFERRED, refreshQueue);
     socket.on(SOCKET_EVENTS.QUEUE_UPDATED, refreshQueue);
 
+    // If socket is already connected, join room immediately
+    if (socket.connected) {
+      console.log('[TellerDashboard] Socket already connected, joining branch room');
+      joinBranchRoom(branch.id);
+    }
+
+    // Polling fallback: refresh every 5 seconds as backup for socket events
+    const pollInterval = setInterval(() => {
+      fetchTellerQueue(branch.id);
+    }, 5000);
+
     return () => {
+      clearInterval(pollInterval);
+      socket.off('connect', onConnect);
       socket.off(SOCKET_EVENTS.TICKET_CREATED, refreshQueue);
       socket.off(SOCKET_EVENTS.TICKET_CALLED, refreshQueue);
       socket.off(SOCKET_EVENTS.TICKET_SERVING, refreshQueue);
@@ -199,7 +232,8 @@ export default function TellerDashboard() {
   const totalWaiting = tellerQueue.totalWaitingInBranch ?? tellerQueue.nextTickets.length;
 
   const currentColors = currentTicket ? getServiceColors(currentTicket.serviceName) : null;
-  const nextColors = nextTicket ? getServiceColors(nextTicket.serviceName) : null;
+  // nextColors not used in Refined Simplicity style (service shown as text only)
+  void nextTicket;
 
   return (
     <>
@@ -228,7 +262,7 @@ export default function TellerDashboard() {
           style={{ borderBottom: '1px solid #CAC4D0' }}
         >
           <div className="flex items-center gap-2 sm:gap-4">
-            <img src="/uib-logo.jpg" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
+            <img src="/uib-logo.png" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
             <span className="text-sm sm:text-lg font-bold" style={{ color: '#1C1B1F' }}>
               Guichet {tellerQueue.counter.number}
             </span>
@@ -263,85 +297,72 @@ export default function TellerDashboard() {
           </div>
         )}
 
-        {/* Main Content - Split Panels (stack on mobile) */}
+        {/* Main Content - Asymmetric Panels (Refined Simplicity) */}
         <main className="flex-1 flex flex-col md:flex-row overflow-hidden">
-          {/* Left Panel: Current Ticket */}
+          {/* Left Panel: Current Ticket (dominant) */}
           <div
-            className="flex-1 flex flex-col p-3 sm:p-4 lg:p-6 min-h-0"
-            style={{ borderRight: '1px solid #CAC4D0', borderBottom: '1px solid #CAC4D0' }}
+            className="flex-[2] flex flex-col p-4 sm:p-6 lg:p-10 min-h-0 bg-white"
           >
             <div
-              className="text-xs font-medium uppercase tracking-wider mb-2 sm:mb-4 flex items-center gap-2"
-              style={{ color: '#49454F' }}
+              className="text-sm font-medium mb-3 sm:mb-4"
+              style={{ color: '#1A1A1A' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#6750A4' }}>
-                radio_button_checked
-              </span>
               En service
             </div>
 
             {currentTicket ? (
               <div
-                className="flex-1 rounded-2xl sm:rounded-3xl shadow-md3-2 p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center"
+                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
                 style={{
-                  background: 'white',
-                  borderBottom: `5px solid ${currentColors?.accent}`,
+                  border: '1px solid #E5E5E5',
                 }}
               >
-                {/* Status badge with timer */}
+                {/* Ticket number - Ultra-light typography (Refined Simplicity) */}
                 <div
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold mb-3 sm:mb-6"
-                  style={{
-                    background: currentTicket.status === 'serving' ? '#DCFCE7' : '#FEF3C7',
-                    color: currentTicket.status === 'serving' ? '#166534' : '#92400E',
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                    timer
-                  </span>
-                  {formatTimer(serviceTimer)}
-                </div>
-
-                {/* Ticket number */}
-                <div
-                  className="text-4xl sm:text-5xl lg:text-7xl font-black mb-2 sm:mb-4"
-                  style={{ color: '#1C1B1F', lineHeight: 1 }}
+                  className="text-5xl sm:text-6xl lg:text-8xl mb-2 sm:mb-3"
+                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300 }}
                 >
                   {currentTicket.ticketNumber}
                 </div>
 
-                {/* Service tag */}
-                <div
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-8"
-                  style={{
-                    background: currentColors?.bg,
-                    color: currentColors?.text,
-                  }}
-                >
+                {/* Service indicator - thin horizontal line with name */}
+                <div className="flex items-center gap-3 mb-4 sm:mb-6">
                   <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: '16px', color: currentColors?.accent }}
-                  >
-                    {getServiceIcon(currentTicket.serviceName)}
+                    className="block h-0.5 rounded"
+                    style={{ width: '40px', background: currentColors?.accent }}
+                  />
+                  <span className="text-base sm:text-lg text-gray-500 font-normal">
+                    {currentTicket.serviceName}
                   </span>
-                  {currentTicket.serviceName}
+                  <span
+                    className="block h-0.5 rounded"
+                    style={{ width: '40px', background: currentColors?.accent }}
+                  />
                 </div>
 
-                {/* Action buttons - shown immediately when ticket is serving */}
-                {/* (No "Start Service" step - calling next auto-starts service) */}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+                {/* Timer - light weight */}
+                <div
+                  className="text-2xl sm:text-3xl mb-6 sm:mb-10"
+                  style={{ color: '#999', fontWeight: 300 }}
+                >
+                  {formatTimer(serviceTimer)}
+                </div>
+
+                {/* Action buttons - Refined Simplicity style */}
+                {/* Black complete button, outlined no-show */}
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                   <button
                     onClick={handleComplete}
-                    className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-white text-sm sm:text-base font-semibold shadow-md3-1 transition-all hover:shadow-md3-2"
-                    style={{ background: '#22C55E' }}
+                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-lg text-white text-sm sm:text-base font-semibold transition-all hover:opacity-90"
+                    style={{ background: '#1A1A1A' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>check_circle</span>
                     {t('teller.complete')}
                   </button>
                   <button
                     onClick={handleNoShow}
-                    className="inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-semibold border-2 transition-all hover:bg-gray-50"
-                    style={{ borderColor: '#CAC4D0', color: '#49454F' }}
+                    className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-lg text-sm sm:text-base font-medium border transition-all hover:bg-gray-50"
+                    style={{ borderColor: '#1A1A1A', color: '#1A1A1A' }}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>cancel</span>
                     {t('teller.noShow')}
@@ -349,101 +370,78 @@ export default function TellerDashboard() {
                 </div>
               </div>
             ) : (
-              /* Empty state */
+              /* Empty state - Refined */
               <div
-                className="flex-1 rounded-2xl sm:rounded-3xl shadow-md3-1 p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center"
-                style={{ background: '#F5F5F5', borderBottom: '5px solid #CAC4D0' }}
+                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center"
+                style={{ background: '#FAFAFA', border: '1px solid #E5E5E5' }}
               >
                 <span
                   className="material-symbols-outlined mb-3 sm:mb-4"
-                  style={{ fontSize: '48px', color: '#CAC4D0' }}
+                  style={{ fontSize: '48px', color: '#DDD' }}
                 >
                   hourglass_empty
                 </span>
-                <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#49454F' }}>
+                <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#999' }}>
                   {t('teller.noCurrentTicket')}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Right Panel: Next Ticket */}
-          <div className="flex-1 flex flex-col p-3 sm:p-4 lg:p-6" style={{ background: '#F5F5F5' }}>
+          {/* Right Panel: Next Ticket (narrower - Refined Simplicity) */}
+          <div
+            className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8"
+            style={{ background: '#F8F8F8', borderLeft: '1px solid #E5E5E5' }}
+          >
             <div
-              className="text-xs font-medium uppercase tracking-wider mb-2 sm:mb-4 flex items-center gap-2"
-              style={{ color: '#49454F' }}
+              className="text-sm font-medium mb-3 sm:mb-4"
+              style={{ color: '#1A1A1A' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#6750A4' }}>
-                schedule
-              </span>
               Prochain
             </div>
 
             {nextTicket ? (
               <div
-                className="flex-1 rounded-2xl sm:rounded-3xl shadow-md3-2 p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
-                style={{ borderBottom: `5px solid ${nextColors?.accent}` }}
+                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
+                style={{ border: '1px solid #E5E5E5' }}
               >
-                {/* Position badge */}
+                {/* Ticket number - lighter weight */}
                 <div
-                  className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-lg text-xs font-medium mb-3 sm:mb-6"
-                  style={{ background: '#F5F5F5', color: '#49454F' }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                    looks_one
-                  </span>
-                  #1 dans la file
-                </div>
-
-                {/* Ticket number */}
-                <div
-                  className="text-3xl sm:text-4xl lg:text-6xl font-black mb-2 sm:mb-4"
-                  style={{ color: '#1C1B1F', lineHeight: 1 }}
+                  className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-3"
+                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300 }}
                 >
                   {nextTicket.ticketNumber}
                 </div>
 
-                {/* Service tag */}
-                <div
-                  className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-8"
-                  style={{
-                    background: nextColors?.bg,
-                    color: nextColors?.text,
-                  }}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: '16px', color: nextColors?.accent }}
-                  >
-                    {getServiceIcon(nextTicket.serviceName)}
-                  </span>
+                {/* Service name - simple text */}
+                <div className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8">
                   {nextTicket.serviceName}
                 </div>
 
-                {/* Call button */}
+                {/* Call button - SG Red (Refined Simplicity) */}
                 <button
                   onClick={handleCallNext}
                   disabled={isCallingNext || !!currentTicket}
-                  className="w-full sm:w-auto max-w-xs inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-white text-sm sm:text-base font-semibold shadow-md3-1 transition-all hover:shadow-md3-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: '#6750A4' }}
+                  className="w-full sm:w-auto max-w-xs inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-white text-sm sm:text-base font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: SG_RED }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>campaign</span>
                   {isCallingNext ? t('common.loading') : 'Appeler'}
                 </button>
               </div>
             ) : (
-              /* Empty state */
+              /* Empty state - Refined */
               <div
-                className="flex-1 rounded-2xl sm:rounded-3xl shadow-md3-1 p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
-                style={{ borderBottom: '5px solid #CAC4D0' }}
+                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
+                style={{ border: '1px solid #E5E5E5' }}
               >
                 <span
                   className="material-symbols-outlined mb-3 sm:mb-4"
-                  style={{ fontSize: '48px', color: '#CAC4D0' }}
+                  style={{ fontSize: '48px', color: '#DDD' }}
                 >
                   groups
                 </span>
-                <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#49454F' }}>
+                <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#999' }}>
                   {t('teller.noTicketsWaiting')}
                 </p>
               </div>
@@ -451,17 +449,17 @@ export default function TellerDashboard() {
           </div>
         </main>
 
-        {/* Queue Bar at Bottom */}
+        {/* Queue Bar at Bottom - Refined */}
         <footer
-          className="px-3 sm:px-6 py-2 sm:py-4 bg-white flex items-center justify-between flex-shrink-0"
-          style={{ borderTop: '1px solid #CAC4D0' }}
+          className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0"
+          style={{ background: '#FAFAFA', borderTop: '1px solid #E5E5E5' }}
         >
           <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
             <span
-              className="text-xs font-medium uppercase tracking-wider flex-shrink-0"
-              style={{ color: '#49454F' }}
+              className="text-xs font-semibold uppercase tracking-wider flex-shrink-0"
+              style={{ color: '#999' }}
             >
-              File:
+              File
             </span>
             <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
               {queueTickets.length > 0 ? (
@@ -497,9 +495,9 @@ export default function TellerDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0" style={{ color: '#49454F' }}>
+          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0" style={{ color: '#666' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>groups</span>
-            <span className="hidden sm:inline">{totalWaiting} {totalWaiting === 1 ? 'personne' : 'personnes'} en attente</span>
+            <span className="hidden sm:inline">{totalWaiting} en attente</span>
             <span className="sm:hidden">{totalWaiting}</span>
           </div>
         </footer>

@@ -14,12 +14,12 @@ interface ServiceCategory {
 // Main service categories to display on kiosk (in display order)
 const MAIN_SERVICES = ['Retrait', 'Dépôt', 'Ouverture de compte'];
 
-// Service colors (background + accent for text/icons)
-const SERVICE_COLORS: Record<string, { bg: string; accent: string }> = {
-  'Retrait': { bg: '#DBECF4', accent: '#0891B2' },
-  'Dépôt': { bg: '#DEF5B7', accent: '#65A30D' },
-  'Ouverture de compte': { bg: '#FFE9B7', accent: '#D97706' },
-  'Autres': { bg: '#E8E8E8', accent: '#6B7280' },
+// Service colors - Subtle Elegance (white cards with colored left border)
+const SERVICE_COLORS: Record<string, { bg: string; accent: string; border: string }> = {
+  'Retrait': { bg: '#FFFFFF', accent: '#E9041E', border: '#E9041E' },      // SG Red
+  'Dépôt': { bg: '#FFFFFF', accent: '#1A1A1A', border: '#1A1A1A' },        // Black
+  'Ouverture de compte': { bg: '#FFFFFF', accent: '#D66874', border: '#D66874' },  // Rose
+  'Autres': { bg: '#FFFFFF', accent: '#666666', border: '#666666' },       // Gray
 };
 
 // Material Symbols icon names for each service
@@ -37,6 +37,7 @@ interface DisplayOption {
   icon: string;
   bgColor: string;
   accentColor: string;
+  borderColor: string;
   serviceId: string;
 }
 
@@ -103,6 +104,7 @@ export default function KioskServiceSelect() {
         icon: SERVICE_ICONS[service.nameFr] || 'category',
         bgColor: colors.bg,
         accentColor: colors.accent,
+        borderColor: colors.border,
         serviceId: service.id,
       });
     } else if (service.nameFr === 'Autres') {
@@ -129,6 +131,7 @@ export default function KioskServiceSelect() {
       icon: SERVICE_ICONS['Autres'],
       bgColor: autresColors.bg,
       accentColor: autresColors.accent,
+      borderColor: autresColors.border,
       serviceId: autresServiceId,
     });
   }
@@ -204,7 +207,7 @@ export default function KioskServiceSelect() {
           style={{ borderBottom: '1px solid #CAC4D0' }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
-            <img src="/uib-logo.jpg" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
+            <img src="/uib-logo.png" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
             <span className="text-xs sm:text-sm hidden sm:inline" style={{ color: '#49454F' }}>{branchName}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
@@ -242,7 +245,9 @@ export default function KioskServiceSelect() {
                 className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 sm:gap-4 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
                 style={{
                   backgroundColor: option.bgColor,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15)',
+                  border: '1px solid #E0E0E0',
+                  borderLeft: `4px solid ${option.borderColor}`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                 }}
               >
                 {/* Material Symbol Icon */}
@@ -259,7 +264,7 @@ export default function KioskServiceSelect() {
                 {/* Label */}
                 <span
                   className="text-base sm:text-lg lg:text-xl font-medium text-center px-2"
-                  style={{ color: option.accentColor }}
+                  style={{ color: '#1A1A1A' }}
                 >
                   {getOptionName(option)}
                 </span>

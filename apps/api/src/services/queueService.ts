@@ -972,6 +972,8 @@ export const queueService = {
 
   /**
    * Get ticket position (public)
+   * Uses global FIFO position (same as TV Display) - not service-specific
+   * Updated: 2026-02-02 to fix position calculation
    */
   async getTicketPosition(ticketId: string): Promise<TicketPosition> {
     const ticket = await prisma.ticket.findUnique({
@@ -993,21 +995,52 @@ export const queueService = {
     if (ticket.status === TICKET_STATUS.WAITING) {
       const { start, end } = getTodayRangeUTC(ticket.branch.timezone);
 
-      // Count tickets ahead
-      position = await prisma.ticket.count({
+      // Global FIFO position: Count ALL tickets ahead in the branch (not just same service)
+      // This matches the TV Display ordering: [{ priority: 'desc' }, { createdAt: 'asc' }]
+      // Order: All VIP (by createdAt) → All normal (by createdAt)
+
+      if (ticket.priority === 'vip') {
+        // VIP ticket: count only VIP tickets created before this one
+        const vipTicketsAhead = await prisma.ticket.count({
+          where: {
+            branchId: ticket.branchId,
+            status: TICKET_STATUS.WAITING,
+            priority: 'vip',
+            createdAt: { gte: start, lte: end, lt: ticket.createdAt },
+          },
+        });
+        position = vipTicketsAhead + 1;
+      } else {
+        // Normal ticket: all VIP tickets + non-VIP tickets created before this one
+        const [allVipTickets, nonVipTicketsAhead] = await Promise.all([
+          prisma.ticket.count({
+            where: {
+              branchId: ticket.branchId,
+              status: TICKET_STATUS.WAITING,
+              priority: 'vip',
+              createdAt: { gte: start, lte: end },
+            },
+          }),
+          prisma.ticket.count({
+            where: {
+              branchId: ticket.branchId,
+              status: TICKET_STATUS.WAITING,
+              NOT: { priority: 'vip' },  // Count ALL non-VIP tickets (includes null, 'normal', etc.)
+              createdAt: { gte: start, lte: end, lt: ticket.createdAt },
+            },
+          }),
+        ]);
+        position = allVipTickets + nonVipTicketsAhead + 1;
+      }
+
+      // Use ALL active counters in branch (global FIFO means any teller serves any customer)
+      const activeCounters = await prisma.counter.count({
         where: {
           branchId: ticket.branchId,
-          serviceCategoryId: ticket.serviceCategoryId,
-          status: TICKET_STATUS.WAITING,
-          createdAt: { gte: start, lte: end, lt: ticket.createdAt },
+          status: 'open',
         },
       });
-      position += 1;
 
-      const activeCounters = await this.getActiveCountersForService(
-        ticket.branchId,
-        ticket.serviceCategoryId
-      );
       estimatedWaitMins = this.calculateEstimatedWait(
         position,
         ticket.serviceCategory.avgServiceTime,
@@ -1294,15 +1327,19 @@ export const queueService = {
 
   /**
    * Calculate estimated wait time
+   * Uses fixed 10 minutes per interaction per teller for consistency
    */
-  calculateEstimatedWait(position: number, avgServiceTime: number, activeCounters: number): number {
+  calculateEstimatedWait(position: number, _avgServiceTime: number, activeCounters: number): number {
+    const FIXED_SERVICE_TIME_MINS = 10; // Fixed 10 minutes per interaction
+
     if (activeCounters === 0) {
       // No counters serving - use large estimate
-      return position * avgServiceTime;
+      return position * FIXED_SERVICE_TIME_MINS;
     }
 
-    // Divide total wait by parallel capacity
-    return Math.ceil((position * avgServiceTime) / activeCounters);
+    // Divide total wait by parallel capacity (number of open counters)
+    // Example: Position 4 with 2 tellers = (4 * 10) / 2 = 20 minutes
+    return Math.ceil((position * FIXED_SERVICE_TIME_MINS) / activeCounters);
   },
 
   /**
