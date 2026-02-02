@@ -29,6 +29,23 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Token refresh queue to handle parallel 401s
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const subscribeTokenRefresh = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
+
+const onTokenRefreshed = (token: string) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+const onRefreshFailed = () => {
+  refreshSubscribers = [];
+};
+
 // Response interceptor - handle 401 and refresh token
 api.interceptors.response.use(
   (response) => response,
@@ -38,6 +55,20 @@ api.interceptors.response.use(
     // If 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+
+      // If already refreshing, queue this request
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token: string) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`;
+            }
+            resolve(api(originalRequest));
+          });
+        });
+      }
+
+      isRefreshing = true;
 
       try {
         const refreshToken = useAuthStore.getState().refreshToken;
@@ -50,6 +81,9 @@ api.interceptors.response.use(
           const { accessToken } = response.data.data;
           useAuthStore.getState().setAccessToken(accessToken);
 
+          isRefreshing = false;
+          onTokenRefreshed(accessToken);
+
           // Retry the original request
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -57,6 +91,8 @@ api.interceptors.response.use(
           return api(originalRequest);
         }
       } catch (refreshError) {
+        isRefreshing = false;
+        onRefreshFailed();
         // Refresh failed - logout
         useAuthStore.getState().logout();
         window.location.href = '/login';
@@ -125,6 +161,10 @@ export const queueApi = {
 
   getTellerQueue: (branchId: string) =>
     api.get(`/queue/branch/${branchId}/teller`),
+
+  /** List branches for display/kiosk selection (public - no auth required) */
+  listBranches: () =>
+    api.get('/queue/branches'),
 };
 
 export const adminApi = {
@@ -184,6 +224,35 @@ export const adminApi = {
     api.delete(`/admin/users/${userId}`),
 };
 
+export const breaksApi = {
+  /** Start a teller break */
+  startBreak: (data: {
+    counterId: string;
+    reason: 'lunch' | 'prayer' | 'personal' | 'urgent';
+    durationMins: number;
+  }) => api.post('/breaks/start', data),
+
+  /** End a teller break */
+  endBreak: (breakId: string) =>
+    api.post(`/breaks/${breakId}/end`),
+
+  /** Extend an active break */
+  extendBreak: (breakId: string, additionalMins: number) =>
+    api.patch(`/breaks/${breakId}/extend`, { additionalMins }),
+
+  /** Get all breaks for a branch (today by default) */
+  getBranchBreaks: (branchId: string, date?: string) =>
+    api.get(`/breaks/branch/${branchId}`, { params: { date } }),
+
+  /** Get active break for a specific counter */
+  getCounterBreak: (counterId: string) =>
+    api.get(`/breaks/counter/${counterId}`),
+
+  /** Get available break reasons */
+  getReasons: () =>
+    api.get('/breaks/reasons'),
+};
+
 export const analyticsApi = {
   getTodayStats: (branchId: string) =>
     api.get(`/analytics/branch/${branchId}/today`),
@@ -196,6 +265,14 @@ export const analyticsApi = {
 
   getHourlyBreakdown: (branchId: string, date?: string) =>
     api.get(`/analytics/branch/${branchId}/hourly`, { params: { date } }),
+
+  /** Get today vs yesterday comparison for branch manager dashboard */
+  getBranchComparison: (branchId: string) =>
+    api.get(`/analytics/branch/${branchId}/comparison`),
+
+  /** Get branch ranking across tenant (for competitive awareness) */
+  getBranchRanking: () =>
+    api.get('/analytics/tenant/ranking'),
 
   getTenantOverview: () =>
     api.get('/analytics/tenant/overview'),

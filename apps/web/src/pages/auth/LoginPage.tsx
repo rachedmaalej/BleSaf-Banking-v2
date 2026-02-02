@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
-import { authApi, adminApi } from '@/lib/api';
+import { authApi, queueApi } from '@/lib/api';
 
 // SG Brand Colors
 const SG_COLORS = {
@@ -28,7 +28,7 @@ const QUICK_USERS = [
   {
     id: 'manager',
     label: 'Bank Manager',
-    email: 'bank.admin@demo-bank.tn',
+    email: 'manager@demo-bank.tn',
     password: 'demo123',
     icon: 'supervisor_account',
     color: SG_COLORS.black,
@@ -98,11 +98,11 @@ export default function LoginPage() {
     };
   }, []);
 
-  // Fetch branches for display selection
+  // Fetch branches for display selection (public endpoint - no auth required)
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await adminApi.listBranches();
+        const response = await queueApi.listBranches();
         setBranches(response.data.data || []);
         if (response.data.data?.length > 0) {
           setSelectedBranch(response.data.data[0].id);

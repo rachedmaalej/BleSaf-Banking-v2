@@ -67,16 +67,19 @@ model Counter {
   branch          Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
   number          Int
   label           String?
-  status          String   @default("closed") // open | closed | paused
+  status          String   @default("closed") // open | closed | on_break
   currentTicketId String?  @unique
   assignedUserId  String?
   assignedUser    User?    @relation("AssignedCounter", fields: [assignedUserId], references: [id])
+  activeBreakId   String?  @unique
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   assignedServices CounterService[]
   tickets          Ticket[]         @relation("ServedAtCounter")
   currentTicket    Ticket?          @relation("CurrentTicket", fields: [currentTicketId], references: [id])
+  breaks           TellerBreak[]    @relation("CounterBreaks")
+  activeBreak      TellerBreak?     @relation("ActiveBreak", fields: [activeBreakId], references: [id])
 
   @@unique([branchId, number])
   @@index([branchId])
@@ -186,6 +189,9 @@ model User {
   assignedCounter Counter[]      @relation("AssignedCounter")
   refreshTokens   RefreshToken[]
   ticketHistory   TicketHistory[]
+  breaks          TellerBreak[]  @relation("UserBreaks")
+  breaksStarted   TellerBreak[]  @relation("BreakStarter")
+  breaksEnded     TellerBreak[]  @relation("BreakEnder")
 
   @@index([tenantId])
   @@index([branchId])
@@ -292,4 +298,38 @@ model HourlySnapshot {
 
   @@index([branchId, timestamp])
   @@index([branchId, hour])
+}
+
+// ============================================================
+// TELLER BREAK (Pause Tracking)
+// ============================================================
+
+model TellerBreak {
+  id           String    @id @default(uuid())
+  counterId    String
+  counter      Counter   @relation("CounterBreaks", fields: [counterId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User      @relation("UserBreaks", fields: [userId], references: [id])
+  branchId     String
+
+  reason       String    // lunch | prayer | personal | urgent
+  durationMins Int       // planned duration in minutes
+  startedAt    DateTime  @default(now())
+  expectedEnd  DateTime  // calculated: startedAt + durationMins
+  actualEnd    DateTime? // null until break ends
+
+  startedById  String    // userId who initiated (BM or self)
+  startedBy    User      @relation("BreakStarter", fields: [startedById], references: [id])
+  endedById    String?   // userId who ended break
+  endedBy      User?     @relation("BreakEnder", fields: [endedById], references: [id])
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relation for active break
+  activeAtCounter Counter? @relation("ActiveBreak")
+
+  @@index([counterId])
+  @@index([branchId, startedAt])
+  @@index([userId])
 }

@@ -15,6 +15,7 @@ import authRoutes from './routes/auth';
 import queueRoutes from './routes/queue';
 import adminRoutes from './routes/admin';
 import analyticsRoutes from './routes/analytics';
+import breaksRoutes from './routes/breaks';
 
 // Initialize Sentry
 if (config.SENTRY_DSN) {
@@ -93,6 +94,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/queue', queueRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/breaks', breaksRoutes);
 
 // 404 handler
 app.use((_req, res) => {

@@ -23,6 +23,7 @@ export const COUNTER_STATUS = {
   OPEN: 'open',
   CLOSED: 'closed',
   PAUSED: 'paused',
+  ON_BREAK: 'on_break',
 } as const;
 
 export type CounterStatus = (typeof COUNTER_STATUS)[keyof typeof COUNTER_STATUS];

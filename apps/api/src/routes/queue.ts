@@ -184,6 +184,23 @@ router.post('/:ticketId/cancel', authenticate, requireRole('teller', 'branch_man
 });
 
 /**
+ * GET /api/queue/branches
+ * List active branches (public - for display/kiosk selection)
+ */
+router.get('/branches', async (req, res, next) => {
+  try {
+    const result = await queueService.listBranchesForDisplay();
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/queue/branch/:branchId/status
  * Get branch queue status (public - for display)
  */

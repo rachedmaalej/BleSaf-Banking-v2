@@ -238,6 +238,10 @@ export const analyticsService = {
 
     const { startDate, endDate } = query;
 
+    // Extend endDate to end of day (23:59:59.999)
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
     // Get all tellers in the branch
     const tellers = await prisma.user.findMany({
       where: { branchId, role: USER_ROLE.TELLER, status: 'active' },
@@ -251,7 +255,7 @@ export const analyticsService = {
           where: {
             servedByUserId: teller.id,
             status: TICKET_STATUS.COMPLETED,
-            completedAt: { gte: startDate, lte: endDate },
+            completedAt: { gte: startDate, lte: endOfDay },
           },
           select: {
             calledAt: true,
@@ -463,6 +467,203 @@ export const analyticsService = {
     );
 
     return comparison.sort((a, b) => b.totalTickets - a.totalTickets);
+  },
+
+  /**
+   * Get today vs yesterday comparison for branch manager dashboard
+   */
+  async getBranchComparison(branchId: string, tenantId: string, user: JWTPayload) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { tenantId: true, timezone: true },
+    });
+
+    if (!branch || branch.tenantId !== tenantId) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    if (user.role === USER_ROLE.BRANCH_MANAGER && user.branchId !== branchId) {
+      throw new ForbiddenError('Cannot access statistics for another branch');
+    }
+
+    const { start: todayStart, end: todayEnd } = getTodayRangeUTC(branch.timezone);
+
+    // Calculate yesterday's range
+    const yesterdayStart = new Date(todayStart);
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    const yesterdayEnd = new Date(todayEnd);
+    yesterdayEnd.setDate(yesterdayEnd.getDate() - 1);
+
+    // Get today's stats
+    const [todayServed, todayNoShows, todayTotal] = await Promise.all([
+      prisma.ticket.count({
+        where: { branchId, status: TICKET_STATUS.COMPLETED, createdAt: { gte: todayStart, lte: todayEnd } },
+      }),
+      prisma.ticket.count({
+        where: { branchId, status: TICKET_STATUS.NO_SHOW, createdAt: { gte: todayStart, lte: todayEnd } },
+      }),
+      prisma.ticket.count({
+        where: { branchId, createdAt: { gte: todayStart, lte: todayEnd } },
+      }),
+    ]);
+
+    // Get yesterday's stats
+    const [yesterdayServed, yesterdayNoShows, yesterdayTotal] = await Promise.all([
+      prisma.ticket.count({
+        where: { branchId, status: TICKET_STATUS.COMPLETED, createdAt: { gte: yesterdayStart, lte: yesterdayEnd } },
+      }),
+      prisma.ticket.count({
+        where: { branchId, status: TICKET_STATUS.NO_SHOW, createdAt: { gte: yesterdayStart, lte: yesterdayEnd } },
+      }),
+      prisma.ticket.count({
+        where: { branchId, createdAt: { gte: yesterdayStart, lte: yesterdayEnd } },
+      }),
+    ]);
+
+    // Calculate average wait times
+    const todayCompletedTickets = await prisma.ticket.findMany({
+      where: {
+        branchId,
+        status: TICKET_STATUS.COMPLETED,
+        calledAt: { not: null },
+        createdAt: { gte: todayStart, lte: todayEnd },
+      },
+      select: { createdAt: true, calledAt: true },
+    });
+
+    const yesterdayCompletedTickets = await prisma.ticket.findMany({
+      where: {
+        branchId,
+        status: TICKET_STATUS.COMPLETED,
+        calledAt: { not: null },
+        createdAt: { gte: yesterdayStart, lte: yesterdayEnd },
+      },
+      select: { createdAt: true, calledAt: true },
+    });
+
+    let todayAvgWait = 0;
+    if (todayCompletedTickets.length > 0) {
+      const waitTimes = todayCompletedTickets.map((t) =>
+        calculateDurationMins(t.createdAt, t.calledAt!)
+      );
+      todayAvgWait = Math.round(waitTimes.reduce((a, b) => a + b, 0) / waitTimes.length);
+    }
+
+    let yesterdayAvgWait = 0;
+    if (yesterdayCompletedTickets.length > 0) {
+      const waitTimes = yesterdayCompletedTickets.map((t) =>
+        calculateDurationMins(t.createdAt, t.calledAt!)
+      );
+      yesterdayAvgWait = Math.round(waitTimes.reduce((a, b) => a + b, 0) / waitTimes.length);
+    }
+
+    // Calculate trends (percentage change)
+    const calcTrend = (today: number, yesterday: number) => {
+      if (yesterday === 0) return today > 0 ? 100 : 0;
+      return Math.round(((today - yesterday) / yesterday) * 100);
+    };
+
+    return {
+      today: {
+        served: todayServed,
+        avgWait: todayAvgWait,
+        noShows: todayNoShows,
+        total: todayTotal,
+      },
+      yesterday: {
+        served: yesterdayServed,
+        avgWait: yesterdayAvgWait,
+        noShows: yesterdayNoShows,
+        total: yesterdayTotal,
+      },
+      trends: {
+        servedChange: calcTrend(todayServed, yesterdayServed),
+        waitChange: calcTrend(todayAvgWait, yesterdayAvgWait),
+        noShowChange: calcTrend(todayNoShows, yesterdayNoShows),
+      },
+    };
+  },
+
+  /**
+   * Get branch ranking across tenant (for competitive awareness)
+   * Accessible by branch managers to see their position
+   */
+  async getBranchRanking(tenantId: string, userBranchId?: string) {
+    const branches = await prisma.branch.findMany({
+      where: { tenantId, status: 'active' },
+      select: { id: true, name: true, code: true, timezone: true },
+    });
+
+    const branchStats = await Promise.all(
+      branches.map(async (branch) => {
+        const { start, end } = getTodayRangeUTC(branch.timezone);
+
+        const [served, waiting] = await Promise.all([
+          prisma.ticket.count({
+            where: { branchId: branch.id, status: TICKET_STATUS.COMPLETED, createdAt: { gte: start, lte: end } },
+          }),
+          prisma.ticket.count({
+            where: { branchId: branch.id, status: TICKET_STATUS.WAITING, createdAt: { gte: start, lte: end } },
+          }),
+        ]);
+
+        // Calculate average wait time
+        const completedTickets = await prisma.ticket.findMany({
+          where: {
+            branchId: branch.id,
+            status: TICKET_STATUS.COMPLETED,
+            calledAt: { not: null },
+            createdAt: { gte: start, lte: end },
+          },
+          select: { createdAt: true, calledAt: true },
+        });
+
+        let avgWait = 0;
+        if (completedTickets.length > 0) {
+          const waitTimes = completedTickets.map((t) =>
+            calculateDurationMins(t.createdAt, t.calledAt!)
+          );
+          avgWait = Math.round(waitTimes.reduce((a, b) => a + b, 0) / waitTimes.length);
+        }
+
+        return {
+          branchId: branch.id,
+          branchName: branch.name,
+          branchCode: branch.code,
+          served,
+          waiting,
+          avgWait,
+        };
+      })
+    );
+
+    // Sort by customers served (descending) for ranking
+    const ranked = branchStats.sort((a, b) => b.served - a.served);
+
+    // Add rank and find user's branch position
+    const rankedWithPosition = ranked.map((b, index) => ({
+      ...b,
+      rank: index + 1,
+      isUserBranch: b.branchId === userBranchId,
+    }));
+
+    const userRank = userBranchId
+      ? rankedWithPosition.find((b) => b.branchId === userBranchId)?.rank || null
+      : null;
+
+    const leader = rankedWithPosition[0];
+    const userBranch = userBranchId
+      ? rankedWithPosition.find((b) => b.branchId === userBranchId)
+      : null;
+
+    const gapToLeader = userBranch && leader ? leader.served - userBranch.served : 0;
+
+    return {
+      branches: rankedWithPosition,
+      yourRank: userRank,
+      totalBranches: branches.length,
+      gapToLeader,
+    };
   },
 
   /**

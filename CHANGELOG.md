@@ -7,6 +7,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.24.0] - 2026-02-02
+
+### Summary
+Major Branch Manager dashboard redesign with SG style guidelines, teller break management, and improved token refresh handling.
+
+### Added
+
+#### BM Dashboard Redesign (`apps/web/src/pages/manager/BranchDashboard.tsx`)
+- **Alerts Banner** - Real-time alerts for queue issues, slow tellers, closed counters, overtime breaks
+- **Today's Scorecard** - Key metrics (waiting, served, avg wait, service rate, rank) with trend indicators
+- **Teller Leaderboard** - Performance ranking with customers served, avg service time, slow teller warnings
+- **Branch Ranking** - Competitive view across all tenant branches with gap to leader
+- **Counter Control Panel** - Open/close counters, assign tellers, start/end breaks
+
+#### Teller Break Management System
+- **New `TellerBreak` model** in Prisma schema for tracking breaks
+- **New counter status** `on_break` added to `CounterStatus` enum
+- **Break API endpoints** (`apps/api/src/routes/breaks.ts`):
+  - `POST /api/breaks/start` - Start a teller break
+  - `POST /api/breaks/:id/end` - End a break
+  - `PATCH /api/breaks/:id/extend` - Extend break duration
+  - `GET /api/breaks/branch/:id` - Get all breaks for branch
+  - `GET /api/breaks/counter/:id` - Get active break for counter
+  - `GET /api/breaks/reasons` - Get break reason options
+- **Break service** (`apps/api/src/services/breakService.ts`) with business logic
+- **Break UI components** - BreakModal, BreakTimer with countdown
+
+#### Analytics API Enhancements
+- `GET /api/analytics/branch/:id/comparison` - Today vs yesterday stats
+- `GET /api/analytics/tenant/ranking` - Branch ranking across tenant
+
+#### Documentation
+- **Lean `CLAUDE.md`** - Essential project info loaded every session
+- **`docs/API-REFERENCE.md`** - Complete API endpoint documentation
+- **`docs/DATA-MODEL.md`** - Database schema reference
+- **`docs/BM-ENHANCEMENT-PLAN.md`** - Future roadmap for BM features
+- **`docs/design-system.md`** - SG brand styling guide
+
+### Changed
+
+#### Token Refresh Queue (`apps/web/src/lib/api.ts`)
+- Fixed race condition when multiple parallel requests get 401
+- Implemented refresh queue - only one refresh happens at a time
+- Other requests wait for refresh to complete, then retry with new token
+
+#### Login Page (`apps/web/src/pages/auth/LoginPage.tsx`)
+- Updated styling to follow SG brand guidelines
+
+### Fixed
+- **Breaks API middleware** - Fixed `requireBranchAccess()` factory function call (was missing parentheses)
+- **Dashboard loading** - Breaks fetch is now truly non-blocking (uses `.then()` instead of `await`)
+
+### Files Modified
+| File | Description |
+|------|-------------|
+| `apps/web/src/pages/manager/BranchDashboard.tsx` | Complete redesign with SG style |
+| `apps/web/src/lib/api.ts` | Token refresh queue, breaks API |
+| `apps/api/src/routes/breaks.ts` | New break management routes |
+| `apps/api/src/services/breakService.ts` | Break business logic |
+| `apps/api/src/routes/analytics.ts` | Comparison and ranking endpoints |
+| `apps/api/src/services/analyticsService.ts` | Analytics queries |
+| `apps/api/prisma/schema.prisma` | TellerBreak model, on_break status |
+| `packages/shared/src/constants.ts` | ON_BREAK counter status |
+| `packages/shared/src/types.ts` | Break-related types |
+
+---
+
+## [0.22.0] - 2026-02-02
+
+### Summary
+Redesigned login page with SG style guidelines.
+
+### Changed
+- Login page UI updated to follow Société Générale brand colors and styling
+
+---
+
 ## [0.2.0] - 2025-02-02
 
 ### Summary
@@ -146,6 +223,8 @@ Initial release of BléSaf Banking Queue Management System.
 
 | Version | Date | Highlights |
 |---------|------|------------|
+| 0.24.0 | 2026-02-02 | BM dashboard redesign, break management, token refresh fix |
+| 0.22.0 | 2026-02-02 | Login page SG styling |
 | 0.2.0 | 2025-02-02 | Simplified teller workflow, global queue sync |
 | 0.1.0 | 2025-01-28 | Initial release |
 

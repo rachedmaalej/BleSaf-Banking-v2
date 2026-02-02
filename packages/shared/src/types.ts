@@ -262,6 +262,7 @@ export interface CounterDisplay {
   label: string | null;
   status: CounterStatus;
   currentTicket: TicketDisplay | null;
+  assignedUserId: string | null;
   assignedUserName: string | null;
 }
 

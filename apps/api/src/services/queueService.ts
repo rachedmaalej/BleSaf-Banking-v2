@@ -30,6 +30,25 @@ import { notificationQueue } from './notificationQueue';
 
 export const queueService = {
   /**
+   * List active branches for display/kiosk selection
+   * Public endpoint - returns minimal data
+   */
+  async listBranchesForDisplay() {
+    const branches = await prisma.branch.findMany({
+      where: { status: 'active' },
+      select: {
+        id: true,
+        name: true,
+        code: true,
+        address: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return branches;
+  },
+
+  /**
    * Create a new ticket (check-in)
    * Public endpoint for kiosk/mobile
    */
@@ -878,6 +897,7 @@ export const queueService = {
             counterNumber: c.number,
           }
         : null,
+      assignedUserId: c.assignedUserId || null,
       assignedUserName: c.assignedUser?.name || null,
     }));
 

@@ -95,6 +95,41 @@ router.get('/branch/:branchId/hourly', requireRole('bank_admin', 'branch_manager
 });
 
 /**
+ * GET /api/analytics/branch/:branchId/comparison
+ * Get today vs yesterday comparison for branch manager dashboard
+ */
+router.get('/branch/:branchId/comparison', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+    const result = await analyticsService.getBranchComparison(branchId, req.tenantId!, req.user!);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/analytics/tenant/ranking
+ * Get branch ranking for competitive awareness (accessible by branch managers)
+ */
+router.get('/tenant/ranking', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const result = await analyticsService.getBranchRanking(req.tenantId!, req.user!.branchId);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/analytics/tenant/overview
  * Get all-branches summary for HQ (bank_admin only)
  */
