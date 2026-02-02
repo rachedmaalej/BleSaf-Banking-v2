@@ -780,6 +780,59 @@ export const queueService = {
   },
 
   /**
+   * Bump ticket priority to VIP (move to front of queue)
+   * Used by branch managers to prioritize urgent customers
+   */
+  async bumpTicketPriority(ticketId: string, actorId: string) {
+    const ticket = await prisma.ticket.findUnique({
+      where: { id: ticketId },
+      include: {
+        branch: { select: { id: true } },
+        serviceCategory: { select: { nameFr: true, prefix: true } },
+      },
+    });
+
+    if (!ticket) {
+      throw new NotFoundError('Ticket not found');
+    }
+
+    if (ticket.status !== TICKET_STATUS.WAITING) {
+      throw new BadRequestError('Only waiting tickets can be bumped to front');
+    }
+
+    if (ticket.priority === 'vip') {
+      throw new BadRequestError('Ticket is already marked as VIP');
+    }
+
+    const updatedTicket = await prisma.ticket.update({
+      where: { id: ticketId },
+      data: {
+        priority: 'vip',
+      },
+    });
+
+    await prisma.ticketHistory.create({
+      data: {
+        ticketId,
+        action: TICKET_ACTION.PRIORITY_BUMPED,
+        actorId,
+        metadata: { previousPriority: ticket.priority },
+      },
+    });
+
+    // Emit queue updated event
+    emitQueueUpdated(ticket.branch.id, await this.getBranchQueueStatus(ticket.branchId));
+
+    logger.info({ ticketId, actorId }, 'Ticket priority bumped to VIP');
+
+    return {
+      ...updatedTicket,
+      ticketNumber: ticket.ticketNumber,
+      serviceName: ticket.serviceCategory.nameFr,
+    };
+  },
+
+  /**
    * Get branch queue status (public)
    */
   async getBranchQueueStatus(branchId: string): Promise<QueueStatus> {
@@ -908,6 +961,7 @@ export const queueService = {
       serviceName: t.serviceCategory.nameFr,
       servicePrefix: t.serviceCategory.prefix,
       status: t.status as TicketStatus,
+      priority: t.priority,
       position: index + 1,
       estimatedWaitMins: this.calculateEstimatedWait(
         index + 1,

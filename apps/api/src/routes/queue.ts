@@ -184,6 +184,27 @@ router.post('/:ticketId/cancel', authenticate, requireRole('teller', 'branch_man
 });
 
 /**
+ * POST /api/queue/:ticketId/bump-priority
+ * Bump ticket to VIP priority (branch_manager only)
+ * Moves the ticket to the front of the queue
+ */
+router.post('/:ticketId/bump-priority', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
+  try {
+    const { ticketId } = req.params;
+
+    const result = await queueService.bumpTicketPriority(ticketId, req.user!.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      message: 'Ticket bumped to front of queue',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/queue/branches
  * List active branches (public - for display/kiosk selection)
  */

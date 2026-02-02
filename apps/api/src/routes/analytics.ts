@@ -95,6 +95,31 @@ router.get('/branch/:branchId/hourly', requireRole('bank_admin', 'branch_manager
 });
 
 /**
+ * GET /api/analytics/branch/:branchId/sla
+ * Get SLA metrics and daily target progress for branch manager dashboard
+ */
+router.get('/branch/:branchId/sla', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+    const { slaTargetMins, dailyTarget } = req.query;
+
+    const options = {
+      slaTargetMins: slaTargetMins ? parseInt(slaTargetMins as string, 10) : undefined,
+      dailyTarget: dailyTarget ? parseInt(dailyTarget as string, 10) : undefined,
+    };
+
+    const result = await analyticsService.getSlaMetrics(branchId, req.tenantId!, req.user!, options);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/analytics/branch/:branchId/comparison
  * Get today vs yesterday comparison for branch manager dashboard
  */

@@ -382,6 +382,41 @@ export const adminService = {
     logger.info({ counterId }, 'Counter deleted');
   },
 
+  async batchUpdateCounterStatus(
+    tenantId: string,
+    branchId: string,
+    status: 'open' | 'closed',
+    user: JWTPayload
+  ) {
+    // Verify branch belongs to tenant
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+    });
+
+    if (!branch || branch.tenantId !== tenantId) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    // Branch managers can only update their own branch
+    if (user.role === USER_ROLE.BRANCH_MANAGER && user.branchId !== branchId) {
+      throw new ForbiddenError('Cannot update counters in another branch');
+    }
+
+    // Update all counters in the branch
+    const result = await prisma.counter.updateMany({
+      where: {
+        branchId,
+        // Don't close counters that are on_break - they need to be ended first
+        status: status === 'closed' ? { not: 'on_break' } : undefined,
+      },
+      data: { status },
+    });
+
+    logger.info({ branchId, status, count: result.count }, 'Batch counter status update');
+
+    return { updated: result.count };
+  },
+
   // ============================================================
   // SERVICE CATEGORY MANAGEMENT
   // ============================================================

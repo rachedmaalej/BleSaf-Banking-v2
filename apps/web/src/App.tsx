@@ -24,6 +24,7 @@ import AdminServices from './pages/admin/AdminServices';
 
 // Layout
 import AppLayout from './components/layout/AppLayout';
+import ManagerLayout from './components/layout/ManagerLayout';
 
 function App() {
   const { i18n } = useTranslation();
@@ -64,17 +65,16 @@ function App() {
           }
         />
 
-        {/* Protected - Branch Manager */}
+        {/* Protected - Branch Manager (uses ManagerLayout with horizontal nav) */}
         <Route
-          path="/manager"
           element={
             <ProtectedRoute allowedRoles={['branch_manager', 'bank_admin']}>
-              <AppLayout>
-                <BranchDashboard />
-              </AppLayout>
+              <ManagerLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/manager" element={<BranchDashboard />} />
+        </Route>
 
         {/* Protected - HQ Admin */}
         <Route

@@ -153,6 +153,10 @@ export const queueApi = {
   cancelTicket: (ticketId: string) =>
     api.post(`/queue/${ticketId}/cancel`),
 
+  /** Bump ticket priority to VIP (move to front of queue) */
+  bumpTicketPriority: (ticketId: string) =>
+    api.post(`/queue/${ticketId}/bump-priority`),
+
   getBranchStatus: (branchId: string) =>
     api.get(`/queue/branch/${branchId}/status`),
 
@@ -194,6 +198,13 @@ export const adminApi = {
   deleteCounter: (counterId: string) =>
     api.delete(`/admin/counters/${counterId}`),
 
+  // Batch Counter Operations
+  openAllCounters: (branchId: string) =>
+    api.post('/admin/counters/batch/open', { branchId }),
+
+  closeAllCounters: (branchId: string) =>
+    api.post('/admin/counters/batch/close', { branchId }),
+
   // Services
   listServices: (branchId?: string) =>
     api.get('/admin/services', { params: { branchId } }),
@@ -222,6 +233,22 @@ export const adminApi = {
 
   deleteUser: (userId: string) =>
     api.delete(`/admin/users/${userId}`),
+
+  // Teller Management (convenience wrappers for branch managers)
+  listTellers: (branchId: string, page = 1, pageSize = 50) =>
+    api.get('/admin/users', { params: { page, pageSize, branchId, role: 'teller' } }),
+
+  createTeller: (data: { name: string; email: string; password: string; branchId: string }) =>
+    api.post('/admin/users', { ...data, role: 'teller' }),
+
+  updateTeller: (userId: string, data: { name?: string; email?: string; password?: string; status?: string }) =>
+    api.patch(`/admin/users/${userId}`, data),
+
+  deactivateTeller: (userId: string) =>
+    api.delete(`/admin/users/${userId}`),
+
+  reactivateTeller: (userId: string) =>
+    api.patch(`/admin/users/${userId}`, { status: 'active' }),
 };
 
 export const breaksApi = {
@@ -269,6 +296,10 @@ export const analyticsApi = {
   /** Get today vs yesterday comparison for branch manager dashboard */
   getBranchComparison: (branchId: string) =>
     api.get(`/analytics/branch/${branchId}/comparison`),
+
+  /** Get SLA metrics and daily target progress for branch manager dashboard */
+  getSlaMetrics: (branchId: string, options?: { slaTargetMins?: number; dailyTarget?: number }) =>
+    api.get(`/analytics/branch/${branchId}/sla`, { params: options }),
 
   /** Get branch ranking across tenant (for competitive awareness) */
   getBranchRanking: () =>

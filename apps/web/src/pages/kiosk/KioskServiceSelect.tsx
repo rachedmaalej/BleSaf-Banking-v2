@@ -12,21 +12,21 @@ interface ServiceCategory {
 }
 
 // Main service categories to display on kiosk (in display order)
-const MAIN_SERVICES = ['Retrait', 'Dépôt', 'Ouverture de compte'];
+const MAIN_SERVICES = ["Retrait d'espèces", 'Relevés de compte', "Dépôt d'espèces"];
 
 // Service colors - Subtle Elegance (white cards with colored left border)
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; border: string }> = {
-  'Retrait': { bg: '#FFFFFF', accent: '#E9041E', border: '#E9041E' },      // SG Red
-  'Dépôt': { bg: '#FFFFFF', accent: '#1A1A1A', border: '#1A1A1A' },        // Black
-  'Ouverture de compte': { bg: '#FFFFFF', accent: '#D66874', border: '#D66874' },  // Rose
-  'Autres': { bg: '#FFFFFF', accent: '#666666', border: '#666666' },       // Gray
+  "Retrait d'espèces": { bg: '#FFFFFF', accent: '#E9041E', border: '#E9041E' },      // SG Red
+  'Relevés de compte': { bg: '#FFFFFF', accent: '#1A1A1A', border: '#1A1A1A' },      // Black
+  "Dépôt d'espèces": { bg: '#FFFFFF', accent: '#D66874', border: '#D66874' },        // Rose
+  'Autres': { bg: '#FFFFFF', accent: '#666666', border: '#666666' },                 // Gray
 };
 
 // Material Symbols icon names for each service
 const SERVICE_ICONS: Record<string, string> = {
-  'Retrait': 'local_atm',
-  'Dépôt': 'savings',
-  'Ouverture de compte': 'person_add',
+  "Retrait d'espèces": 'local_atm',
+  'Relevés de compte': 'receipt_long',
+  "Dépôt d'espèces": 'payments',
   'Autres': 'more_horiz',
 };
 

@@ -8,14 +8,12 @@ import {
   SOCKET_EVENTS,
 } from '@/lib/socket';
 
-// Material icon names for ranking positions
-const RANK_ICONS = ['looks_one', 'looks_two', 'looks_3', 'looks_4', 'looks_5', 'looks_6'];
-
 // Service class names and their Material icons
 const SERVICE_CONFIG: Record<string, { className: string; icon: string; label: string }> = {
-  Retrait: { className: 'retrait', icon: 'local_atm', label: 'Retrait' },
-  'Dépôt': { className: 'depot', icon: 'savings', label: 'Dépôt' },
-  'Ouverture de compte': { className: 'ouverture', icon: 'folder_open', label: 'Ouverture' },
+  "Retrait d'espèces": { className: 'retrait', icon: 'local_atm', label: 'Retrait' },
+  'Relevés de compte': { className: 'releves', icon: 'receipt_long', label: 'Relevés' },
+  "Dépôt d'espèces": { className: 'depot', icon: 'payments', label: 'Dépôt' },
+  Autres: { className: 'autres', icon: 'more_horiz', label: 'Autres' },
   default: { className: 'autres', icon: 'more_horiz', label: 'Autres' },
 };
 
@@ -132,9 +130,9 @@ export default function QueueDisplay() {
     estimatedWaitMins: ticket.estimatedWaitMins,
   }));
 
-  // Get first 6 for display
-  const visibleQueue = waitingQueue.slice(0, 6);
-  const remainingCount = Math.max(0, waitingQueue.length - 6);
+  // Get first 8 for display
+  const visibleQueue = waitingQueue.slice(0, 8);
+  const remainingCount = Math.max(0, waitingQueue.length - 8);
 
   // Calculate next call estimate
   const nextCallEstimateMins = waitingQueue.length > 0 ? AVG_SERVICE_TIME_MINS : 0;
@@ -183,27 +181,27 @@ export default function QueueDisplay() {
           color: #49454F;
         }
 
-        /* MD3 Design Tokens - Monochrome Banking (SG Red + Dark Gray) */
+        /* MD3 Design Tokens - SG Brand Colors */
         .tv-display {
-          /* Retrait: SG Red */
+          /* Retrait d'espèces: SG Red */
           --retrait-bg: #FDECEE;
           --retrait-accent: #E9041E;
           --retrait-text: #E9041E;
 
-          /* Dépôt: Neutral Gray */
-          --depot-bg: #F3F4F6;
-          --depot-accent: #6B7280;
-          --depot-text: #6B7280;
+          /* Relevés de compte: Black */
+          --releves-bg: #F5F5F5;
+          --releves-accent: #1A1A1A;
+          --releves-text: #1A1A1A;
 
-          /* Ouverture: Dark Gray */
-          --ouverture-bg: #F5F5F5;
-          --ouverture-accent: #2D2D2D;
-          --ouverture-text: #2D2D2D;
+          /* Dépôt d'espèces: Rose */
+          --depot-bg: #FCE8EB;
+          --depot-accent: #D66874;
+          --depot-text: #D66874;
 
-          /* Autres: Light Gray */
+          /* Autres: Gray */
           --autres-bg: #F9FAFB;
-          --autres-accent: #9CA3AF;
-          --autres-text: #9CA3AF;
+          --autres-accent: #666666;
+          --autres-text: #666666;
 
           --md3-primary: #E9041E;
           --md3-surface: #FFFFFF;
@@ -233,8 +231,8 @@ export default function QueueDisplay() {
 
         /* Service Colors */
         .retrait { --service-bg: var(--retrait-bg); --service-accent: var(--retrait-accent); --service-text: var(--retrait-text); }
+        .releves { --service-bg: var(--releves-bg); --service-accent: var(--releves-accent); --service-text: var(--releves-text); }
         .depot { --service-bg: var(--depot-bg); --service-accent: var(--depot-accent); --service-text: var(--depot-text); }
-        .ouverture { --service-bg: var(--ouverture-bg); --service-accent: var(--ouverture-accent); --service-text: var(--ouverture-text); }
         .autres { --service-bg: var(--autres-bg); --service-accent: var(--autres-accent); --service-text: var(--autres-text); }
 
         /* Service Tag */
@@ -357,17 +355,19 @@ export default function QueueDisplay() {
 
         .tv-hero-card .counter-number {
           font-size: 80px;
-          font-weight: 900;
+          font-weight: 300;
           color: var(--md3-on-surface);
           line-height: 1;
           margin-bottom: 8px;
+          letter-spacing: -0.02em;
         }
 
         .tv-hero-card .ticket-number {
-          font-size: 32px;
-          font-weight: 700;
+          font-size: 48px;
+          font-weight: 300;
           color: var(--service-accent);
           margin-bottom: 12px;
+          letter-spacing: -0.01em;
         }
 
         /* Empty state for hero when no active counters */
@@ -390,26 +390,32 @@ export default function QueueDisplay() {
           font-size: 18px;
         }
 
-        /* Queue Section: 1/3 of vertical space */
+        /* Queue Section: 1/3 of vertical space - Large Hero Cards Design */
         .tv-queue-section {
           flex: 1;
           display: flex;
           flex-direction: column;
-          background: var(--md3-surface);
+          background: var(--md3-surface-variant);
           border-top: 1px solid var(--md3-outline-variant);
         }
 
+        .tv-queue-header {
+          padding: 12px 24px 8px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-shrink: 0;
+        }
+
         .tv-queue-title {
-          padding: 12px 32px 8px;
           font-size: 12px;
-          font-weight: 500;
+          font-weight: 600;
           color: var(--md3-on-surface-variant);
           text-transform: uppercase;
           letter-spacing: 1.5px;
           display: flex;
           align-items: center;
           gap: 8px;
-          flex-shrink: 0;
         }
 
         .tv-queue-title .material-icon {
@@ -417,126 +423,178 @@ export default function QueueDisplay() {
           color: var(--md3-primary);
         }
 
-        .tv-queue-flow {
-          flex: 1;
-          padding: 0 32px 16px;
+        .tv-queue-stats {
           display: flex;
           align-items: center;
+          gap: 16px;
+          font-size: 13px;
+          color: var(--md3-on-surface-variant);
+        }
+
+        .tv-queue-stats .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .tv-queue-stats .material-icon {
+          font-size: 16px;
+        }
+
+        .tv-queue-stats strong {
+          color: var(--md3-on-surface);
+          font-weight: 600;
+        }
+
+        /* Hero Cards Grid */
+        .tv-queue-cards {
+          flex: 1;
+          padding: 0 24px 16px;
+          display: flex;
+          align-items: stretch;
           justify-content: center;
-          gap: 8px;
+          gap: 12px;
           overflow: hidden;
         }
 
-        .tv-queue-item {
+        /* Individual Queue Card */
+        .tv-queue-card {
+          flex: 1;
+          max-width: 140px;
+          background: var(--md3-surface);
+          border-radius: var(--md3-radius-medium);
+          padding: 12px 14px;
+          position: relative;
+          overflow: hidden;
+          box-shadow: var(--md3-shadow-1);
           display: flex;
           flex-direction: column;
-          align-items: center;
-          min-width: 100px;
+          border: 1px solid var(--md3-outline-variant);
         }
 
-        .tv-rank-icon {
-          color: var(--queue-gray);
-          margin-bottom: 4px;
+        /* Top accent border */
+        .tv-queue-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: var(--service-accent);
         }
 
-        .tv-rank-icon .material-icon {
-          font-size: 36px;
+        /* First card highlight */
+        .tv-queue-card:first-child {
+          box-shadow: var(--md3-shadow-2);
+          border-color: var(--service-accent);
         }
 
+        .tv-queue-card:first-child::before {
+          height: 5px;
+        }
+
+        /* Position label */
+        .tv-queue-position {
+          font-size: 10px;
+          font-weight: 500;
+          color: var(--md3-on-surface-variant);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 6px;
+          margin-top: 2px;
+        }
+
+        /* Ticket number - hero element */
         .tv-queue-ticket {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--queue-gray);
-          margin-bottom: 4px;
-        }
-
-        .tv-queue-details {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .tv-queue-service {
-          display: flex;
-          align-items: center;
+          font-size: 22px;
+          font-weight: 600;
           color: var(--service-accent);
+          letter-spacing: -0.5px;
+          margin-bottom: 8px;
+          line-height: 1;
         }
 
-        .tv-queue-service .material-icon {
-          font-size: 16px;
+        /* Card footer with service + wait */
+        .tv-queue-card-footer {
+          margin-top: auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 6px;
+        }
+
+        .tv-queue-service-tag {
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 4px;
+          border-radius: 3px;
+          font-size: 8px;
+          font-weight: 600;
+          text-transform: uppercase;
+          background: var(--service-bg);
+          color: var(--service-text);
+          flex-shrink: 0;
+        }
+
+        .tv-queue-service-tag .material-icon {
+          font-size: 10px;
         }
 
         .tv-queue-wait {
           display: flex;
           align-items: center;
           gap: 2px;
-          font-size: 12px;
+          font-size: 10px;
           color: var(--md3-on-surface-variant);
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         .tv-queue-wait .material-icon {
-          font-size: 14px;
+          font-size: 10px;
         }
 
-        .tv-queue-connector {
-          color: #D0D0D0;
-          display: flex;
-          align-items: center;
-        }
-
-        .tv-queue-connector .material-icon {
-          font-size: 20px;
-        }
-
-        .tv-queue-more {
+        /* More indicator card */
+        .tv-queue-more-card {
+          flex: 0 0 60px;
+          background: transparent;
+          border: 2px dashed var(--md3-outline-variant);
+          border-radius: var(--md3-radius-medium);
           display: flex;
           flex-direction: column;
           align-items: center;
+          justify-content: center;
           color: var(--md3-on-surface-variant);
-          min-width: 60px;
         }
 
-        .tv-queue-more .material-icon {
-          font-size: 28px;
-          color: var(--queue-gray);
+        .tv-queue-more-card .material-icon {
+          font-size: 20px;
+          margin-bottom: 2px;
         }
 
-        .tv-queue-more span {
+        .tv-queue-more-card .more-count {
           font-size: 12px;
-          margin-top: 4px;
+          font-weight: 600;
         }
 
         /* Empty queue state */
         .tv-queue-empty {
           flex: 1;
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
           color: var(--md3-on-surface-variant);
+          gap: 8px;
+        }
+
+        .tv-queue-empty .material-icon {
+          font-size: 40px;
+          opacity: 0.5;
+        }
+
+        .tv-queue-empty-text {
           font-size: 14px;
-        }
-
-        .tv-footer {
-          padding: 10px 32px;
-          text-align: center;
-          color: var(--md3-on-surface-variant);
-          font-size: 13px;
-          background: var(--md3-surface);
-          border-top: 1px solid var(--md3-outline-variant);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          flex-shrink: 0;
-        }
-
-        .tv-footer .material-icon {
-          font-size: 16px;
-        }
-
-        .tv-footer strong {
-          color: var(--md3-on-surface);
-          font-weight: 600;
         }
       `}</style>
 
@@ -583,41 +641,42 @@ export default function QueueDisplay() {
           </div>
         </div>
 
-        {/* Queue Section: 1/3 of vertical space */}
+        {/* Queue Section: 1/3 of vertical space - Large Hero Cards */}
         <div className="tv-queue-section">
-          <div className="tv-queue-title">
-            <span className="material-icon">schedule</span>
-            Prochains en file
+          <div className="tv-queue-header">
+            <div className="tv-queue-title">
+              <span className="material-icon">schedule</span>
+              Prochains en file
+            </div>
+            <div className="tv-queue-stats">
+              <div className="stat-item">
+                <span className="material-icon">groups</span>
+                <strong>{branchStatus.stats.totalWaiting}</strong> en attente
+              </div>
+              <div className="stat-item">
+                <span className="material-icon">avg_pace</span>
+                Prochain appel: <strong>~{nextCallEstimateMins} min</strong>
+              </div>
+            </div>
           </div>
 
           {visibleQueue.length > 0 ? (
-            <div className="tv-queue-flow">
+            <div className="tv-queue-cards">
               {visibleQueue.map((item, index) => {
                 const serviceConfig = getServiceConfig(item.serviceName);
-                // Use backend-calculated wait time for consistency with customer status page
                 const waitMins = item.estimatedWaitMins;
-                const rankIcon = RANK_ICONS[index] || 'more_horiz';
 
                 return (
-                  <div key={item.ticketNumber} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {index > 0 && (
-                      <div className="tv-queue-connector">
-                        <span className="material-icon">chevron_right</span>
-                      </div>
-                    )}
-                    <div className={`tv-queue-item ${serviceConfig.className}`}>
-                      <div className="tv-rank-icon">
-                        <span className="material-icon">{rankIcon}</span>
-                      </div>
-                      <div className="tv-queue-ticket">{item.ticketNumber}</div>
-                      <div className="tv-queue-details">
-                        <div className="tv-queue-service">
-                          <span className="material-icon">{serviceConfig.icon}</span>
-                        </div>
-                        <div className="tv-queue-wait">
-                          <span className="material-icon">schedule</span>
-                          {waitMins} min
-                        </div>
+                  <div key={item.ticketNumber} className={`tv-queue-card ${serviceConfig.className}`}>
+                    <div className="tv-queue-position">Position {index + 1}</div>
+                    <div className="tv-queue-ticket">{item.ticketNumber}</div>
+                    <div className="tv-queue-card-footer">
+                      <span className={`tv-queue-service-tag ${serviceConfig.className}`}>
+                        <span className="material-icon">{serviceConfig.icon}</span>
+                      </span>
+                      <div className="tv-queue-wait">
+                        <span className="material-icon">schedule</span>
+                        {waitMins} min
                       </div>
                     </div>
                   </div>
@@ -625,26 +684,18 @@ export default function QueueDisplay() {
               })}
 
               {remainingCount > 0 && (
-                <>
-                  <div className="tv-queue-connector">
-                    <span className="material-icon">chevron_right</span>
-                  </div>
-                  <div className="tv-queue-more">
-                    <span className="material-icon">more_horiz</span>
-                    <span>+{remainingCount}</span>
-                  </div>
-                </>
+                <div className="tv-queue-more-card">
+                  <span className="material-icon">more_horiz</span>
+                  <span className="more-count">+{remainingCount}</span>
+                </div>
               )}
             </div>
           ) : (
-            <div className="tv-queue-empty">Aucun client en attente</div>
+            <div className="tv-queue-empty">
+              <span className="material-icon">hourglass_empty</span>
+              <div className="tv-queue-empty-text">Aucun client en attente</div>
+            </div>
           )}
-
-          <div className="tv-footer">
-            <span className="material-icon">groups</span>
-            <strong>{branchStatus.stats.totalWaiting}</strong> personnes · Prochain:{' '}
-            <strong>~{nextCallEstimateMins} min</strong>
-          </div>
         </div>
       </div>
     </>

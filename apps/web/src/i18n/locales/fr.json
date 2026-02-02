@@ -120,7 +120,7 @@
     "selectCounterFirst": "Sélectionnez d'abord un guichet"
   },
   "manager": {
-    "dashboard": "Tableau de bord Manager",
+    "dashboard": "Tableau de Bord",
     "overview": "Vue d'ensemble",
     "counters": "Guichets",
     "agents": "Agents",
@@ -163,16 +163,17 @@
     "priority": "Priorité"
   },
   "services": {
-    "withdrawal": "Retrait",
-    "deposit": "Dépôt",
-    "accountOpening": "Ouverture de compte",
+    "withdrawal": "Retrait d'espèces",
+    "deposit": "Dépôt d'espèces",
+    "accountStatements": "Relevés de compte",
     "loans": "Prêts",
-    "foreignExchange": "Change"
+    "foreignExchange": "Change",
+    "other": "Autres"
   },
   "roles": {
     "super_admin": "Super Admin",
     "bank_admin": "Admin Banque",
-    "branch_manager": "Manager Agence",
+    "branch_manager": "Cheffe d'Agence",
     "teller": "Agent"
   },
   "errors": {

@@ -84,6 +84,7 @@ export const TICKET_ACTION = {
   NO_SHOW: 'no_show',
   CANCELLED: 'cancelled',
   TRANSFERRED: 'transferred',
+  PRIORITY_BUMPED: 'priority_bumped',
 } as const;
 
 export type TicketAction = (typeof TICKET_ACTION)[keyof typeof TICKET_ACTION];

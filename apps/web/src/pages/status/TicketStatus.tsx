@@ -12,9 +12,9 @@ import {
 
 // Service colors - Subtle Elegance (matching Kiosk)
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; tint: string }> = {
-  'Retrait': { bg: '#FEE2E2', accent: '#E9041E', tint: '#FEF7F7' },
-  'Dépôt': { bg: '#F0F0F0', accent: '#1A1A1A', tint: '#F5F5F5' },
-  'Ouverture de compte': { bg: '#FCE8EB', accent: '#D66874', tint: '#FDF5F6' },
+  "Retrait d'espèces": { bg: '#FEE2E2', accent: '#E9041E', tint: '#FEF7F7' },
+  'Relevés de compte': { bg: '#F0F0F0', accent: '#1A1A1A', tint: '#F5F5F5' },
+  "Dépôt d'espèces": { bg: '#FCE8EB', accent: '#D66874', tint: '#FDF5F6' },
   'Autres': { bg: '#F0F0F0', accent: '#666666', tint: '#F5F5F5' },
 };
 

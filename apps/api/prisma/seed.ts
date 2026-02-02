@@ -44,11 +44,14 @@ async function main() {
   const services = await Promise.all([
     prisma.serviceCategory.upsert({
       where: { branchId_prefix: { branchId: branch.id, prefix: 'A' } },
-      update: {},
+      update: {
+        nameAr: 'سحب نقدي',
+        nameFr: "Retrait d'espèces",
+      },
       create: {
         branchId: branch.id,
         nameAr: 'سحب نقدي',
-        nameFr: 'Retrait',
+        nameFr: "Retrait d'espèces",
         prefix: 'A',
         icon: '💵',
         priorityWeight: 1,
@@ -58,11 +61,14 @@ async function main() {
     }),
     prisma.serviceCategory.upsert({
       where: { branchId_prefix: { branchId: branch.id, prefix: 'B' } },
-      update: {},
+      update: {
+        nameAr: 'كشف الحساب',
+        nameFr: 'Relevés de compte',
+      },
       create: {
         branchId: branch.id,
-        nameAr: 'إيداع',
-        nameFr: 'Dépôt',
+        nameAr: 'كشف الحساب',
+        nameFr: 'Relevés de compte',
         prefix: 'B',
         icon: '📥',
         priorityWeight: 1,
@@ -72,11 +78,14 @@ async function main() {
     }),
     prisma.serviceCategory.upsert({
       where: { branchId_prefix: { branchId: branch.id, prefix: 'C' } },
-      update: {},
+      update: {
+        nameAr: 'إيداع نقدي',
+        nameFr: "Dépôt d'espèces",
+      },
       create: {
         branchId: branch.id,
-        nameAr: 'فتح حساب',
-        nameFr: 'Ouverture de compte',
+        nameAr: 'إيداع نقدي',
+        nameFr: "Dépôt d'espèces",
         prefix: 'C',
         icon: '📋',
         priorityWeight: 2,

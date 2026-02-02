@@ -8,17 +8,17 @@ import { queueOfflineCheckin } from '@/lib/offlineQueue';
 // Service colors - Subtle Elegance (SG Refined Aesthetic)
 // bg = light tint for badges/backgrounds, accent = service color for text/icons
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; tint: string }> = {
-  'Retrait': { bg: '#FEE2E2', accent: '#E9041E', tint: '#FEF7F7' },       // SG Red
-  'Dépôt': { bg: '#F0F0F0', accent: '#1A1A1A', tint: '#F5F5F5' },         // Black
-  'Ouverture de compte': { bg: '#FCE8EB', accent: '#D66874', tint: '#FDF5F6' },  // Rose
-  'Autres': { bg: '#F0F0F0', accent: '#666666', tint: '#F5F5F5' },        // Gray
+  "Retrait d'espèces": { bg: '#FEE2E2', accent: '#E9041E', tint: '#FEF7F7' },   // SG Red
+  'Relevés de compte': { bg: '#F0F0F0', accent: '#1A1A1A', tint: '#F5F5F5' },   // Black
+  "Dépôt d'espèces": { bg: '#FCE8EB', accent: '#D66874', tint: '#FDF5F6' },     // Rose
+  'Autres': { bg: '#F0F0F0', accent: '#666666', tint: '#F5F5F5' },              // Gray
 };
 
 // Service icon mapping
 const SERVICE_ICONS: Record<string, string> = {
-  'Retrait': 'local_atm',
-  'Dépôt': 'savings',
-  'Ouverture de compte': 'person_add',
+  "Retrait d'espèces": 'local_atm',
+  'Relevés de compte': 'receipt_long',
+  "Dépôt d'espèces": 'payments',
   'Autres': 'more_horiz',
 };
 
@@ -234,10 +234,12 @@ export default function KioskTicketConfirm() {
 
           <div>
             <div
-              className="font-bold animate-ticket"
+              className="animate-ticket"
               style={{
                 fontSize: 'clamp(48px, 10vh, 80px)',
+                fontWeight: 300,
                 lineHeight: 1.1,
+                letterSpacing: '-0.02em',
                 color: serviceColors.accent,
               }}
             >
@@ -255,8 +257,8 @@ export default function KioskTicketConfirm() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <div
-                    className="font-bold text-gray-900"
-                    style={{ fontSize: 'clamp(24px, 5vh, 36px)' }}
+                    className="text-gray-900"
+                    style={{ fontSize: 'clamp(24px, 5vh, 36px)', fontWeight: 300, letterSpacing: '-0.01em' }}
                   >
                     #{ticket.position}
                   </div>
@@ -266,8 +268,8 @@ export default function KioskTicketConfirm() {
                 </div>
                 <div>
                   <div
-                    className="font-bold text-gray-900"
-                    style={{ fontSize: 'clamp(24px, 5vh, 36px)' }}
+                    className="text-gray-900"
+                    style={{ fontSize: 'clamp(24px, 5vh, 36px)', fontWeight: 300, letterSpacing: '-0.01em' }}
                   >
                     ~{ticket.estimatedWaitMins}
                   </div>

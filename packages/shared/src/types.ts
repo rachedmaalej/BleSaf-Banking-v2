@@ -272,6 +272,7 @@ export interface TicketDisplay {
   serviceName: string;
   servicePrefix: string;
   status: TicketStatus;
+  priority?: string;
   position: number;
   estimatedWaitMins: number;
   createdAt: Date;

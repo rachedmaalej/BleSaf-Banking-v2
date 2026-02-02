@@ -8,19 +8,19 @@ export interface ServiceColorScheme {
 }
 
 export const SERVICE_COLORS: Record<string, ServiceColorScheme> = {
-  Retrait: {
+  "Retrait d'espèces": {
     bg: 'bg-gradient-to-br from-emerald-500/30 to-emerald-600/30',
     border: 'border-emerald-500/30',
     text: 'text-emerald-300',
     badge: 'bg-emerald-100 text-emerald-800',
   },
-  'Dépôt': {
+  'Relevés de compte': {
     bg: 'bg-gradient-to-br from-blue-500/30 to-blue-600/30',
     border: 'border-blue-500/30',
     text: 'text-blue-300',
     badge: 'bg-blue-100 text-blue-800',
   },
-  'Ouverture de compte': {
+  "Dépôt d'espèces": {
     bg: 'bg-gradient-to-br from-orange-500/30 to-orange-600/30',
     border: 'border-orange-500/30',
     text: 'text-orange-300',
@@ -38,6 +38,12 @@ export const SERVICE_COLORS: Record<string, ServiceColorScheme> = {
     text: 'text-teal-300',
     badge: 'bg-teal-100 text-teal-800',
   },
+  Autres: {
+    bg: 'bg-gradient-to-br from-gray-500/30 to-gray-600/30',
+    border: 'border-gray-500/30',
+    text: 'text-gray-300',
+    badge: 'bg-gray-100 text-gray-800',
+  },
   default: {
     bg: 'bg-gradient-to-br from-gray-500/30 to-gray-600/30',
     border: 'border-gray-500/30',
@@ -52,11 +58,12 @@ export function getServiceColors(serviceName: string): ServiceColorScheme {
 
 // Service icons mapping
 export const SERVICE_ICONS: Record<string, string> = {
-  Retrait: '💵',
-  'Dépôt': '📥',
-  'Ouverture de compte': '📋',
+  "Retrait d'espèces": '💵',
+  'Relevés de compte': '📥',
+  "Dépôt d'espèces": '📋',
   'Prêts': '🏦',
   Change: '💱',
+  Autres: '📂',
   default: '📂',
 };
 

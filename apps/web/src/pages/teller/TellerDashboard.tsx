@@ -12,19 +12,19 @@ import {
 
 // Service icon mapping (Material Symbols)
 const SERVICE_ICONS: Record<string, string> = {
-  'Retrait': 'local_atm',
-  'Dépôt': 'savings',
-  'Ouverture de compte': 'folder_open',
+  "Retrait d'espèces": 'local_atm',
+  'Relevés de compte': 'receipt_long',
+  "Dépôt d'espèces": 'payments',
   'Autres': 'more_horiz',
 };
 
 // Service colors - Refined Simplicity (SG Aesthetic)
 // Service color shown as thin horizontal line, not background fills
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; text: string }> = {
-  'Retrait': { bg: '#FFFFFF', accent: '#E9041E', text: '#1A1A1A' },       // SG Red
-  'Dépôt': { bg: '#FFFFFF', accent: '#1A1A1A', text: '#1A1A1A' },         // Black
-  'Ouverture de compte': { bg: '#FFFFFF', accent: '#D66874', text: '#1A1A1A' },  // Rose
-  'Autres': { bg: '#FFFFFF', accent: '#666666', text: '#1A1A1A' },        // Gray
+  "Retrait d'espèces": { bg: '#FFFFFF', accent: '#E9041E', text: '#1A1A1A' },   // SG Red
+  'Relevés de compte': { bg: '#FFFFFF', accent: '#1A1A1A', text: '#1A1A1A' },   // Black
+  "Dépôt d'espèces": { bg: '#FFFFFF', accent: '#D66874', text: '#1A1A1A' },     // Rose
+  'Autres': { bg: '#FFFFFF', accent: '#666666', text: '#1A1A1A' },              // Gray
 };
 
 // SG Red for primary CTA (Call Next button)
@@ -320,7 +320,7 @@ export default function TellerDashboard() {
                 {/* Ticket number - Ultra-light typography (Refined Simplicity) */}
                 <div
                   className="text-5xl sm:text-6xl lg:text-8xl mb-2 sm:mb-3"
-                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300 }}
+                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300, letterSpacing: '-0.02em' }}
                 >
                   {currentTicket.ticketNumber}
                 </div>
@@ -408,7 +408,7 @@ export default function TellerDashboard() {
                 {/* Ticket number - lighter weight */}
                 <div
                   className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-3"
-                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300 }}
+                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300, letterSpacing: '-0.02em' }}
                 >
                   {nextTicket.ticketNumber}
                 </div>

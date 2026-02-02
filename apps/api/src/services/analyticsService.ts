@@ -667,6 +667,107 @@ export const analyticsService = {
   },
 
   /**
+   * Get SLA metrics for branch manager dashboard
+   * Tracks daily target progress and % served within SLA wait time
+   */
+  async getSlaMetrics(
+    branchId: string,
+    tenantId: string,
+    user: JWTPayload,
+    options: { slaTargetMins?: number; dailyTarget?: number } = {}
+  ) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { tenantId: true, timezone: true },
+    });
+
+    if (!branch || branch.tenantId !== tenantId) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    if (user.role === USER_ROLE.BRANCH_MANAGER && user.branchId !== branchId) {
+      throw new ForbiddenError('Cannot access statistics for another branch');
+    }
+
+    // Default SLA: 15 min wait time, 100 daily target
+    const slaTargetMins = options.slaTargetMins ?? 15;
+    const dailyTarget = options.dailyTarget ?? 100;
+
+    const { start, end } = getTodayRangeUTC(branch.timezone);
+
+    // Get all completed tickets with wait time data
+    const completedTickets = await prisma.ticket.findMany({
+      where: {
+        branchId,
+        status: TICKET_STATUS.COMPLETED,
+        calledAt: { not: null },
+        createdAt: { gte: start, lte: end },
+      },
+      select: { createdAt: true, calledAt: true },
+    });
+
+    // Count tickets within SLA
+    let withinSla = 0;
+    const waitTimes: number[] = [];
+
+    for (const ticket of completedTickets) {
+      const waitMins = calculateDurationMins(ticket.createdAt, ticket.calledAt!);
+      waitTimes.push(waitMins);
+      if (waitMins <= slaTargetMins) {
+        withinSla++;
+      }
+    }
+
+    const totalServed = completedTickets.length;
+    const slaPercentage = totalServed > 0 ? Math.round((withinSla / totalServed) * 100) : 100;
+    const targetProgress = Math.min(Math.round((totalServed / dailyTarget) * 100), 100);
+
+    // Calculate average and max wait
+    const avgWaitMins = waitTimes.length > 0
+      ? Math.round(waitTimes.reduce((a, b) => a + b, 0) / waitTimes.length)
+      : 0;
+    const maxWaitMins = waitTimes.length > 0 ? Math.max(...waitTimes) : 0;
+
+    // Get currently waiting count
+    const currentlyWaiting = await prisma.ticket.count({
+      where: {
+        branchId,
+        status: TICKET_STATUS.WAITING,
+        createdAt: { gte: start, lte: end },
+      },
+    });
+
+    // SLA status: green (>=90%), yellow (70-89%), red (<70%)
+    let slaStatus: 'green' | 'yellow' | 'red' = 'green';
+    if (slaPercentage < 70) {
+      slaStatus = 'red';
+    } else if (slaPercentage < 90) {
+      slaStatus = 'yellow';
+    }
+
+    return {
+      sla: {
+        targetMins: slaTargetMins,
+        withinSla,
+        totalServed,
+        percentage: slaPercentage,
+        status: slaStatus,
+      },
+      dailyTarget: {
+        target: dailyTarget,
+        served: totalServed,
+        remaining: Math.max(dailyTarget - totalServed, 0),
+        progress: targetProgress,
+      },
+      waitTimes: {
+        avgMins: avgWaitMins,
+        maxMins: maxWaitMins,
+        currentlyWaiting,
+      },
+    };
+  },
+
+  /**
    * Get service category breakdown across tenant
    */
   async getServiceCategoryBreakdown(tenantId: string, query: DateRange) {

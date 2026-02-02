@@ -11,11 +11,13 @@ import {
   createUserSchema,
   updateUserSchema,
   paginationSchema,
+  USER_ROLE,
 } from '@blesaf/shared';
 import { adminService } from '../services/adminService';
 import { authenticate } from '../middleware/auth';
 import { requireRole } from '../middleware/rbac';
 import { tenantMiddleware } from '../middleware/tenant';
+import { ForbiddenError } from '../lib/errors';
 
 const router = Router();
 
@@ -263,6 +265,54 @@ router.delete('/counters/:counterId', requireRole('bank_admin', 'branch_manager'
   }
 });
 
+/**
+ * POST /api/admin/counters/batch/open
+ * Open all counters in a branch
+ */
+router.post('/counters/batch/open', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.body;
+    const result = await adminService.batchUpdateCounterStatus(
+      req.tenantId!,
+      branchId,
+      'open',
+      req.user!
+    );
+
+    res.json({
+      success: true,
+      data: result,
+      message: `${result.updated} counters opened`,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/admin/counters/batch/close
+ * Close all counters in a branch
+ */
+router.post('/counters/batch/close', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.body;
+    const result = await adminService.batchUpdateCounterStatus(
+      req.tenantId!,
+      branchId,
+      'closed',
+      req.user!
+    );
+
+    res.json({
+      success: true,
+      data: result,
+      message: `${result.updated} counters closed`,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // ============================================================
 // SERVICE CATEGORY MANAGEMENT (bank_admin+)
 // ============================================================
@@ -379,7 +429,7 @@ router.get('/users', requireRole('bank_admin', 'branch_manager'), async (req, re
 
 /**
  * POST /api/admin/users
- * Create a new user
+ * Create a new user (bank_admin only)
  */
 router.post('/users', requireRole('bank_admin'), async (req, res, next) => {
   try {
@@ -415,10 +465,33 @@ router.get('/users/:userId', requireRole('bank_admin', 'branch_manager'), async 
 /**
  * PATCH /api/admin/users/:userId
  * Update a user
+ * - bank_admin: can update any user
+ * - branch_manager: can only update tellers in their own branch
  */
-router.patch('/users/:userId', requireRole('bank_admin'), async (req, res, next) => {
+router.patch('/users/:userId', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
   try {
     const data = updateUserSchema.parse(req.body);
+
+    // Branch managers can only update tellers in their own branch
+    if (req.user!.role === USER_ROLE.BRANCH_MANAGER) {
+      const targetUser = await adminService.getUser(req.params.userId, req.tenantId!, req.user!);
+
+      if (targetUser.role !== USER_ROLE.TELLER) {
+        throw new ForbiddenError('Branch managers can only manage teller accounts');
+      }
+      if (targetUser.branchId !== req.user!.branchId) {
+        throw new ForbiddenError('Cannot manage user in another branch');
+      }
+      // Prevent role changes
+      if (data.role && data.role !== USER_ROLE.TELLER) {
+        throw new ForbiddenError('Cannot change teller role');
+      }
+      // Prevent branch changes
+      if (data.branchId && data.branchId !== req.user!.branchId) {
+        throw new ForbiddenError('Cannot move teller to another branch');
+      }
+    }
+
     const result = await adminService.updateUser(req.params.userId, req.tenantId!, data);
 
     res.json({
@@ -432,7 +505,7 @@ router.patch('/users/:userId', requireRole('bank_admin'), async (req, res, next)
 
 /**
  * DELETE /api/admin/users/:userId
- * Deactivate a user
+ * Deactivate a user (soft delete) - bank_admin only
  */
 router.delete('/users/:userId', requireRole('bank_admin'), async (req, res, next) => {
   try {
