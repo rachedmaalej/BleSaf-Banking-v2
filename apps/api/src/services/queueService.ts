@@ -181,19 +181,15 @@ export const queueService = {
         throw new BadRequestError('Counter already has a ticket being served');
       }
 
-      const serviceIds = counter.assignedServices.map((cs) => cs.serviceId);
-      if (serviceIds.length === 0) {
-        throw new BadRequestError('Counter has no assigned services');
-      }
-
       const { start, end } = getTodayRangeUTC(counter.branch.timezone);
 
+      // Global FIFO: Call the next ticket in the branch regardless of service
+      // Any teller can serve any customer - true first-come-first-served
       // Atomic select with row lock - skips locked rows to prevent race conditions
       // This is the key to preventing double-assignment when multiple tellers click "Call Next"
       const tickets = await tx.$queryRaw<{ id: string }[]>`
         SELECT id FROM "Ticket"
         WHERE "branchId" = ${counter.branch.id}
-          AND "serviceCategoryId" IN (${Prisma.join(serviceIds)})
           AND "status" = 'waiting'
           AND "createdAt" >= ${start}
           AND "createdAt" <= ${end}

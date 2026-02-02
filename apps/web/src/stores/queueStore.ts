@@ -113,8 +113,8 @@ export const useQueueStore = create<QueueState>((set, get) => ({
     const { tellerQueue } = get();
     if (!tellerQueue) return;
 
-    // Optimistic update - assume next ticket will be called
-    const optimisticTicket = tellerQueue.nextTickets[0];
+    // Optimistic update - use global FIFO queue (first ticket in branch, regardless of service)
+    const optimisticTicket = tellerQueue.globalQueue?.[0];
 
     set({ isCallingNext: true });
 
@@ -131,9 +131,9 @@ export const useQueueStore = create<QueueState>((set, get) => ({
             calledAt: new Date(),
             servingStartedAt: new Date(),
           },
-          nextTickets: tellerQueue.nextTickets.slice(1),
-          // Also update globalQueue to remove the called ticket
-          globalQueue: tellerQueue.globalQueue?.filter(t => t.id !== optimisticTicket.id) || [],
+          // Update both nextTickets and globalQueue
+          nextTickets: tellerQueue.nextTickets.filter(t => t.id !== optimisticTicket.id),
+          globalQueue: tellerQueue.globalQueue?.slice(1) || [],
           totalWaitingInBranch: Math.max(0, (tellerQueue.totalWaitingInBranch || 0) - 1),
         },
       });

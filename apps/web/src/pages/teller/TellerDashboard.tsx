@@ -192,7 +192,8 @@ export default function TellerDashboard() {
   }
 
   const currentTicket = tellerQueue.currentTicket;
-  const nextTicket = tellerQueue.nextTickets[0];
+  // Use global FIFO queue for "next" ticket - all tellers see the same next customer
+  const nextTicket = tellerQueue.globalQueue?.[0] || null;
   // Use global FIFO queue for footer (same for all tellers in branch)
   const queueTickets = tellerQueue.globalQueue?.slice(0, 6) || [];
   const totalWaiting = tellerQueue.totalWaitingInBranch ?? tellerQueue.nextTickets.length;
