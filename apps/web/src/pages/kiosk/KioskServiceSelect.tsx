@@ -168,8 +168,12 @@ export default function KioskServiceSelect() {
     };
   });
 
-  // Sort by prefix for consistent ordering
+  // Sort by prefix for consistent ordering, but keep "Autres" last
   displayOptions.sort((a, b) => {
+    const isAutresA = a.nameFr.toLowerCase() === 'autres';
+    const isAutresB = b.nameFr.toLowerCase() === 'autres';
+    if (isAutresA && !isAutresB) return 1;
+    if (!isAutresA && isAutresB) return -1;
     const serviceA = services.find(s => s.id === a.serviceId);
     const serviceB = services.find(s => s.id === b.serviceId);
     return (serviceA?.prefix || '').localeCompare(serviceB?.prefix || '');
@@ -308,39 +312,91 @@ export default function KioskServiceSelect() {
               maxWidth: displayOptions.length <= 4 ? '900px' : '700px',
             }}
           >
-            {displayOptions.map((option) => (
-              <button
-                key={option.key}
-                onClick={() => handleSelectService(option)}
-                disabled={queuePaused}
-                className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 sm:gap-4 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  backgroundColor: option.bgColor,
-                  border: '1px solid #E0E0E0',
-                  borderLeft: `4px solid ${option.borderColor}`,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                }}
-              >
-                {/* Material Symbol Icon */}
-                <span
-                  className="material-symbols-outlined"
+            {displayOptions.map((option) => {
+              const isAutres = option.nameFr.toLowerCase() === 'autres';
+
+              if (isAutres) {
+                return (
+                  <button
+                    key={option.key}
+                    onClick={() => handleSelectService(option)}
+                    disabled={queuePaused}
+                    className="rounded-2xl flex flex-col items-center justify-center gap-2 sm:gap-3 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      gridColumn: 'span 2',
+                      backgroundColor: option.bgColor,
+                      border: '1px solid #E0E0E0',
+                      borderLeft: `4px solid ${option.borderColor}`,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                      minHeight: '180px',
+                    }}
+                  >
+                    <span
+                      className="material-symbols-outlined"
+                      style={{
+                        fontSize: 'clamp(36px, 6vw, 52px)',
+                        color: option.accentColor,
+                        fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48",
+                      }}
+                    >
+                      {option.icon}
+                    </span>
+                    <span
+                      className="text-base sm:text-lg lg:text-xl font-medium text-center"
+                      style={{ color: '#1A1A1A' }}
+                    >
+                      {getOptionName(option)}
+                    </span>
+                    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 px-4">
+                      {(i18n.language === 'ar'
+                        ? ['تحويل بنكي', 'دفتر شيكات', 'معلومات متنوعة']
+                        : ['Émission de virement', 'Chéquier', 'Renseignements divers']
+                      ).map((sub) => (
+                        <span
+                          key={sub}
+                          className="text-xs sm:text-sm"
+                          style={{ color: '#79747E' }}
+                        >
+                          {sub}
+                        </span>
+                      ))}
+                    </div>
+                  </button>
+                );
+              }
+
+              return (
+                <button
+                  key={option.key}
+                  onClick={() => handleSelectService(option)}
+                  disabled={queuePaused}
+                  className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 sm:gap-4 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    fontSize: 'clamp(40px, 8vw, 64px)',
-                    color: option.accentColor,
-                    fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48",
+                    backgroundColor: option.bgColor,
+                    border: '1px solid #E0E0E0',
+                    borderLeft: `4px solid ${option.borderColor}`,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
                   }}
                 >
-                  {option.icon}
-                </span>
-                {/* Label */}
-                <span
-                  className="text-base sm:text-lg lg:text-xl font-medium text-center px-2"
-                  style={{ color: '#1A1A1A' }}
-                >
-                  {getOptionName(option)}
-                </span>
-              </button>
-            ))}
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      fontSize: 'clamp(40px, 8vw, 64px)',
+                      color: option.accentColor,
+                      fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48",
+                    }}
+                  >
+                    {option.icon}
+                  </span>
+                  <span
+                    className="text-base sm:text-lg lg:text-xl font-medium text-center px-2"
+                    style={{ color: '#1A1A1A' }}
+                  >
+                    {getOptionName(option)}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
           <p className="text-gray-500 text-sm sm:text-base mt-4 sm:mt-6">

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>Kiosk Step 2 — 3 Design Alternatives</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #F5F5F5;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ===== TAB NAVIGATION ===== */
+.tab-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #1A1A1A;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 0;
+}
+.tab-nav h1 {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 16px 20px 16px 0;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  margin-right: 8px;
+  white-space: nowrap;
+}
+.tab-btn {
+  padding: 16px 24px;
+  color: #94A3B8;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: #E5E7EB; }
+.tab-btn.active {
+  color: #FFFFFF;
+  border-bottom-color: #E9041E;
+}
+
+/* ===== CRITIQUE SECTION ===== */
+.critique-section {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+.critique-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  padding: 28px 32px;
+  margin-bottom: 20px;
+}
+.critique-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.critique-card h2 .material-symbols-outlined { color: #E9041E; font-size: 24px; }
+.critique-card h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #E9041E;
+  margin: 14px 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.critique-card p, .critique-card li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #4B5563;
+}
+.critique-card ul { padding-left: 20px; }
+.critique-card li { margin-bottom: 4px; }
+.critique-card .problem-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #FEE2E2;
+  color: #E9041E;
+  margin-right: 6px;
+}
+
+/* ===== MOCKUP CONTAINER ===== */
+.mockup-panel { display: none; }
+.mockup-panel.active { display: block; }
+
+.mockup-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px 60px;
+}
+
+/* Simulates a kiosk screen */
+.kiosk-frame {
+  width: 100%;
+  max-width: 800px;
+  height: 600px;
+  background: #FAFAFA;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Kiosk header (shared) */
+.k-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  border-bottom: 1px solid #CAC4D0;
+  flex-shrink: 0;
+}
+.k-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.k-header-left .back-btn {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 500; color: #4B5563;
+  background: none; border: none; cursor: pointer;
+  padding: 6px 12px; border-radius: 20px;
+}
+.k-header-left .back-btn:hover { background: #F3F4F6; }
+.k-header-left .divider { width: 1px; height: 24px; background: #E5E7EB; }
+.k-header-logo {
+  display: flex; align-items: center; gap: 8px;
+}
+.k-header-logo svg { height: 32px; }
+.k-header-logo span { font-size: 12px; color: #49454F; }
+.k-header-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.k-header-right .lang-btn {
+  padding: 4px 12px; border: 1px solid #CAC4D0; border-radius: 20px;
+  font-size: 12px; color: #49454F; background: none; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+}
+.k-header-right .time {
+  font-size: 18px; font-weight: 300; color: #1C1B1F;
+}
+
+/* Kiosk body */
+.k-body {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== SHARED ELEMENTS ===== */
+.success-check {
+  width: 48px; height: 48px;
+  background: #ECFDF5;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 8px;
+}
+.success-check .material-symbols-outlined {
+  font-size: 28px; color: #10B981;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.ticket-number {
+  font-size: 56px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #D66874; /* Rose, will be overridden per service */
+}
+.service-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #FCE8EB;
+  color: #D66874;
+}
+.service-badge .material-symbols-outlined { font-size: 16px; }
+.stat-box {
+  background: #F5F5F5;
+  border-radius: 10px;
+  padding: 10px 16px;
+  text-align: center;
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 300;
+  color: #1A1A1A;
+  letter-spacing: -0.01em;
+}
+.stat-label {
+  font-size: 11px;
+  color: #6B7280;
+  margin-top: 2px;
+}
+
+/* SG colors */
+.sg-red { color: #E9041E; }
+.bg-sg-red { background: #E9041E; }
+
+/* ===== ALTERNATIVE A: Horizontal Split ===== */
+.alt-a-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.alt-a-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #FFFFFF;
+  text-align: center;
+  gap: 10px;
+}
+.alt-a-right {
+  width: 320px;
+  background: #F8F8F8;
+  border-left: 1px solid #E5E7EB;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.alt-a-right h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.alt-a-option {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.alt-a-option:hover {
+  border-color: #E9041E;
+  box-shadow: 0 2px 8px rgba(233,4,30,0.08);
+}
+.alt-a-option .opt-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.alt-a-option .opt-icon .material-symbols-outlined { font-size: 22px; }
+.alt-a-option .opt-text h4 {
+  font-size: 13px; font-weight: 600; color: #1A1A1A; margin-bottom: 2px;
+}
+.alt-a-option .opt-text p {
+  font-size: 11px; color: #6B7280; line-height: 1.4;
+}
+.alt-a-stats {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+}
+.alt-a-stats .stat-box { flex: 1; }
+.alt-a-done {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 10px;
+  background: #E9041E;
+  color: #fff;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* ===== ALTERNATIVE B: Tabs ===== */
+.alt-b-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 24px 16px;
+  overflow: auto;
+}
+.alt-b-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E5E7EB;
+  padding: 16px 24px;
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 20px;
+}
+.alt-b-header .ticket-col {
+  text-align: center;
+  padding-right: 20px;
+  border-right: 1px solid #E5E7EB;
+}
+.alt-b-header .ticket-col .ticket-number {
+  font-size: 40px;
+}
+.alt-b-header .info-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.alt-b-header .info-col .stat-box {
+  flex: 1;
+  padding: 8px 12px;
+}
+.alt-b-header .info-col .stat-value { font-size: 22px; }
+.alt-b-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.alt-b-tabs {
+  display: flex;
+  gap: 0;
+  background: #F3F4F6;
+  border-radius: 10px;
+  padding: 3px;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 16px;
+}
+.alt-b-tab {
+  flex: 1;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.alt-b-tab .material-symbols-outlined { font-size: 18px; }
+.alt-b-tab.active {
+  background: #FFFFFF;
+  color: #1A1A1A;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.alt-b-content {
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 1px solid #E5E7EB;
+  padding: 24px;
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.alt-b-content .tab-pane { display: none; }
+.alt-b-content .tab-pane.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.alt-b-content .tab-pane h4 {
+  font-size: 16px; font-weight: 600; color: #1A1A1A;
+}
+.alt-b-content .tab-pane p {
+  font-size: 13px; color: #6B7280; line-height: 1.5; max-width: 320px;
+}
+.alt-b-qr-placeholder {
+  width: 140px; height: 140px;
+  background: #F5F5F5;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px dashed #D1D5DB;
+}
+.alt-b-qr-placeholder .material-symbols-outlined { font-size: 48px; color: #9CA3AF; }
+.alt-b-tv-icon {
+  width: 80px; height: 80px;
+  background: #F5F5F5;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.alt-b-tv-icon .material-symbols-outlined { font-size: 48px; color: #6B7280; }
+/* Numpad compact */
+.numpad-compact {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  gap: 6px;
+  margin-top: 4px;
+}
+.numpad-compact button {
+  width: 56px; height: 42px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1A1A1A;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.numpad-compact button.empty {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+.numpad-compact button .material-symbols-outlined { font-size: 18px; color: #6B7280; }
+.phone-display-mini {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F3F4F6;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #9CA3AF;
+  width: 196px;
+}
+.phone-display-mini .prefix {
+  color: #6B7280;
+  font-weight: 600;
+}
+.alt-b-done {
+  margin-top: auto;
+  padding: 12px 32px;
+  border-radius: 24px;
+  background: #E9041E;
+  color: #fff;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== ALTERNATIVE C: All-in-One Card ===== */
+.alt-c-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 24px;
+  overflow: auto;
+}
+.alt-c-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: 580px;
+  overflow: hidden;
+}
+.alt-c-top {
+  background: #FFFFFF;
+  padding: 20px 24px 16px;
+  text-align: center;
+  border-bottom: 1px solid #F3F4F6;
+}
+.alt-c-top .success-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.alt-c-top .success-row .material-symbols-outlined {
+  font-size: 22px;
+  color: #10B981;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.alt-c-top .success-row span:last-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: #10B981;
+}
+.alt-c-top .ticket-number { font-size: 52px; margin: 4px 0; }
+.alt-c-stats-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.alt-c-stats-row .stat-box { min-width: 100px; }
+.alt-c-stats-row .stat-value { font-size: 24px; }
+.alt-c-bottom {
+  padding: 16px 20px 20px;
+  background: #FAFAFA;
+}
+.alt-c-bottom h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1A1A1A;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.alt-c-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.alt-c-opt {
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.alt-c-opt:hover {
+  border-color: #E9041E;
+  box-shadow: 0 2px 8px rgba(233,4,30,0.08);
+}
+.alt-c-opt .opt-circle {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.alt-c-opt .opt-circle .material-symbols-outlined { font-size: 24px; }
+.alt-c-opt h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+.alt-c-opt p {
+  font-size: 11px;
+  color: #6B7280;
+  line-height: 1.4;
+}
+.alt-c-opt .opt-arrow {
+  font-size: 16px;
+  color: #D1D5DB;
+  margin-top: auto;
+}
+
+/* ===== DESCRIPTION BANNERS ===== */
+.alt-description {
+  max-width: 800px;
+  margin: 0 auto 16px;
+  padding: 0 24px;
+}
+.alt-description .desc-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  padding: 16px 20px;
+}
+.alt-description h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-bottom: 6px;
+}
+.alt-description p {
+  font-size: 13px;
+  color: #4B5563;
+  line-height: 1.6;
+}
+.alt-description .tag {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+.alt-description .tag-pro { background: #ECFDF5; color: #059669; }
+.alt-description .tag-con { background: #FEF3C7; color: #D97706; }
+</style>
+</head>
+<body>
+
+<!-- ===== TAB NAVIGATION ===== -->
+<nav class="tab-nav">
+  <h1>Kiosk Step 2 — Alternatives</h1>
+  <button class="tab-btn active" data-tab="critique">Critique</button>
+  <button class="tab-btn" data-tab="alt-a">A: Split Panel</button>
+  <button class="tab-btn" data-tab="alt-b">B: Tab Switcher</button>
+  <button class="tab-btn" data-tab="alt-c">C: All-in-One Card</button>
+</nav>
+
+<!-- ===== CRITIQUE PANEL ===== -->
+<div class="mockup-panel active" id="panel-critique">
+  <div class="critique-section">
+
+    <div class="critique-card">
+      <h2>
+        <span class="material-symbols-outlined">error</span>
+        What's wrong with the current flow
+      </h2>
+      <h3>Fundamental: Two screens for one decision</h3>
+      <p>After selecting a service, the customer hits a phone numpad screen — but <strong>hasn't received their ticket yet</strong>. They're being asked to make a notification choice before knowing their position or wait time. The actual ticket only appears on a second screen, which the customer reaches only after interacting with (or skipping) the numpad.</p>
+
+      <h3>Problem breakdown</h3>
+      <ul>
+        <li><span class="problem-tag">Flow</span> The phone screen blocks ticket creation. The customer can't see their position until after they deal with the SMS prompt.</li>
+        <li><span class="problem-tag">Hierarchy</span> An <em>optional</em> feature (SMS) is presented as the primary action. The numpad dominates 70% of screen real estate.</li>
+        <li><span class="problem-tag">Context</span> When deciding about SMS, the customer doesn't know their wait time. "Do I need an SMS?" depends on whether the wait is 5 min or 45 min.</li>
+        <li><span class="problem-tag">Clarity</span> Three notification methods exist (TV display, QR code, SMS) but only SMS is presented. QR appears later on the ticket screen as an afterthought.</li>
+        <li><span class="problem-tag">CTA</span> Screen 1 has "Prendre un ticket" + "Continuer sans telephone" — two ways to do the same thing. Screen 2 has "Nouveau ticket" which is for the <em>next</em> customer, not this one.</li>
+        <li><span class="problem-tag">Print</span> There's no option to print a physical ticket. In a bank, many customers (especially older ones) expect a printed slip.</li>
+      </ul>
+    </div>
+
+    <div class="critique-card">
+      <h2>
+        <span class="material-symbols-outlined">lightbulb</span>
+        The fix: Merge into one screen
+      </h2>
+      <p>After selecting a service, the API creates the ticket <strong>immediately</strong>. The customer sees <strong>one screen</strong> that:</p>
+      <ul>
+        <li>Confirms they've joined the queue (green checkmark)</li>
+        <li>Shows their ticket number, service, position, and estimated wait</li>
+        <li>Presents <strong>all 3 notification options</strong> clearly and equally:
+          <ol>
+            <li><strong>Ecran TV</strong> — follow your number on the screen in the waiting area (default, no action needed)</li>
+            <li><strong>QR Code</strong> — scan with your phone to track your position live</li>
+            <li><strong>SMS</strong> — enter your number to be notified when it's your turn</li>
+          </ol>
+        </li>
+      </ul>
+      <p style="margin-top: 12px;">Below are <strong>3 alternative layouts</strong> for this single screen, all following SG design guidelines.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALTERNATIVE A: Split Panel ===== -->
+<div class="mockup-panel" id="panel-alt-a">
+  <div class="alt-description">
+    <div class="desc-card">
+      <h3>A: Split Panel — Confirmation left, actions right</h3>
+      <p>
+        The left panel is a calm, spacious ticket confirmation. The right panel is a focused "action zone" with 3 clear options.
+        The customer sees everything at once without scrolling. Tapping an option could expand it inline (e.g., SMS shows a numpad).
+      </p>
+      <div style="margin-top: 8px;">
+        <span class="tag tag-pro">PRO</span> Clear separation of "info" vs "actions". Spacious, easy to scan.
+        <br>
+        <span class="tag tag-con">CON</span> Right panel may feel narrow on smaller kiosk screens.
+      </div>
+    </div>
+  </div>
+  <div class="mockup-wrapper">
+    <div class="kiosk-frame">
+      <!-- Header -->
+      <div class="k-header">
+        <div class="k-header-left">
+          <button class="back-btn">
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+            Retour
+          </button>
+          <div class="divider"></div>
+          <div class="k-header-logo">
+            <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="32" height="16" fill="#E9041E"/>
+              <rect x="0" y="16" width="32" height="16" fill="#1A1A1A"/>
+              <text x="40" y="24" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">UIB</text>
+            </svg>
+            <span>Agence Lac 2</span>
+          </div>
+        </div>
+        <div class="k-header-right">
+          <button class="lang-btn">العربية</button>
+          <span class="time">14:19</span>
+        </div>
+      </div>
+      <!-- Body: Split -->
+      <div class="alt-a-body">
+        <!-- Left: Confirmation -->
+        <div class="alt-a-left">
+          <div class="success-check">
+            <span class="material-symbols-outlined">check_circle</span>
+          </div>
+          <div style="font-size:14px; font-weight:600; color:#10B981;">Vous etes dans la file</div>
+          <div class="service-badge" style="margin: 2px 0;">
+            <span class="material-symbols-outlined">payments</span>
+            Depot d'especes
+          </div>
+          <div class="ticket-number">D-013</div>
+          <div class="alt-a-stats">
+            <div class="stat-box">
+              <div class="stat-value">#3</div>
+              <div class="stat-label">Position</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">~15</div>
+              <div class="stat-label">min d'attente</div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Options -->
+        <div class="alt-a-right">
+          <h3>Comment suivre votre tour ?</h3>
+
+          <div class="alt-a-option">
+            <div class="opt-icon" style="background: #F3F4F6;">
+              <span class="material-symbols-outlined" style="color:#1A1A1A">tv</span>
+            </div>
+            <div class="opt-text">
+              <h4>Ecran TV</h4>
+              <p>Suivez votre numero <strong>D-013</strong> sur l'ecran dans la salle d'attente</p>
+            </div>
+          </div>
+
+          <div class="alt-a-option">
+            <div class="opt-icon" style="background: #EFF6FF;">
+              <span class="material-symbols-outlined" style="color:#2563EB">qr_code_2</span>
+            </div>
+            <div class="opt-text">
+              <h4>QR Code</h4>
+              <p>Scannez pour suivre votre position en temps reel sur votre telephone</p>
+            </div>
+          </div>
+
+          <div class="alt-a-option">
+            <div class="opt-icon" style="background: #FEF3C7;">
+              <span class="material-symbols-outlined" style="color:#D97706">sms</span>
+            </div>
+            <div class="opt-text">
+              <h4>Notification SMS</h4>
+              <p>Recevez un SMS quand votre tour approche</p>
+            </div>
+          </div>
+
+          <button class="alt-a-done">
+            <span class="material-symbols-outlined" style="font-size:18px">check</span>
+            Terminer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALTERNATIVE B: Tab Switcher ===== -->
+<div class="mockup-panel" id="panel-alt-b">
+  <div class="alt-description">
+    <div class="desc-card">
+      <h3>B: Tab Switcher — Compact header, switchable content</h3>
+      <p>
+        Ticket info is condensed into a compact horizontal strip at the top. Below, 3 tabs let the customer explore each notification method.
+        The default tab is "Ecran TV" (no action required). The customer can switch to QR or SMS if they want more.
+      </p>
+      <div style="margin-top: 8px;">
+        <span class="tag tag-pro">PRO</span> Maximum space for each option. SMS numpad fits naturally. Progressive disclosure.
+        <br>
+        <span class="tag tag-con">CON</span> Tabs require the user to discover options. Not all 3 visible at once.
+      </div>
+    </div>
+  </div>
+  <div class="mockup-wrapper">
+    <div class="kiosk-frame">
+      <!-- Header -->
+      <div class="k-header">
+        <div class="k-header-left">
+          <button class="back-btn">
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+            Retour
+          </button>
+          <div class="divider"></div>
+          <div class="k-header-logo">
+            <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="32" height="16" fill="#E9041E"/>
+              <rect x="0" y="16" width="32" height="16" fill="#1A1A1A"/>
+              <text x="40" y="24" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">UIB</text>
+            </svg>
+            <span>Agence Lac 2</span>
+          </div>
+        </div>
+        <div class="k-header-right">
+          <button class="lang-btn">العربية</button>
+          <span class="time">14:19</span>
+        </div>
+      </div>
+      <!-- Body -->
+      <div class="alt-b-body">
+        <!-- Compact ticket header -->
+        <div class="alt-b-header">
+          <div class="ticket-col">
+            <div class="service-badge" style="margin-bottom:6px">
+              <span class="material-symbols-outlined">payments</span>
+              Depot
+            </div>
+            <div class="ticket-number">D-013</div>
+          </div>
+          <div class="info-col">
+            <div class="stat-box">
+              <div class="stat-value">#3</div>
+              <div class="stat-label">Position</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value">~15</div>
+              <div class="stat-label">min d'attente</div>
+            </div>
+            <div style="text-align:center">
+              <div style="width:32px; height:32px; background:#ECFDF5; border-radius:50%; display:flex; align-items:center; justify-content:center;">
+                <span class="material-symbols-outlined" style="font-size:20px; color:#10B981; font-variation-settings:'FILL' 1">check_circle</span>
+              </div>
+              <div style="font-size:10px; color:#10B981; font-weight:600; margin-top:2px;">En file</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alt-b-title">Comment souhaitez-vous etre notifie ?</div>
+
+        <!-- Tabs -->
+        <div class="alt-b-tabs" id="altBTabs">
+          <button class="alt-b-tab active" data-pane="b-tv">
+            <span class="material-symbols-outlined">tv</span>
+            Ecran TV
+          </button>
+          <button class="alt-b-tab" data-pane="b-qr">
+            <span class="material-symbols-outlined">qr_code_2</span>
+            QR Code
+          </button>
+          <button class="alt-b-tab" data-pane="b-sms">
+            <span class="material-symbols-outlined">sms</span>
+            SMS
+          </button>
+        </div>
+
+        <!-- Tab content -->
+        <div class="alt-b-content" id="altBContent">
+          <!-- TV pane -->
+          <div class="tab-pane active" id="b-tv">
+            <div class="alt-b-tv-icon">
+              <span class="material-symbols-outlined">live_tv</span>
+            </div>
+            <h4>Suivez l'ecran TV</h4>
+            <p>Votre numero <strong style="color:#D66874">D-013</strong> sera affiche sur l'ecran dans la salle d'attente quand votre tour viendra.</p>
+            <p style="font-size:12px; color:#9CA3AF;">Aucune action requise.</p>
+          </div>
+          <!-- QR pane -->
+          <div class="tab-pane" id="b-qr">
+            <div class="alt-b-qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <h4>Scannez avec votre telephone</h4>
+            <p>Suivez votre position en temps reel et recevez une notification quand votre tour approche.</p>
+          </div>
+          <!-- SMS pane -->
+          <div class="tab-pane" id="b-sms">
+            <h4>Recevoir un SMS</h4>
+            <p>Entrez votre numero de telephone tunisien :</p>
+            <div class="phone-display-mini">
+              <span class="prefix">+216</span>
+              __ ___ ___
+            </div>
+            <div class="numpad-compact">
+              <button>1</button><button>2</button><button>3</button>
+              <button>4</button><button>5</button><button>6</button>
+              <button>7</button><button>8</button><button>9</button>
+              <button class="empty"></button><button>0</button>
+              <button><span class="material-symbols-outlined">backspace</span></button>
+            </div>
+          </div>
+        </div>
+
+        <button class="alt-b-done">
+          <span class="material-symbols-outlined" style="font-size:18px">check</span>
+          Terminer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALTERNATIVE C: All-in-One Card ===== -->
+<div class="mockup-panel" id="panel-alt-c">
+  <div class="alt-description">
+    <div class="desc-card">
+      <h3>C: All-in-One Card — Everything in one centered card</h3>
+      <p>
+        A single card with the ticket confirmation on top and 3 equal-weight notification options below.
+        Each option is a large, tappable card. Tapping one navigates to its detail (e.g., full QR code, SMS numpad).
+        This is the simplest and most "kiosk-native" approach.
+      </p>
+      <div style="margin-top: 8px;">
+        <span class="tag tag-pro">PRO</span> All 3 options visible at equal weight. Very simple. Works on any screen size. Most kiosk-like.
+        <br>
+        <span class="tag tag-con">CON</span> Less space for detail per option. SMS requires a sub-step.
+      </div>
+    </div>
+  </div>
+  <div class="mockup-wrapper">
+    <div class="kiosk-frame">
+      <!-- Header -->
+      <div class="k-header">
+        <div class="k-header-left">
+          <button class="back-btn">
+            <span class="material-symbols-outlined" style="font-size:16px">arrow_back</span>
+            Retour
+          </button>
+          <div class="divider"></div>
+          <div class="k-header-logo">
+            <svg viewBox="0 0 90 32" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="32" height="16" fill="#E9041E"/>
+              <rect x="0" y="16" width="32" height="16" fill="#1A1A1A"/>
+              <text x="40" y="24" font-family="Inter, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A">UIB</text>
+            </svg>
+            <span>Agence Lac 2</span>
+          </div>
+        </div>
+        <div class="k-header-right">
+          <button class="lang-btn">العربية</button>
+          <span class="time">14:19</span>
+        </div>
+      </div>
+      <!-- Body -->
+      <div class="alt-c-body">
+        <div class="alt-c-card">
+          <!-- Top: Confirmation -->
+          <div class="alt-c-top">
+            <div class="success-row">
+              <span class="material-symbols-outlined">check_circle</span>
+              <span>Vous etes dans la file</span>
+            </div>
+            <div class="service-badge" style="margin: 6px 0;">
+              <span class="material-symbols-outlined">payments</span>
+              Depot d'especes
+            </div>
+            <div class="ticket-number">D-013</div>
+            <div class="alt-c-stats-row">
+              <div class="stat-box">
+                <div class="stat-value">#3</div>
+                <div class="stat-label">Position dans la file</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-value">~15 min</div>
+                <div class="stat-label">Temps d'attente estime</div>
+              </div>
+            </div>
+          </div>
+          <!-- Bottom: 3 Options -->
+          <div class="alt-c-bottom">
+            <h3>Comment souhaitez-vous etre notifie ?</h3>
+            <div class="alt-c-options">
+              <!-- TV -->
+              <div class="alt-c-opt">
+                <div class="opt-circle" style="background: #F3F4F6;">
+                  <span class="material-symbols-outlined" style="color:#1A1A1A">tv</span>
+                </div>
+                <h4>Ecran TV</h4>
+                <p>Suivez votre numero sur l'ecran en salle d'attente</p>
+                <span class="material-symbols-outlined opt-arrow">arrow_forward</span>
+              </div>
+              <!-- QR -->
+              <div class="alt-c-opt" style="border-color: #E9041E; box-shadow: 0 0 0 1px rgba(233,4,30,0.15);">
+                <div class="opt-circle" style="background: #FEE2E2;">
+                  <span class="material-symbols-outlined" style="color:#E9041E">qr_code_2</span>
+                </div>
+                <h4>QR Code</h4>
+                <p>Scannez et suivez en temps reel sur votre telephone</p>
+                <span class="material-symbols-outlined opt-arrow" style="color:#E9041E">arrow_forward</span>
+              </div>
+              <!-- SMS -->
+              <div class="alt-c-opt">
+                <div class="opt-circle" style="background: #FEF3C7;">
+                  <span class="material-symbols-outlined" style="color:#D97706">sms</span>
+                </div>
+                <h4>SMS</h4>
+                <p>Recevez un SMS quand votre tour approche</p>
+                <span class="material-symbols-outlined opt-arrow">arrow_forward</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Top-level tab switching
+document.querySelectorAll('.tab-nav .tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-nav .tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.mockup-panel').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.getAttribute('data-tab')).classList.add('active');
+  });
+});
+
+// Alt B internal tab switching
+document.querySelectorAll('#altBTabs .alt-b-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('#altBTabs .alt-b-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('#altBContent .tab-pane').forEach(function(p) { p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById(tab.getAttribute('data-pane')).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
