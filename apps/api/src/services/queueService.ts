@@ -25,6 +25,10 @@ import {
   emitTicketNoShow,
   emitTicketTransferred,
   emitQueueUpdated,
+  emitQueuePaused,
+  emitQueueResumed,
+  emitQueueReset,
+  emitTicketPrioritized,
 } from '../socket';
 import { notificationQueue } from './notificationQueue';
 
@@ -49,6 +53,42 @@ export const queueService = {
   },
 
   /**
+   * Get branch staff (tellers + manager) for login page
+   * Public endpoint - returns only name, email, role (no sensitive data)
+   */
+  async getBranchStaffForLogin(branchId: string) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { id: true, name: true },
+    });
+
+    if (!branch) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    const staff = await prisma.user.findMany({
+      where: {
+        branchId,
+        status: 'active',
+        role: { in: ['teller', 'branch_manager'] },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+      orderBy: [{ role: 'asc' }, { name: 'asc' }],
+    });
+
+    return {
+      branchId,
+      branchName: branch.name,
+      staff,
+    };
+  },
+
+  /**
    * Create a new ticket (check-in)
    * Public endpoint for kiosk/mobile
    */
@@ -58,11 +98,19 @@ export const queueService = {
     // Get branch with timezone
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },
-      select: { id: true, name: true, timezone: true, notifyAtPosition: true },
+      select: { id: true, name: true, timezone: true, notifyAtPosition: true, queueStatus: true },
     });
 
     if (!branch) {
       throw new NotFoundError('Branch not found');
+    }
+
+    // Check if queue is paused or closed
+    if (branch.queueStatus === 'paused') {
+      throw new BadRequestError('Queue is temporarily paused. Please try again later.');
+    }
+    if (branch.queueStatus === 'closed') {
+      throw new BadRequestError('Branch is closed. Queue will open at the scheduled time.');
     }
 
     // Get service category
@@ -783,7 +831,7 @@ export const queueService = {
    * Bump ticket priority to VIP (move to front of queue)
    * Used by branch managers to prioritize urgent customers
    */
-  async bumpTicketPriority(ticketId: string, actorId: string) {
+  async bumpTicketPriority(ticketId: string, actorId: string, reason?: string) {
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId },
       include: {
@@ -804,10 +852,14 @@ export const queueService = {
       throw new BadRequestError('Ticket is already marked as VIP');
     }
 
+    const now = new Date();
     const updatedTicket = await prisma.ticket.update({
       where: { id: ticketId },
       data: {
         priority: 'vip',
+        priorityReason: reason || null,
+        prioritizedBy: actorId,
+        prioritizedAt: now,
       },
     });
 
@@ -816,14 +868,24 @@ export const queueService = {
         ticketId,
         action: TICKET_ACTION.PRIORITY_BUMPED,
         actorId,
-        metadata: { previousPriority: ticket.priority },
+        metadata: { previousPriority: ticket.priority, reason },
       },
     });
 
     // Emit queue updated event
     emitQueueUpdated(ticket.branch.id, await this.getBranchQueueStatus(ticket.branchId));
 
-    logger.info({ ticketId, actorId }, 'Ticket priority bumped to VIP');
+    // Emit ticket prioritized event
+    emitTicketPrioritized(ticket.branch.id, ticketId, {
+      ticketId,
+      ticketNumber: ticket.ticketNumber,
+      newPriority: 'vip',
+      previousPriority: ticket.priority,
+      reason,
+      prioritizedBy: actorId,
+    });
+
+    logger.info({ ticketId, actorId, reason }, 'Ticket priority bumped to VIP');
 
     return {
       ...updatedTicket,
@@ -833,12 +895,103 @@ export const queueService = {
   },
 
   /**
+   * Pause queue for a branch
+   * Stops ticket creation until resumed
+   */
+  async pauseQueue(branchId: string, actorId: string) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { id: true, name: true, queueStatus: true },
+    });
+
+    if (!branch) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    if (branch.queueStatus === 'paused') {
+      throw new BadRequestError('Queue is already paused');
+    }
+
+    const now = new Date();
+    const updatedBranch = await prisma.branch.update({
+      where: { id: branchId },
+      data: {
+        queueStatus: 'paused',
+        queuePausedAt: now,
+        queuePausedBy: actorId,
+      },
+    });
+
+    // Emit queue paused event
+    emitQueuePaused(branchId, {
+      branchId,
+      branchName: branch.name,
+      pausedBy: actorId,
+      pausedAt: now,
+    });
+
+    logger.info({ branchId, actorId }, 'Queue paused');
+
+    return {
+      queueStatus: updatedBranch.queueStatus,
+      pausedAt: updatedBranch.queuePausedAt,
+    };
+  },
+
+  /**
+   * Resume queue for a branch
+   * Re-enables ticket creation
+   */
+  async resumeQueue(branchId: string, actorId: string) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { id: true, name: true, queueStatus: true, queuePausedAt: true },
+    });
+
+    if (!branch) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    if (branch.queueStatus === 'open') {
+      throw new BadRequestError('Queue is already open');
+    }
+
+    const pauseDurationMins = branch.queuePausedAt
+      ? Math.round((Date.now() - branch.queuePausedAt.getTime()) / 60000)
+      : 0;
+
+    const updatedBranch = await prisma.branch.update({
+      where: { id: branchId },
+      data: {
+        queueStatus: 'open',
+        queuePausedAt: null,
+        queuePausedBy: null,
+      },
+    });
+
+    // Emit queue resumed event
+    emitQueueResumed(branchId, {
+      branchId,
+      branchName: branch.name,
+      resumedBy: actorId,
+      pauseDurationMins,
+    });
+
+    logger.info({ branchId, actorId, pauseDurationMins }, 'Queue resumed');
+
+    return {
+      queueStatus: updatedBranch.queueStatus,
+      pauseDurationMins,
+    };
+  },
+
+  /**
    * Get branch queue status (public)
    */
   async getBranchQueueStatus(branchId: string): Promise<QueueStatus> {
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },
-      select: { id: true, name: true, timezone: true },
+      select: { id: true, name: true, timezone: true, queueStatus: true },
     });
 
     if (!branch) {
@@ -1031,6 +1184,7 @@ export const queueService = {
     return {
       branchId,
       branchName: branch.name,
+      queueStatus: branch.queueStatus as 'open' | 'paused' | 'closed',
       counters: counterDisplays,
       waitingTickets: ticketDisplays,
       services,
@@ -1547,5 +1701,79 @@ export const queueService = {
     // Time until next call = avg service time / number of parallel counters
     // This represents when the next counter will become available
     return Math.ceil(avgServiceTime / activeCountersForService);
+  },
+
+  /**
+   * Reset queue for a branch
+   * Cancels all waiting/called tickets, resets ticket counters, clears counter assignments
+   */
+  async resetQueue(branchId: string, actorId: string) {
+    const branch = await prisma.branch.findUnique({
+      where: { id: branchId },
+      select: { id: true, name: true, timezone: true },
+    });
+
+    if (!branch) {
+      throw new NotFoundError('Branch not found');
+    }
+
+    const { start, end } = getTodayRangeUTC(branch.timezone);
+
+    // 1. Cancel all waiting and called tickets for today
+    const cancelledTickets = await prisma.ticket.updateMany({
+      where: {
+        branchId,
+        status: { in: [TICKET_STATUS.WAITING, TICKET_STATUS.CALLED] },
+        createdAt: { gte: start, lte: end },
+      },
+      data: {
+        status: TICKET_STATUS.CANCELLED,
+      },
+    });
+
+    // 2. Clear current ticket from all counters
+    await prisma.counter.updateMany({
+      where: { branchId },
+      data: { currentTicketId: null },
+    });
+
+    // 3. Reset Redis ticket counters for this branch
+    const redis = getRedisClient();
+    const dateKey = getTodayDateString(branch.timezone);
+
+    // Get all service prefixes for this branch
+    const services = await prisma.serviceCategory.findMany({
+      where: { branchId },
+      select: { prefix: true },
+    });
+
+    // Delete all daily ticket counters for this branch
+    for (const service of services) {
+      const counterKey = REDIS_KEYS.dailyTicketCounter(branchId, service.prefix, dateKey);
+      await redis.del(counterKey);
+    }
+
+    // 4. Emit queue reset event
+    emitQueueReset(branchId, {
+      branchId,
+      branchName: branch.name,
+      resetBy: actorId,
+      cancelledCount: cancelledTickets.count,
+      resetAt: new Date(),
+    });
+
+    // 5. Emit queue updated to refresh displays (with full queue status)
+    const queueStatus = await this.getBranchQueueStatus(branchId);
+    emitQueueUpdated(branchId, queueStatus);
+
+    logger.info(
+      { branchId, actorId, cancelledCount: cancelledTickets.count },
+      'Queue reset'
+    );
+
+    return {
+      cancelledCount: cancelledTickets.count,
+      resetAt: new Date(),
+    };
   },
 };

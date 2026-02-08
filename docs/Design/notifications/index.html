@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIB - Notification Animation Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 30px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #2d2d44;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #c41e3a, #8b0000);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .animation-type {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .display-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+        }
+
+        .display-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Base notification styles */
+        .notification {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px 40px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .notification.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .notification-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .notification-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #c41e3a;
+        }
+
+        .notification-message {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            max-width: 350px;
+        }
+
+        .play-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #c41e3a, #8b0000);
+            color: white;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            background: linear-gradient(135deg, #d42e4a, #9b1010);
+        }
+
+        /* ============================================
+           ANIMATION 1: Slide Down from Top
+           ============================================ */
+        .notification-1 {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100%);
+            width: 90%;
+            max-width: 450px;
+            background: white;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .notification-1.active {
+            animation: slideDown 0.6s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 2: Fade In with Scale (Center Modal)
+           ============================================ */
+        .notification-2 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            width: 85%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .notification-2.active {
+            animation: fadeScale 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeScale {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 3: Slide In from Right
+           ============================================ */
+        .notification-3 {
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%) translateX(100%);
+            width: 320px;
+            background: white;
+            border-radius: 16px 0 0 16px;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.3);
+        }
+
+        .notification-3.active {
+            animation: slideFromRight 0.5s ease-out forwards;
+        }
+
+        @keyframes slideFromRight {
+            0% { transform: translateY(-50%) translateX(100%); opacity: 0; }
+            100% { transform: translateY(-50%) translateX(0); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 4: Bounce In
+           ============================================ */
+        .notification-4 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 85%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .notification-4.active {
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+            70% { transform: translate(-50%, -50%) scale(0.95); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 5: Full Screen Overlay with Blur
+           ============================================ */
+        .notification-5-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(196, 30, 58, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .notification-5-overlay.active {
+            animation: fadeInOverlay 0.6s ease-out forwards;
+        }
+
+        .notification-5-overlay .notification-icon {
+            color: white;
+        }
+
+        .notification-5-overlay .notification-title {
+            color: white;
+        }
+
+        .notification-5-overlay .notification-message {
+            color: rgba(255,255,255,0.9);
+        }
+
+        @keyframes fadeInOverlay {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 6: Slide Up from Bottom
+           ============================================ */
+        .notification-6 {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+            padding: 25px 40px;
+        }
+
+        .notification-6.active {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateX(-50%) translateY(100%); opacity: 0; }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 7: Flip In (3D)
+           ============================================ */
+        .notification-7 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) perspective(1000px) rotateX(-90deg);
+            transform-origin: top center;
+            width: 85%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .notification-7.active {
+            animation: flipIn 0.7s ease-out forwards;
+        }
+
+        @keyframes flipIn {
+            0% { transform: translate(-50%, -50%) perspective(1000px) rotateX(-90deg); opacity: 0; }
+            100% { transform: translate(-50%, -50%) perspective(1000px) rotateX(0deg); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 8: Zoom In with Pulse
+           ============================================ */
+        .notification-8 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 85%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .notification-8.active {
+            animation: zoomPulse 1s ease-out forwards;
+        }
+
+        @keyframes zoomPulse {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            40% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+            60% { transform: translate(-50%, -50%) scale(0.98); }
+            80% { transform: translate(-50%, -50%) scale(1.02); }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 9: Slide In from Left with Rotation
+           ============================================ */
+        .notification-9 {
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%) translateX(-100%) rotate(-5deg);
+            width: 320px;
+            background: white;
+            border-radius: 0 16px 16px 0;
+            box-shadow: 10px 0 40px rgba(0,0,0,0.3);
+        }
+
+        .notification-9.active {
+            animation: slideRotateIn 0.6s ease-out forwards;
+        }
+
+        @keyframes slideRotateIn {
+            0% { transform: translateY(-50%) translateX(-100%) rotate(-5deg); opacity: 0; }
+            100% { transform: translateY(-50%) translateX(0) rotate(0deg); opacity: 1; }
+        }
+
+        /* ============================================
+           ANIMATION 10: Elastic Drop
+           ============================================ */
+        .notification-10 {
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-200%);
+            width: 85%;
+            max-width: 420px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .notification-10.active {
+            animation: elasticDrop 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes elasticDrop {
+            0% { transform: translateX(-50%) translateY(-200%); opacity: 0; }
+            60% { transform: translateX(-50%) translateY(10%); opacity: 1; }
+            80% { transform: translateX(-50%) translateY(-5%); }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 520px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .notification-message {
+                font-size: 12px;
+            }
+            
+            .notification-title {
+                font-size: 14px;
+            }
+            
+            .notification-icon {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🕌 UIB - Notification Animation Showcase</h1>
+    <p class="subtitle">10 different animation styles for the Friday prayer notification</p>
+
+    <div class="grid">
+        <!-- Animation 1: Slide Down -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 1</h3>
+                <span class="animation-type">Slide Down</span>
+            </div>
+            <div class="display-container" id="container-1">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-1" id="notif-1">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(1)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 2: Fade Scale -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 2</h3>
+                <span class="animation-type">Fade & Scale</span>
+            </div>
+            <div class="display-container" id="container-2">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-2" id="notif-2">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(2)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 3: Slide from Right -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 3</h3>
+                <span class="animation-type">Slide Right</span>
+            </div>
+            <div class="display-container" id="container-3">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-3" id="notif-3">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(3)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 4: Bounce In -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 4</h3>
+                <span class="animation-type">Bounce In</span>
+            </div>
+            <div class="display-container" id="container-4">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-4" id="notif-4">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(4)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 5: Full Screen Overlay -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 5</h3>
+                <span class="animation-type">Full Overlay</span>
+            </div>
+            <div class="display-container" id="container-5">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification-5-overlay" id="notif-5">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(5)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 6: Slide Up -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 6</h3>
+                <span class="animation-type">Slide Up</span>
+            </div>
+            <div class="display-container" id="container-6">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-6" id="notif-6">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(6)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 7: Flip In -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 7</h3>
+                <span class="animation-type">3D Flip</span>
+            </div>
+            <div class="display-container" id="container-7">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-7" id="notif-7">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(7)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 8: Zoom Pulse -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 8</h3>
+                <span class="animation-type">Zoom Pulse</span>
+            </div>
+            <div class="display-container" id="container-8">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-8" id="notif-8">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(8)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 9: Slide Rotate -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 9</h3>
+                <span class="animation-type">Slide Rotate</span>
+            </div>
+            <div class="display-container" id="container-9">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-9" id="notif-9">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(9)">▶ Jouer l'animation</button>
+        </div>
+
+        <!-- Animation 10: Elastic Drop -->
+        <div class="card">
+            <div class="card-header">
+                <h3>Animation 10</h3>
+                <span class="animation-type">Elastic Drop</span>
+            </div>
+            <div class="display-container" id="container-10">
+                <img src="background.png" alt="UIB Display">
+                <div class="notification notification-10" id="notif-10">
+                    <div class="notification-icon">🕌</div>
+                    <div class="notification-title">FERMETURE TEMPORAIRE</div>
+                    <div class="notification-message">Nos guichets sont temporairement fermés. Nous sommes allés à la prière du vendredi. On sera de retour dans 15min.</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="playAnimation(10)">▶ Jouer l'animation</button>
+        </div>
+    </div>
+
+    <script>
+        function playAnimation(num) {
+            const notif = document.getElementById('notif-' + num);
+            
+            // Reset animation
+            notif.classList.remove('active');
+            
+            // Force reflow to restart animation
+            void notif.offsetWidth;
+            
+            // Play animation
+            notif.classList.add('active');
+            
+            // Auto-hide after 4 seconds
+            setTimeout(() => {
+                notif.classList.remove('active');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import { getBullMQRedisConnection } from '../lib/redis';
 import { logger } from '../lib/logger';
 import { config } from '../config';
 import { NOTIFICATION_STATUS, NotificationChannel, NotificationType } from '@blesaf/shared';
+import { whatsappService } from './whatsappService';
 
 // Notification job data
 interface NotificationJobData {
@@ -91,16 +92,30 @@ async function sendSMS(
   }
 }
 
-// Send WhatsApp via Twilio
+// Send WhatsApp via Meta Cloud API (primary) or Twilio (fallback)
 async function sendWhatsApp(
   recipient: string,
   messageType: NotificationType,
   templateData: Record<string, unknown>,
   language: 'fr' | 'ar' = 'fr'
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
+): Promise<{ success: boolean; messageId?: string; error?: string; provider?: string }> {
+  // Try Meta Cloud API first (preferred)
+  if (whatsappService.isMetaConfigured()) {
+    logger.info({ recipient, messageType }, 'Sending WhatsApp via Meta Cloud API');
+
+    const result = await whatsappService.sendTemplate(recipient, messageType, templateData, language);
+
+    if (result.success) {
+      return { ...result, provider: 'meta' };
+    }
+
+    logger.warn({ error: result.error, recipient }, 'Meta WhatsApp failed, trying Twilio fallback');
+  }
+
+  // Fallback to Twilio
   if (!config.TWILIO_ACCOUNT_SID || !config.TWILIO_AUTH_TOKEN || !config.TWILIO_PHONE_NUMBER) {
-    logger.warn('Twilio credentials not configured, skipping WhatsApp');
-    return { success: false, error: 'Twilio not configured' };
+    logger.warn('Neither Meta nor Twilio configured for WhatsApp');
+    return { success: false, error: 'No WhatsApp provider configured' };
   }
 
   try {
@@ -122,11 +137,11 @@ async function sendWhatsApp(
       from: whatsappFrom,
     });
 
-    logger.info({ messageId: result.sid, recipient, messageType }, 'WhatsApp sent');
+    logger.info({ messageId: result.sid, recipient, messageType }, 'WhatsApp sent via Twilio');
 
-    return { success: true, messageId: result.sid };
+    return { success: true, messageId: result.sid, provider: 'twilio' };
   } catch (error) {
-    logger.error({ error, recipient, messageType }, 'Failed to send WhatsApp');
+    logger.error({ error, recipient, messageType }, 'Failed to send WhatsApp via Twilio');
     return { success: false, error: (error as Error).message };
   }
 }
@@ -139,7 +154,7 @@ const notificationWorker = new Worker<NotificationJobData>(
 
     logger.info({ jobId: job.id, ticketId, messageType, channel }, 'Processing notification');
 
-    let result: { success: boolean; messageId?: string; error?: string; channel?: string };
+    let result: { success: boolean; messageId?: string; error?: string; channel?: string; provider?: string };
 
     // Try primary channel
     if (channel === 'whatsapp') {
@@ -150,15 +165,17 @@ const notificationWorker = new Worker<NotificationJobData>(
         logger.info({ ticketId }, 'WhatsApp failed, falling back to SMS');
         result = await sendSMS(recipient, messageType, templateData);
         result.channel = 'sms';
+        result.provider = 'twilio';
       } else {
         result.channel = 'whatsapp';
       }
     } else {
       result = await sendSMS(recipient, messageType, templateData);
       result.channel = 'sms';
+      result.provider = 'twilio';
     }
 
-    // Log notification result
+    // Log notification result with provider info
     await prisma.notificationLog.create({
       data: {
         ticketId,
@@ -166,6 +183,7 @@ const notificationWorker = new Worker<NotificationJobData>(
         messageType,
         recipient,
         providerId: result.messageId || null,
+        provider: result.provider || null,
         status: result.success ? NOTIFICATION_STATUS.SENT : NOTIFICATION_STATUS.FAILED,
         errorMsg: result.error || null,
       },

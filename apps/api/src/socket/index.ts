@@ -211,4 +211,65 @@ export function emitCounterUpdated(branchId: string, data: unknown) {
   io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.COUNTER_UPDATED, data);
 }
 
+/**
+ * Emit queue paused event to branch and display
+ */
+export function emitQueuePaused(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.QUEUE_PAUSED, data);
+}
+
+/**
+ * Emit queue resumed event to branch and display
+ */
+export function emitQueueResumed(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.QUEUE_RESUMED, data);
+}
+
+/**
+ * Emit queue reset event to branch and display
+ */
+export function emitQueueReset(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.QUEUE_RESET, data);
+}
+
+/**
+ * Emit queue auto-closed event (end of day)
+ */
+export function emitQueueAutoClosed(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.QUEUE_AUTO_CLOSED, data);
+}
+
+/**
+ * Emit queue auto-opened event (start of day)
+ */
+export function emitQueueAutoOpened(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.QUEUE_AUTO_OPENED, data);
+}
+
+/**
+ * Emit ticket prioritized event
+ */
+export function emitTicketPrioritized(branchId: string, ticketId: string, data: unknown) {
+  io.to(`branch:${branchId}`)
+    .to(`display:${branchId}`)
+    .to(`ticket:${ticketId}`)
+    .emit(SOCKET_EVENTS.TICKET_PRIORITIZED, data);
+}
+
+/**
+ * Emit announcement created event to branch and display rooms
+ */
+export function emitAnnouncement(branchId: string, data: unknown) {
+  io.to(`branch:${branchId}`).to(`display:${branchId}`).emit(SOCKET_EVENTS.ANNOUNCEMENT_CREATED, data);
+}
+
+/**
+ * Emit announcement dismissed event to branch and display rooms
+ */
+export function emitAnnouncementDismissed(branchId: string, announcementId: string) {
+  io.to(`branch:${branchId}`)
+    .to(`display:${branchId}`)
+    .emit(SOCKET_EVENTS.ANNOUNCEMENT_DISMISSED, { announcementId });
+}
+
 export { io };

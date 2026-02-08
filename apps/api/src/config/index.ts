@@ -17,9 +17,12 @@ const envSchema = z.object({
   TWILIO_AUTH_TOKEN: z.string().optional(),
   TWILIO_PHONE_NUMBER: z.string().optional(),
 
-  // WhatsApp
-  WHATSAPP_BUSINESS_ID: z.string().optional(),
+  // WhatsApp (Meta Cloud API)
+  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
   WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+  WHATSAPP_BUSINESS_ID: z.string().optional(),
+  WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().optional(),
+  WHATSAPP_WEBHOOK_SECRET: z.string().optional(),
 
   // Sentry
   SENTRY_DSN: z.string().optional(),
@@ -45,4 +48,4 @@ function loadConfig() {
 
 export const config = loadConfig();
 
-export type Config = typeof config;
+export type Config = z.infer<typeof envSchema>;

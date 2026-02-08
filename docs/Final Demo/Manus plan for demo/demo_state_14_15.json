@@ -1,0 +1,41 @@
+{
+  "time": "14:15",
+  "queue_length": 0,
+  "being_served": 4,
+  "total_served": 27,
+  "active_counters": 4,
+  "avg_wait_time": 7.0,
+  "sla_compliance": 100.0,
+  "waiting_customers": [],
+  "active_tellers": [
+    {
+      "id": "G1",
+      "name": "Mohamed Sassi",
+      "status": "busy",
+      "current_ticket": "R-010",
+      "customers_served": 9
+    },
+    {
+      "id": "G3",
+      "name": "Farid Kallel",
+      "status": "busy",
+      "current_ticket": "R-012",
+      "customers_served": 8
+    },
+    {
+      "id": "G2",
+      "name": "Leila Hamdi",
+      "status": "busy",
+      "current_ticket": "R-011",
+      "customers_served": 5
+    },
+    {
+      "id": "G1",
+      "name": "Mohamed Sassi",
+      "status": "busy",
+      "current_ticket": "D-006",
+      "customers_served": 3
+    }
+  ],
+  "service_breakdown": {}
+}

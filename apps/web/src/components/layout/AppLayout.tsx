@@ -7,10 +7,10 @@ import {
   HomeIcon,
   UsersIcon,
   BuildingOfficeIcon,
-  Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   LanguageIcon,
   QueueListIcon,
+  DocumentDuplicateIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -34,10 +34,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const { user, tenant, logout } = useAuthStore();
 
   const isAdmin = user?.role === 'bank_admin' || user?.role === 'super_admin';
-  const isManager = user?.role === 'branch_manager' || isAdmin;
+  const isBranchManager = user?.role === 'branch_manager';
 
   const navigation = [
-    ...(isManager
+    ...(isBranchManager
       ? [
           {
             name: t('manager.dashboard'),
@@ -67,6 +67,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
             name: t('admin.services'),
             href: '/admin/services',
             icon: QueueListIcon,
+          },
+          {
+            name: 'Templates',
+            href: '/admin/templates',
+            icon: DocumentDuplicateIcon,
           },
         ]
       : []),

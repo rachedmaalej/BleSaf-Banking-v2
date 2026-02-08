@@ -79,4 +79,12 @@ export const REDIS_KEYS = {
   branchStats: (branchId: string) => `stats:${branchId}`,
   dailyTicketCounter: (branchId: string, servicePrefix: string, date: string) =>
     `counter:${branchId}:${servicePrefix}:${date}`,
+  // AI / composite metrics cache keys
+  compositeMetrics: (branchId: string) => `metrics:composite:${branchId}`,
+  forecast: (branchId: string) => `ai:forecast:${branchId}`,
+  recommendations: (branchId: string) => `ai:recommendations:${branchId}`,
+  // HQ Dashboard cache keys
+  hqMetrics: (tenantId: string) => `hq:metrics:${tenantId}`,
+  hqBranches: (tenantId: string) => `hq:branches:${tenantId}`,
+  hqRecommendations: (tenantId: string) => `hq:recommendations:${tenantId}`,
 } as const;

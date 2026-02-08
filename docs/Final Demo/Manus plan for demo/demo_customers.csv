@@ -1,0 +1,37 @@
+ID,Name,Ticket,Service,Arrival,Service Start,Service End,Wait (min),Teller,Status
+1,Fatma Sassi,C-001,Consultation,14:00:00,13:57:00,14:07:00,-3.0,G1,completed
+2,Ahmed Khedher,R-001,Retrait d'espèces,14:00:00,13:58:00,14:03:00,-2.0,G2,completed
+3,Leila Dridi,D-001,Dépôt d'espèces,14:00:00,14:03:00,14:13:31,3.0,G2,completed
+4,Hamza Sassi,D-002,Dépôt d'espèces,14:00:30,14:07:00,14:14:00,6.5,G1,completed
+5,Leila Hamdi,R-002,Relevés de compte,14:00:45,14:14:00,14:18:00,13.2,G1,completed
+6,Youssef Ayari,C-002,Consultation,14:01:00,14:14:00,14:27:41,13.0,G2,completed
+7,Leila Gharbi,D-003,Dépôt d'espèces,14:02:00,14:16:00,14:23:37,14.0,G3,completed
+8,Leila Sassi,D-004,Dépôt d'espèces,14:05:00,14:18:00,14:24:00,13.0,G1,completed
+9,Mariem Ben Ali,D-005,Dépôt d'espèces,14:06:20,14:24:00,14:34:00,17.7,G1,completed
+10,Youssef Khedher,D-006,Dépôt d'espèces,14:07:00,14:24:00,14:30:40,17.0,G3,completed
+11,Youssef Kallel,A-001,Autres,14:07:33,14:28:00,14:38:31,20.4,G2,completed
+12,Karim Hamdi,R-003,Retrait d'espèces,14:08:00,14:31:00,14:37:40,23.0,G3,completed
+13,Sonia Sassi,R-004,Retrait d'espèces,14:09:00,14:34:00,14:38:00,25.0,G1,completed
+14,Omar Dridi,V-001,Virement,14:11:08,14:38:00,14:48:00,26.9,G1,completed
+15,Ahmed Jebali,C-003,Consultation,14:11:36,14:38:00,14:50:22,26.4,G3,completed
+16,Ahmed Dridi,D-007,Dépôt d'espèces,14:12:25,14:39:00,14:47:25,26.6,G2,completed
+17,Leila Trabelsi,C-004,Consultation,14:12:50,15:00:00,15:12:00,47.2,G1,being_served
+18,Rami Khedher,D-008,Dépôt d'espèces,14:12:40,15:00:00,15:08:25,47.3,G2,being_served
+19,Rami Kallel,R-005,Relevés de compte,14:13:00,15:00:00,15:04:45,47.0,G3,being_served
+20,Mariem Trabelsi,D-009,Dépôt d'espèces,14:14:06,,,,,waiting
+21,Rami Khedher,R-006,Relevés de compte,14:14:21,,,,,waiting
+22,Mohamed Jebali,D-010,Dépôt d'espèces,14:14:20,,,,,waiting
+23,Youssef Dridi,C-005,Consultation,14:15:41,,,,,waiting
+24,Rami Kallel,D-011,Dépôt d'espèces,14:15:27,,,,,waiting
+25,Leila Mejri,D-012,Dépôt d'espèces,14:15:17,,,,,waiting
+26,Ines Hamdi,R-007,Retrait d'espèces,14:19:00,,,,,waiting
+27,Fatma Mansour,D-013,Dépôt d'espèces,14:25:00,,,,,waiting
+28,Sonia Hamdi,C-006,Consultation,14:26:00,,,,,waiting
+29,Rami Khedher,C-007,Consultation,14:29:00,,,,,waiting
+30,Leila Ayari,D-014,Dépôt d'espèces,14:32:00,,,,,waiting
+31,Omar Hamdi,D-015,Dépôt d'espèces,14:37:00,,,,,waiting
+32,Salma Jebali,R-008,Retrait d'espèces,14:39:00,,,,,waiting
+33,Leila Jebali,C-008,Consultation,14:42:00,,,,,waiting
+34,Karim Trabelsi,R-009,Retrait d'espèces,14:43:00,,,,,waiting
+35,Karim Ben Ali,R-010,Retrait d'espèces,14:44:00,,,,,waiting
+36,Salma Kallel,D-016,Dépôt d'espèces,14:45:00,,,,,waiting

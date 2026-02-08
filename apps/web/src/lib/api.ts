@@ -154,8 +154,24 @@ export const queueApi = {
     api.post(`/queue/${ticketId}/cancel`),
 
   /** Bump ticket priority to VIP (move to front of queue) */
-  bumpTicketPriority: (ticketId: string) =>
-    api.post(`/queue/${ticketId}/bump-priority`),
+  bumpTicketPriority: (ticketId: string, reason?: string) =>
+    api.post(`/queue/${ticketId}/bump-priority`, { reason }),
+
+  /** Pause queue for a branch (stops ticket creation) */
+  pauseQueue: (branchId: string) =>
+    api.post(`/queue/branch/${branchId}/pause`),
+
+  /** Resume queue for a branch (re-enables ticket creation) */
+  resumeQueue: (branchId: string) =>
+    api.post(`/queue/branch/${branchId}/resume`),
+
+  /** Reset queue for a branch (cancels all waiting tickets, resets counters) */
+  resetQueue: (branchId: string) =>
+    api.post(`/queue/branch/${branchId}/reset`),
+
+  /** Close queue for a branch (end of day - auto-completes serving, cancels waiting) */
+  closeQueue: (branchId: string) =>
+    api.post(`/queue/branch/${branchId}/close`),
 
   getBranchStatus: (branchId: string) =>
     api.get(`/queue/branch/${branchId}/status`),
@@ -169,6 +185,10 @@ export const queueApi = {
   /** List branches for display/kiosk selection (public - no auth required) */
   listBranches: () =>
     api.get('/queue/branches'),
+
+  /** Get staff (tellers + manager) for a branch (public - for demo login page) */
+  getBranchStaff: (branchId: string) =>
+    api.get(`/queue/branch/${branchId}/staff`),
 };
 
 export const adminApi = {
@@ -184,6 +204,56 @@ export const adminApi = {
 
   updateBranch: (branchId: string, data: any) =>
     api.patch(`/admin/branches/${branchId}`, data),
+
+  deleteBranch: (branchId: string) =>
+    api.delete(`/admin/branches/${branchId}`),
+
+  /** Create a complete branch with services and counters in one atomic operation */
+  createBranchComplete: (data: {
+    name: string;
+    code: string;
+    address?: string | null;
+    region?: string | null;
+    timezone?: string;
+    notifyAtPosition?: number;
+    templateIds: string[];
+    counterCount: number;
+  }) => api.post('/admin/branches/complete', data),
+
+  /** Suggest a unique branch code based on name */
+  suggestBranchCode: (name: string) =>
+    api.post<{ success: boolean; data: { suggestedCode: string } }>('/admin/branches/suggest-code', { name }),
+
+  /** Check if a branch code is available */
+  checkBranchCode: (code: string) =>
+    api.post<{ success: boolean; data: { available: boolean; code: string } }>('/admin/branches/check-code', { code }),
+
+  // Batch Import
+  /** Download CSV template for batch import */
+  downloadBatchTemplate: () =>
+    api.get('/admin/branches/batch/template', { responseType: 'blob' }),
+
+  /** Validate batch import data without creating branches */
+  validateBatchImport: (rows: Array<{
+    name: string;
+    code: string;
+    address?: string;
+    region?: string;
+    profile?: string;
+    counterCount?: number;
+    services?: string;
+  }>) => api.post('/admin/branches/batch/validate', { rows }),
+
+  /** Import validated branches */
+  importBranches: (rows: Array<{
+    name: string;
+    code: string;
+    address?: string;
+    region?: string;
+    profile?: string;
+    counterCount?: number;
+    services?: string;
+  }>, skipErrors = true) => api.post('/admin/branches/batch/import', { rows, skipErrors }),
 
   // Counters
   listCounters: (branchId?: string) =>
@@ -204,6 +274,10 @@ export const adminApi = {
 
   closeAllCounters: (branchId: string) =>
     api.post('/admin/counters/batch/close', { branchId }),
+
+  // Counter Configuration
+  configureCounters: (branchId: string, targetCount: number) =>
+    api.patch(`/admin/branches/${branchId}/counters/config`, { targetCount }),
 
   // Services
   listServices: (branchId?: string) =>
@@ -249,6 +323,43 @@ export const adminApi = {
 
   reactivateTeller: (userId: string) =>
     api.patch(`/admin/users/${userId}`, { status: 'active' }),
+
+  // Branch Targets
+  /** Get daily target for a branch (defaults to today) */
+  getBranchTarget: (branchId: string, date?: string) =>
+    api.get(`/admin/branches/${branchId}/targets`, { params: { date } }),
+
+  /** Update daily target for a branch */
+  updateBranchTarget: (branchId: string, data: {
+    date?: string;
+    servedTarget?: number;
+    avgWaitTarget?: number;
+    slaTarget?: number;
+    slaThreshold?: number;
+  }) => api.patch(`/admin/branches/${branchId}/targets`, data),
+
+  // Operating Hours (Auto Queue Management)
+  /** Get operating hours for a branch */
+  getOperatingHours: (branchId: string) =>
+    api.get(`/admin/branches/${branchId}/operating-hours`),
+
+  /** Update operating hours for a branch */
+  updateOperatingHours: (branchId: string, data: {
+    autoQueueEnabled: boolean;
+    openingTime?: string | null;
+    closingTime?: string | null;
+    closedOnWeekends?: boolean;
+  }) => api.patch(`/admin/branches/${branchId}/operating-hours`, data),
+
+  /** Get tenant default operating hours */
+  getTenantDefaultHours: () =>
+    api.get('/admin/tenant/default-hours'),
+
+  /** Update tenant default operating hours */
+  updateTenantDefaultHours: (data: {
+    defaultOpeningTime?: string | null;
+    defaultClosingTime?: string | null;
+  }) => api.patch('/admin/tenant/default-hours', data),
 };
 
 export const breaksApi = {
@@ -313,6 +424,136 @@ export const analyticsApi = {
 
   getServiceBreakdown: (startDate: string, endDate: string) =>
     api.get('/analytics/tenant/services', { params: { startDate, endDate } }),
+
+  /** Get chart data for historical trends visualization */
+  getChartData: (
+    branchId: string,
+    period: 'week' | 'month',
+    metrics: ('served' | 'avgWait' | 'slaPercent' | 'noShows')[]
+  ) =>
+    api.get(`/analytics/branch/${branchId}/charts`, {
+      params: { period, metrics: metrics.join(',') },
+    }),
+
+  /** Get detailed teller activity timeline for a specific day */
+  getTellerTimeline: (branchId: string, tellerId: string, date?: string) =>
+    api.get(`/analytics/branch/${branchId}/teller/${tellerId}/timeline`, {
+      params: { date },
+    }),
+
+  /** Get top services for today (for branch objectives card) */
+  getTopServices: (branchId: string) =>
+    api.get(`/analytics/branch/${branchId}/top-services`),
+};
+
+// ============================================================
+// AI / COMPOSITE METRICS API
+// ============================================================
+
+export const aiApi = {
+  /** Get composite metrics (Queue Health Score, Capacity, SLA Trajectory) */
+  getCompositeMetrics: (branchId: string) =>
+    api.get(`/ai/branch/${branchId}/composite`),
+
+  /** Get hourly demand forecast for next 4 hours */
+  getForecast: (branchId: string) =>
+    api.get(`/ai/branch/${branchId}/forecast`),
+
+  /** Get rule-based recommendations */
+  getRecommendations: (branchId: string) =>
+    api.get(`/ai/branch/${branchId}/recommendations`),
+
+  /** Execute a recommendation action */
+  executeRecommendation: (branchId: string, recommendationId: string) =>
+    api.post(`/ai/branch/${branchId}/recommendations/${recommendationId}/execute`),
+};
+
+// ============================================================
+// HQ DASHBOARD API
+// ============================================================
+
+export const hqApi = {
+  /** Get tenant-level composite metrics (network health, capacity, SLA) */
+  getMetrics: () =>
+    api.get('/hq/metrics'),
+
+  /** Get per-branch health scores for the performance matrix */
+  getBranches: () =>
+    api.get('/hq/branches'),
+
+  /** Get tenant-level recommendations */
+  getRecommendations: () =>
+    api.get('/hq/recommendations'),
+};
+
+// ============================================================
+// ANNOUNCEMENTS API
+// ============================================================
+
+export const announcementApi = {
+  /** Create a new announcement (broadcasts to TV displays) */
+  create: (data: {
+    branchId: string;
+    message: string;
+    messageAr?: string;
+    priority?: 'normal' | 'urgent';
+    enableTts?: boolean;
+    displayDuration?: number;
+  }) => api.post('/announcements', data),
+
+  /** Get active announcements for a branch (public for displays) */
+  getActive: (branchId: string) =>
+    api.get(`/announcements/branch/${branchId}/active`),
+
+  /** Get announcement history for a branch */
+  getHistory: (branchId: string, limit?: number) =>
+    api.get(`/announcements/branch/${branchId}`, { params: { limit } }),
+
+  /** Dismiss an announcement */
+  dismiss: (announcementId: string) =>
+    api.delete(`/announcements/${announcementId}`),
+};
+
+// ============================================================
+// SERVICE TEMPLATES API (Bank-level reusable service definitions)
+// ============================================================
+
+export const templateApi = {
+  /** List all service templates for the tenant */
+  list: (page = 1, pageSize = 50, activeOnly = true) =>
+    api.get('/templates', { params: { page, pageSize, activeOnly } }),
+
+  /** Create a new service template */
+  create: (data: {
+    nameFr: string;
+    nameAr: string;
+    prefix: string;
+    icon?: string | null;
+    priorityWeight?: number;
+    avgServiceTime?: number;
+  }) => api.post('/templates', data),
+
+  /** Get template by ID */
+  get: (templateId: string) =>
+    api.get(`/templates/${templateId}`),
+
+  /** Update a service template */
+  update: (templateId: string, data: {
+    nameFr?: string;
+    nameAr?: string;
+    prefix?: string;
+    icon?: string | null;
+    priorityWeight?: number;
+    avgServiceTime?: number;
+  }) => api.patch(`/templates/${templateId}`, data),
+
+  /** Delete (deactivate) a service template */
+  delete: (templateId: string) =>
+    api.delete(`/templates/${templateId}`),
+
+  /** Copy selected templates to a branch as actual services */
+  copyToBranch: (branchId: string, templateIds: string[]) =>
+    api.post('/templates/copy-to-branch', { branchId, templateIds }),
 };
 
 export default api;

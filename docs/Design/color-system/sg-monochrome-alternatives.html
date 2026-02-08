@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monochrome Banking - 3 Variations</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #F0F0F0;
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #000000;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      font-size: 16px;
+      color: #4B5563;
+      margin-bottom: 24px;
+    }
+
+    .concept-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #E9041E 0%, #000000 100%);
+      color: white;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    /* Toggle Buttons */
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      padding: 14px 24px;
+      border: 2px solid #D1D5DB;
+      border-radius: 100px;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 180px;
+    }
+
+    .toggle-btn:hover {
+      border-color: #E9041E;
+      background: #FFF5F5;
+    }
+
+    .toggle-btn.active {
+      background: #E9041E;
+      border-color: #E9041E;
+      color: white;
+    }
+
+    .toggle-btn .toggle-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .toggle-btn .toggle-desc {
+      font-size: 10px;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+
+    .toggle-preview {
+      display: flex;
+      gap: 3px;
+      margin-top: 6px;
+    }
+
+    .toggle-preview span {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    /* Screens Grid */
+    .screens-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .screen-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .screen-label {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #4B5563;
+      border-bottom: 1px solid #E5E7EB;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .screen-label .material-symbols-outlined {
+      font-size: 20px;
+      color: #E9041E;
+    }
+
+    .screen-preview {
+      padding: 16px;
+      background: var(--surface-variant);
+      min-height: 400px;
+    }
+
+    /* ============= MINI TV DISPLAY ============= */
+    .tv-mini {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .tv-mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .tv-mini-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--on-surface);
+    }
+
+    .tv-mini-logo-icon {
+      width: 24px;
+      height: 24px;
+      background: #E9041E;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 8px;
+      font-weight: 900;
+    }
+
+    .tv-mini-time {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--on-surface);
+    }
+
+    .tv-mini-hero {
+      padding: 16px;
+      background: var(--surface-variant);
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .tv-mini-counter-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 12px 16px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      min-width: 80px;
+      position: relative;
+    }
+
+    .tv-mini-counter-card.is-new {
+      box-shadow: 0 0 0 2px #E9041E, 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .tv-mini-guichet-label {
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tv-mini-guichet-num {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--on-surface);
+      line-height: 1;
+    }
+
+    .tv-mini-ticket-num {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 4px 0;
+    }
+
+    .tv-mini-service-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px 6px;
+      border-radius: 12px;
+      font-size: 8px;
+      font-weight: 600;
+    }
+
+    .tv-mini-new-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #E9041E;
+      color: white;
+      font-size: 6px;
+      font-weight: 700;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    .tv-mini-queue {
+      padding: 8px 12px;
+      border-top: 1px solid var(--outline);
+    }
+
+    .tv-mini-queue-label {
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .tv-mini-queue-flow {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tv-mini-queue-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #6B7280;
+    }
+
+    .tv-mini-queue-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    /* ============= MINI KIOSK ============= */
+    .kiosk-mini {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .kiosk-mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .kiosk-mini-content {
+      padding: 16px;
+      text-align: center;
+    }
+
+    .kiosk-mini-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--on-surface);
+      margin-bottom: 12px;
+    }
+
+    .kiosk-mini-services {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .kiosk-mini-service-btn {
+      aspect-ratio: 1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .kiosk-mini-service-btn .material-symbols-outlined {
+      font-size: 24px;
+    }
+
+    .kiosk-mini-service-btn span:last-child {
+      font-size: 9px;
+      font-weight: 500;
+    }
+
+    /* ============= MINI TELLER ============= */
+    .teller-mini {
+      background: var(--surface);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .teller-mini-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--outline);
+    }
+
+    .teller-mini-guichet {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--on-surface);
+    }
+
+    .teller-mini-main {
+      display: flex;
+    }
+
+    .teller-mini-panel {
+      flex: 1;
+      padding: 12px;
+    }
+
+    .teller-mini-panel:first-child {
+      border-right: 1px solid var(--outline);
+    }
+
+    .teller-mini-panel:last-child {
+      background: var(--surface-variant);
+    }
+
+    .teller-mini-panel-label {
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .teller-mini-panel-label .material-symbols-outlined {
+      font-size: 12px;
+      color: #E9041E;
+    }
+
+    .teller-mini-ticket-card {
+      background: var(--surface);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .teller-mini-timer {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .teller-mini-ticket-num {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--on-surface);
+      line-height: 1;
+    }
+
+    .teller-mini-buttons {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .teller-mini-btn {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 20px;
+      font-size: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .teller-mini-btn.complete {
+      background: #E9041E;
+      color: white;
+    }
+
+    .teller-mini-btn.noshow {
+      background: white;
+      border: 1px solid var(--outline);
+      color: var(--on-surface-variant);
+    }
+
+    .teller-mini-btn .material-symbols-outlined {
+      font-size: 12px;
+    }
+
+    .teller-mini-call-btn {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #E9041E;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .teller-mini-call-btn .material-symbols-outlined {
+      font-size: 14px;
+    }
+
+    .teller-mini-footer {
+      padding: 6px 12px;
+      border-top: 1px solid var(--outline);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 9px;
+      color: var(--on-surface-variant);
+    }
+
+    .teller-mini-footer-queue {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    /* ============= COLOR PALETTE SECTION ============= */
+    .palette-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .palette-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #000000;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .palette-title .material-symbols-outlined {
+      color: #E9041E;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+    }
+
+    .palette-item {
+      text-align: center;
+    }
+
+    .palette-swatch {
+      width: 100%;
+      height: 50px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .palette-swatch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .palette-hex {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 10px;
+      font-weight: 600;
+      color: #000000;
+      background: #F3F4F6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .palette-hex:hover {
+      background: #E5E7EB;
+    }
+
+    .palette-name {
+      font-size: 9px;
+      color: #6B7280;
+      margin-top: 4px;
+    }
+
+    .palette-category {
+      grid-column: 1 / -1;
+      font-size: 11px;
+      font-weight: 600;
+      color: #4B5563;
+      padding: 8px 0 4px;
+      border-bottom: 1px solid #E5E7EB;
+      margin-top: 8px;
+    }
+
+    .palette-category:first-child {
+      margin-top: 0;
+    }
+
+    /* Comparison Table */
+    .comparison-section {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .comparison-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #000000;
+      margin-bottom: 16px;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .comparison-table th {
+      background: #F9FAFB;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .comparison-table td:first-child {
+      font-weight: 500;
+      color: #4B5563;
+    }
+
+    .color-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-cell-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .screens-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-header">
+    <h1 class="page-title">Monochrome Banking</h1>
+    <p class="page-subtitle">3 Variations of the Minimalist Red/Black/Gray Palette</p>
+    <div class="concept-badge">
+      <span class="material-symbols-outlined" style="font-size: 18px;">palette</span>
+      Based on Alternative 2: Monochrome Banking
+    </div>
+  </div>
+
+  <div class="toggle-container">
+    <button class="toggle-btn active" data-alt="1" onclick="setAlternative(1)">
+      <div class="toggle-name">A: Pure Monochrome</div>
+      <div class="toggle-desc">Uniform gray, red CTAs only</div>
+      <div class="toggle-preview">
+        <span style="background: #E9041E;"></span>
+        <span style="background: #6B7280;"></span>
+        <span style="background: #9CA3AF;"></span>
+        <span style="background: #D1D5DB;"></span>
+      </div>
+    </button>
+    <button class="toggle-btn" data-alt="2" onclick="setAlternative(2)">
+      <div class="toggle-name">B: Tiered Gray</div>
+      <div class="toggle-desc">Graduated gray shades</div>
+      <div class="toggle-preview">
+        <span style="background: #E9041E;"></span>
+        <span style="background: #374151;"></span>
+        <span style="background: #6B7280;"></span>
+        <span style="background: #9CA3AF;"></span>
+      </div>
+    </button>
+    <button class="toggle-btn" data-alt="3" onclick="setAlternative(3)">
+      <div class="toggle-name">C: Warm Monochrome</div>
+      <div class="toggle-desc">Stone/taupe gray tones</div>
+      <div class="toggle-preview">
+        <span style="background: #E9041E;"></span>
+        <span style="background: #57534E;"></span>
+        <span style="background: #78716C;"></span>
+        <span style="background: #A8A29E;"></span>
+      </div>
+    </button>
+  </div>
+
+  <div class="screens-grid">
+    <!-- TV Display -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <span class="material-symbols-outlined">tv</span>
+        TV Display
+      </div>
+      <div class="screen-preview" id="tv-preview">
+        <div class="tv-mini" id="tv-mini">
+          <div class="tv-mini-header">
+            <div class="tv-mini-logo">
+              <div class="tv-mini-logo-icon">UIB</div>
+              <span>Agence Lac 2</span>
+            </div>
+            <div class="tv-mini-time">14:35</div>
+          </div>
+          <div class="tv-mini-hero">
+            <div class="tv-mini-counter-card retrait-card">
+              <div class="tv-mini-guichet-label">Guichet</div>
+              <div class="tv-mini-guichet-num">1</div>
+              <div class="tv-mini-ticket-num retrait-ticket">A-009</div>
+              <div class="tv-mini-service-tag retrait-tag">
+                <span class="material-symbols-outlined" style="font-size: 10px;">local_atm</span>
+                Retrait
+              </div>
+            </div>
+            <div class="tv-mini-counter-card depot-card">
+              <div class="tv-mini-guichet-label">Guichet</div>
+              <div class="tv-mini-guichet-num">2</div>
+              <div class="tv-mini-ticket-num depot-ticket">D-004</div>
+              <div class="tv-mini-service-tag depot-tag">
+                <span class="material-symbols-outlined" style="font-size: 10px;">savings</span>
+                Depot
+              </div>
+            </div>
+            <div class="tv-mini-counter-card ouverture-card is-new">
+              <div class="tv-mini-new-badge">NEW</div>
+              <div class="tv-mini-guichet-label">Guichet</div>
+              <div class="tv-mini-guichet-num">3</div>
+              <div class="tv-mini-ticket-num ouverture-ticket">C-001</div>
+              <div class="tv-mini-service-tag ouverture-tag">
+                <span class="material-symbols-outlined" style="font-size: 10px;">folder_open</span>
+                Ouverture
+              </div>
+            </div>
+          </div>
+          <div class="tv-mini-queue">
+            <div class="tv-mini-queue-label">Prochains en file</div>
+            <div class="tv-mini-queue-flow">
+              <div class="tv-mini-queue-item"><span class="tv-mini-queue-dot retrait-dot"></span>A-012</div>
+              <span style="color: #D1D5DB;">></span>
+              <div class="tv-mini-queue-item"><span class="tv-mini-queue-dot depot-dot"></span>D-005</div>
+              <span style="color: #D1D5DB;">></span>
+              <div class="tv-mini-queue-item"><span class="tv-mini-queue-dot autres-dot"></span>X-001</div>
+              <span style="color: #9CA3AF; font-size: 9px; margin-left: 4px;">+5</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kiosk -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <span class="material-symbols-outlined">touch_app</span>
+        Kiosk
+      </div>
+      <div class="screen-preview" id="kiosk-preview">
+        <div class="kiosk-mini" id="kiosk-mini">
+          <div class="kiosk-mini-header">
+            <div class="tv-mini-logo">
+              <div class="tv-mini-logo-icon">UIB</div>
+              <span style="font-size: 9px;">Agence Lac 2</span>
+            </div>
+            <div class="tv-mini-time">14:35</div>
+          </div>
+          <div class="kiosk-mini-content">
+            <div class="kiosk-mini-title">Selectionnez votre service</div>
+            <div class="kiosk-mini-services">
+              <div class="kiosk-mini-service-btn retrait-btn">
+                <span class="material-symbols-outlined">local_atm</span>
+                <span>Retrait</span>
+              </div>
+              <div class="kiosk-mini-service-btn depot-btn">
+                <span class="material-symbols-outlined">savings</span>
+                <span>Depot</span>
+              </div>
+              <div class="kiosk-mini-service-btn ouverture-btn">
+                <span class="material-symbols-outlined">person_add</span>
+                <span>Ouverture</span>
+              </div>
+              <div class="kiosk-mini-service-btn autres-btn">
+                <span class="material-symbols-outlined">more_horiz</span>
+                <span>Autres</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teller -->
+    <div class="screen-card">
+      <div class="screen-label">
+        <span class="material-symbols-outlined">support_agent</span>
+        Teller Dashboard
+      </div>
+      <div class="screen-preview" id="teller-preview">
+        <div class="teller-mini" id="teller-mini">
+          <div class="teller-mini-header">
+            <div class="tv-mini-logo">
+              <div class="tv-mini-logo-icon">UIB</div>
+            </div>
+            <div class="teller-mini-guichet">Guichet 3</div>
+            <div class="tv-mini-time">14:35</div>
+          </div>
+          <div class="teller-mini-main">
+            <div class="teller-mini-panel">
+              <div class="teller-mini-panel-label">
+                <span class="material-symbols-outlined">radio_button_checked</span>
+                En service
+              </div>
+              <div class="teller-mini-ticket-card retrait-card">
+                <div class="teller-mini-timer timer-badge">
+                  <span class="material-symbols-outlined" style="font-size: 10px;">timer</span>
+                  05:23
+                </div>
+                <div class="teller-mini-ticket-num">A-009</div>
+                <div class="tv-mini-service-tag retrait-tag" style="margin-top: 4px;">
+                  <span class="material-symbols-outlined" style="font-size: 10px;">local_atm</span>
+                  Retrait
+                </div>
+                <div class="teller-mini-buttons">
+                  <div class="teller-mini-btn complete">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    Terminer
+                  </div>
+                  <div class="teller-mini-btn noshow">
+                    <span class="material-symbols-outlined">cancel</span>
+                    Non pres.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="teller-mini-panel">
+              <div class="teller-mini-panel-label">
+                <span class="material-symbols-outlined">schedule</span>
+                Prochain
+              </div>
+              <div class="teller-mini-ticket-card depot-card">
+                <div style="font-size: 8px; color: var(--on-surface-variant); margin-bottom: 4px;">#1 dans la file</div>
+                <div class="teller-mini-ticket-num">D-004</div>
+                <div class="tv-mini-service-tag depot-tag" style="margin-top: 4px;">
+                  <span class="material-symbols-outlined" style="font-size: 10px;">savings</span>
+                  Depot
+                </div>
+                <div class="teller-mini-call-btn">
+                  <span class="material-symbols-outlined">campaign</span>
+                  Appeler
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="teller-mini-footer">
+            <span>File:</span>
+            <div class="teller-mini-footer-queue">
+              <span class="tv-mini-queue-dot retrait-dot"></span>A-012
+              <span style="color: #D1D5DB;">></span>
+              <span class="tv-mini-queue-dot depot-dot"></span>D-005
+            </div>
+            <span style="margin-left: auto;">8 en attente</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Palette -->
+  <div class="palette-section">
+    <div class="palette-title">
+      <span class="material-symbols-outlined">palette</span>
+      <span id="palette-variant-name">Variation A: Pure Monochrome</span>
+    </div>
+    <div class="palette-grid" id="palette-grid">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="comparison-section">
+    <div class="comparison-title">Service Color Comparison</div>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>A: Pure Monochrome</th>
+          <th>B: Tiered Gray</th>
+          <th>C: Warm Monochrome</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Retrait</td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #6B7280;"></span>#6B7280</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #374151;"></span>#374151</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #57534E;"></span>#57534E</div></td>
+        </tr>
+        <tr>
+          <td>Depot</td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #9CA3AF;"></span>#9CA3AF</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #6B7280;"></span>#6B7280</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #78716C;"></span>#78716C</div></td>
+        </tr>
+        <tr>
+          <td>Ouverture (VIP)</td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #E9041E;"></span>#E9041E</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #E9041E;"></span>#E9041E</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #E9041E;"></span>#E9041E</div></td>
+        </tr>
+        <tr>
+          <td>Autres</td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #D1D5DB;"></span>#D1D5DB</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #9CA3AF;"></span>#9CA3AF</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #A8A29E;"></span>#A8A29E</div></td>
+        </tr>
+        <tr>
+          <td>Surface</td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #FFFFFF; border: 1px solid #E5E7EB;"></span>#FFFFFF</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #FAFAFA; border: 1px solid #E5E7EB;"></span>#FAFAFA</div></td>
+          <td><div class="color-cell"><span class="color-cell-swatch" style="background: #FAFAF9; border: 1px solid #E5E7EB;"></span>#FAFAF9</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const alternatives = {
+      1: {
+        name: 'Variation A: Pure Monochrome',
+        desc: 'All services in uniform gray, only CTAs in red',
+        colors: {
+          '--surface': '#FFFFFF',
+          '--surface-variant': '#F9FAFB',
+          '--on-surface': '#000000',
+          '--on-surface-variant': '#6B7280',
+          '--outline': '#E5E7EB',
+          '--retrait-bg': '#F3F4F6',
+          '--retrait-accent': '#6B7280',
+          '--retrait-text': '#374151',
+          '--depot-bg': '#F9FAFB',
+          '--depot-accent': '#9CA3AF',
+          '--depot-text': '#6B7280',
+          '--ouverture-bg': '#FEF2F2',
+          '--ouverture-accent': '#E9041E',
+          '--ouverture-text': '#991B1B',
+          '--autres-bg': '#F3F4F6',
+          '--autres-accent': '#D1D5DB',
+          '--autres-text': '#9CA3AF',
+          '--timer-bg': '#F3F4F6',
+          '--timer-text': '#374151',
+        },
+        palette: [
+          { category: 'Brand' },
+          { name: 'SG Red', hex: '#E9041E' },
+          { name: 'SG Black', hex: '#000000' },
+          { category: 'Surfaces' },
+          { name: 'Surface', hex: '#FFFFFF' },
+          { name: 'Surface Var', hex: '#F9FAFB' },
+          { name: 'Outline', hex: '#E5E7EB' },
+          { category: 'Services (Uniform Gray)' },
+          { name: 'Retrait', hex: '#6B7280' },
+          { name: 'Depot', hex: '#9CA3AF' },
+          { name: 'Ouverture', hex: '#E9041E' },
+          { name: 'Autres', hex: '#D1D5DB' },
+        ]
+      },
+      2: {
+        name: 'Variation B: Tiered Gray',
+        desc: 'Graduated gray shades for visual hierarchy',
+        colors: {
+          '--surface': '#FAFAFA',
+          '--surface-variant': '#F4F4F5',
+          '--on-surface': '#000000',
+          '--on-surface-variant': '#52525B',
+          '--outline': '#E4E4E7',
+          '--retrait-bg': '#F4F4F5',
+          '--retrait-accent': '#374151',
+          '--retrait-text': '#1F2937',
+          '--depot-bg': '#FAFAFA',
+          '--depot-accent': '#6B7280',
+          '--depot-text': '#374151',
+          '--ouverture-bg': '#FEF2F2',
+          '--ouverture-accent': '#E9041E',
+          '--ouverture-text': '#991B1B',
+          '--autres-bg': '#FAFAFA',
+          '--autres-accent': '#9CA3AF',
+          '--autres-text': '#6B7280',
+          '--timer-bg': '#E5E7EB',
+          '--timer-text': '#1F2937',
+        },
+        palette: [
+          { category: 'Brand' },
+          { name: 'SG Red', hex: '#E9041E' },
+          { name: 'SG Black', hex: '#000000' },
+          { category: 'Surfaces' },
+          { name: 'Surface', hex: '#FAFAFA' },
+          { name: 'Surface Var', hex: '#F4F4F5' },
+          { name: 'Outline', hex: '#E4E4E7' },
+          { category: 'Services (Tiered Gray)' },
+          { name: 'Retrait (Dark)', hex: '#374151' },
+          { name: 'Depot (Medium)', hex: '#6B7280' },
+          { name: 'Ouverture', hex: '#E9041E' },
+          { name: 'Autres (Light)', hex: '#9CA3AF' },
+        ]
+      },
+      3: {
+        name: 'Variation C: Warm Monochrome',
+        desc: 'Stone/taupe warm gray tones',
+        colors: {
+          '--surface': '#FAFAF9',
+          '--surface-variant': '#F5F5F4',
+          '--on-surface': '#0C0A09',
+          '--on-surface-variant': '#57534E',
+          '--outline': '#E7E5E4',
+          '--retrait-bg': '#F5F5F4',
+          '--retrait-accent': '#57534E',
+          '--retrait-text': '#292524',
+          '--depot-bg': '#FAFAF9',
+          '--depot-accent': '#78716C',
+          '--depot-text': '#44403C',
+          '--ouverture-bg': '#FEF2F2',
+          '--ouverture-accent': '#E9041E',
+          '--ouverture-text': '#991B1B',
+          '--autres-bg': '#FAFAF9',
+          '--autres-accent': '#A8A29E',
+          '--autres-text': '#78716C',
+          '--timer-bg': '#E7E5E4',
+          '--timer-text': '#292524',
+        },
+        palette: [
+          { category: 'Brand' },
+          { name: 'SG Red', hex: '#E9041E' },
+          { name: 'Warm Black', hex: '#0C0A09' },
+          { category: 'Surfaces (Warm)' },
+          { name: 'Surface', hex: '#FAFAF9' },
+          { name: 'Surface Var', hex: '#F5F5F4' },
+          { name: 'Outline', hex: '#E7E5E4' },
+          { category: 'Services (Stone Gray)' },
+          { name: 'Retrait', hex: '#57534E' },
+          { name: 'Depot', hex: '#78716C' },
+          { name: 'Ouverture', hex: '#E9041E' },
+          { name: 'Autres', hex: '#A8A29E' },
+        ]
+      }
+    };
+
+    function setAlternative(num) {
+      const alt = alternatives[num];
+      const root = document.documentElement;
+
+      // Set CSS variables
+      Object.entries(alt.colors).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+      });
+
+      // Update toggle buttons
+      document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.alt == num);
+      });
+
+      // Update service-specific styles
+      updateServiceStyles(alt.colors);
+
+      // Update palette grid
+      document.getElementById('palette-variant-name').textContent = alt.name;
+      updatePaletteGrid(alt.palette);
+    }
+
+    function updateServiceStyles(colors) {
+      // Retrait
+      document.querySelectorAll('.retrait-card').forEach(el => {
+        el.style.borderBottom = `3px solid ${colors['--retrait-accent']}`;
+      });
+      document.querySelectorAll('.retrait-tag').forEach(el => {
+        el.style.background = colors['--retrait-bg'];
+        el.style.color = colors['--retrait-text'];
+      });
+      document.querySelectorAll('.retrait-btn').forEach(el => {
+        el.style.background = colors['--retrait-bg'];
+        el.style.color = colors['--retrait-accent'];
+      });
+      document.querySelectorAll('.retrait-dot').forEach(el => {
+        el.style.background = colors['--retrait-accent'];
+      });
+      document.querySelectorAll('.retrait-ticket').forEach(el => {
+        el.style.color = colors['--retrait-accent'];
+      });
+
+      // Depot
+      document.querySelectorAll('.depot-card').forEach(el => {
+        el.style.borderBottom = `3px solid ${colors['--depot-accent']}`;
+      });
+      document.querySelectorAll('.depot-tag').forEach(el => {
+        el.style.background = colors['--depot-bg'];
+        el.style.color = colors['--depot-text'];
+      });
+      document.querySelectorAll('.depot-btn').forEach(el => {
+        el.style.background = colors['--depot-bg'];
+        el.style.color = colors['--depot-accent'];
+      });
+      document.querySelectorAll('.depot-dot').forEach(el => {
+        el.style.background = colors['--depot-accent'];
+      });
+      document.querySelectorAll('.depot-ticket').forEach(el => {
+        el.style.color = colors['--depot-accent'];
+      });
+
+      // Ouverture (always red - VIP)
+      document.querySelectorAll('.ouverture-card').forEach(el => {
+        el.style.borderBottom = `3px solid ${colors['--ouverture-accent']}`;
+      });
+      document.querySelectorAll('.ouverture-tag').forEach(el => {
+        el.style.background = colors['--ouverture-bg'];
+        el.style.color = colors['--ouverture-text'];
+      });
+      document.querySelectorAll('.ouverture-btn').forEach(el => {
+        el.style.background = colors['--ouverture-bg'];
+        el.style.color = colors['--ouverture-accent'];
+      });
+      document.querySelectorAll('.ouverture-dot').forEach(el => {
+        el.style.background = colors['--ouverture-accent'];
+      });
+      document.querySelectorAll('.ouverture-ticket').forEach(el => {
+        el.style.color = colors['--ouverture-accent'];
+      });
+
+      // Autres
+      document.querySelectorAll('.autres-card').forEach(el => {
+        el.style.borderBottom = `3px solid ${colors['--autres-accent']}`;
+      });
+      document.querySelectorAll('.autres-tag').forEach(el => {
+        el.style.background = colors['--autres-bg'];
+        el.style.color = colors['--autres-text'];
+      });
+      document.querySelectorAll('.autres-btn').forEach(el => {
+        el.style.background = colors['--autres-bg'];
+        el.style.color = colors['--autres-accent'];
+      });
+      document.querySelectorAll('.autres-dot').forEach(el => {
+        el.style.background = colors['--autres-accent'];
+      });
+
+      // Timer badge
+      document.querySelectorAll('.timer-badge').forEach(el => {
+        el.style.background = colors['--timer-bg'];
+        el.style.color = colors['--timer-text'];
+      });
+    }
+
+    function updatePaletteGrid(palette) {
+      const grid = document.getElementById('palette-grid');
+      grid.innerHTML = palette.map(item => {
+        if (item.category) {
+          return `<div class="palette-category">${item.category}</div>`;
+        }
+        return `
+          <div class="palette-item">
+            <div class="palette-swatch" style="background: ${item.hex};"></div>
+            <div class="palette-hex" onclick="copyColor('${item.hex}')">${item.hex}</div>
+            <div class="palette-name">${item.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function copyColor(hex) {
+      navigator.clipboard.writeText(hex).then(() => {
+        const el = event.target;
+        const original = el.textContent;
+        el.textContent = 'Copied!';
+        el.style.background = '#E9041E';
+        el.style.color = 'white';
+        setTimeout(() => {
+          el.textContent = original;
+          el.style.background = '';
+          el.style.color = '';
+        }, 800);
+      });
+    }
+
+    // Initialize with Variation A
+    setAlternative(1);
+  </script>
+</body>
+</html>

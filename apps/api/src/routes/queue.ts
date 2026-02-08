@@ -6,6 +6,7 @@ import {
   completeTicketSchema,
 } from '@blesaf/shared';
 import { queueService } from '../services/queueService';
+import { scheduleService } from '../services/scheduleService';
 import { authenticate, optionalAuth } from '../middleware/auth';
 import { requireRole } from '../middleware/rbac';
 
@@ -191,13 +192,98 @@ router.post('/:ticketId/cancel', authenticate, requireRole('teller', 'branch_man
 router.post('/:ticketId/bump-priority', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
   try {
     const { ticketId } = req.params;
+    const { reason } = req.body || {};
 
-    const result = await queueService.bumpTicketPriority(ticketId, req.user!.userId);
+    const result = await queueService.bumpTicketPriority(ticketId, req.user!.userId, reason);
 
     res.json({
       success: true,
       data: result,
       message: 'Ticket bumped to front of queue',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/queue/branch/:branchId/pause
+ * Pause queue for a branch (branch_manager only)
+ * Stops ticket creation until resumed
+ */
+router.post('/branch/:branchId/pause', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+
+    const result = await queueService.pauseQueue(branchId, req.user!.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      message: 'Queue paused',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/queue/branch/:branchId/resume
+ * Resume queue for a branch (branch_manager only)
+ * Re-enables ticket creation
+ */
+router.post('/branch/:branchId/resume', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+
+    const result = await queueService.resumeQueue(branchId, req.user!.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      message: 'Queue resumed',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/queue/branch/:branchId/reset
+ * Reset queue for a branch (branch_manager only)
+ * Cancels all waiting/called tickets and resets ticket counters
+ */
+router.post('/branch/:branchId/reset', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+
+    const result = await queueService.resetQueue(branchId, req.user!.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      message: 'Queue reset successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/queue/branch/:branchId/close
+ * Close queue for a branch (end of day)
+ * Auto-completes serving tickets, cancels waiting tickets, closes counters
+ */
+router.post('/branch/:branchId/close', authenticate, requireRole('branch_manager', 'bank_admin'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+
+    const result = await scheduleService.manualCloseQueue(branchId, req.user!.userId);
+
+    res.json({
+      success: true,
+      data: result,
+      message: 'Queue closed successfully',
     });
   } catch (error) {
     next(error);
@@ -211,6 +297,26 @@ router.post('/:ticketId/bump-priority', authenticate, requireRole('branch_manage
 router.get('/branches', async (req, res, next) => {
   try {
     const result = await queueService.listBranchesForDisplay();
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/queue/branch/:branchId/staff
+ * List staff (tellers + manager) for a branch (public - for demo login page)
+ * Returns only name and email (no sensitive data)
+ */
+router.get('/branch/:branchId/staff', async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+
+    const result = await queueService.getBranchStaffForLogin(branchId);
 
     res.json({
       success: true,

@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BM Dashboard - 5 Redesign Alternatives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F5F5F5;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    /* ========================== */
+    /* TAB NAVIGATION            */
+    /* ========================== */
+    .tabs-container {
+      max-width: 1400px;
+      margin: 0 auto 40px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      border: 1px solid #E0E0E0;
+      background: white;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      border-color: #1A1A1A;
+      color: #1A1A1A;
+    }
+
+    .tab-btn.active {
+      background: #1A1A1A;
+      border-color: #1A1A1A;
+      color: white;
+    }
+
+    .tab-btn.recommended {
+      background: #E9041E;
+      border-color: #E9041E;
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* ========================== */
+    /* ALTERNATIVE SECTION       */
+    /* ========================== */
+    .alternative-section {
+      max-width: 1400px;
+      margin: 0 auto 60px;
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid #E0E0E0;
+    }
+
+    .alt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .alt-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .alt-badge {
+      padding: 4px 12px;
+      background: #666;
+      color: white;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .alt-badge.recommended {
+      background: #E9041E;
+    }
+
+    .alt-description {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 900px;
+    }
+
+    .alt-principles {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .principle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .principle-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #E9041E;
+    }
+
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .pros, .cons {
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .pros {
+      background: #ECFDF5;
+      border-left: 4px solid #10B981;
+    }
+
+    .cons {
+      background: #FEF3C7;
+      border-left: 4px solid #F59E0B;
+    }
+
+    .pros h4, .cons h4 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .pros h4 { color: #059669; }
+    .cons h4 { color: #B45309; }
+
+    .pros ul, .cons ul {
+      list-style: none;
+      color: #666;
+    }
+
+    .pros li, .cons li {
+      padding: 4px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .pros li::before { content: "+"; color: #10B981; font-weight: 600; }
+    .cons li::before { content: "-"; color: #F59E0B; font-weight: 600; }
+
+    /* ========================== */
+    /* DASHBOARD MOCKUP          */
+    /* ========================== */
+    .dashboard-mockup {
+      background: #FAFAFA;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #E0E0E0;
+    }
+
+    .dashboard-screen {
+      width: 100%;
+      min-height: 600px;
+    }
+
+    /* Common header styles */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid #E5E5E5;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo-placeholder {
+      width: 80px;
+      height: 32px;
+      background: linear-gradient(135deg, #E9041E, #B8031A);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .branch-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .branch-subtitle {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .last-updated {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .alert-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #FEE2E2;
+      color: #DC2626;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .header-btn {
+      padding: 8px 16px;
+      border: 1px solid #E5E5E5;
+      background: white;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    /* Hero Status Panel */
+    .hero-status {
+      display: flex;
+      justify-content: space-around;
+      padding: 32px 24px;
+      background: white;
+      border-bottom: 1px solid #E5E5E5;
+    }
+
+    .hero-metric {
+      text-align: center;
+    }
+
+    .hero-value {
+      font-size: 56px;
+      font-weight: 200;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .hero-value.green { color: #10B981; }
+    .hero-value.amber { color: #F59E0B; }
+    .hero-value.red { color: #E9041E; }
+
+    .hero-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Counter + Queue Combined */
+    .combined-section {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 0;
+      min-height: 300px;
+    }
+
+    .counters-panel {
+      background: #FAFAFA;
+      border-right: 1px solid #E5E5E5;
+      padding: 20px;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 16px;
+    }
+
+    .counter-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #E5E5E5;
+    }
+
+    .counter-item.open { border-color: #10B981; background: rgba(16,185,129,0.05); }
+    .counter-item.break { border-color: #F59E0B; background: rgba(245,158,11,0.05); }
+
+    .counter-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #9CA3AF;
+    }
+
+    .counter-dot.open { background: #10B981; }
+    .counter-dot.break { background: #F59E0B; }
+
+    .counter-info {
+      flex: 1;
+    }
+
+    .counter-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #1A1A1A;
+    }
+
+    .counter-teller {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .counter-ticket {
+      font-weight: 600;
+      font-size: 16px;
+      color: #E9041E;
+    }
+
+    .queue-panel {
+      padding: 20px;
+      background: white;
+    }
+
+    .queue-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: #FAFAFA;
+      border-radius: 8px;
+      border-left: 3px solid transparent;
+    }
+
+    .queue-item.warning {
+      border-left-color: #F59E0B;
+      background: #FFFBEB;
+    }
+
+    .queue-item.vip {
+      border-left-color: #E9041E;
+      background: #FEF2F2;
+    }
+
+    .ticket-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ticket-number {
+      font-weight: 600;
+      font-size: 16px;
+      color: #1A1A1A;
+    }
+
+    .ticket-service {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .ticket-wait {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .ticket-wait.warning { color: #B45309; font-weight: 500; }
+
+    .ticket-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      background: #F3F4F6;
+      color: #666;
+    }
+
+    .btn-small.vip { background: #FEF3C7; color: #B45309; }
+
+    /* Accordion */
+    .accordion {
+      background: white;
+      border-top: 1px solid #E5E5E5;
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .accordion-header:hover {
+      background: #FAFAFA;
+    }
+
+    .accordion-content {
+      padding: 0 24px 20px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    /* Split Screen */
+    .split-screen {
+      display: flex;
+      min-height: 500px;
+    }
+
+    .control-side {
+      width: 320px;
+      background: #FAFAFA;
+      border-right: 1px solid #E5E5E5;
+      padding: 24px;
+    }
+
+    .monitor-side {
+      flex: 1;
+      padding: 24px;
+      background: white;
+    }
+
+    .status-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 2px solid #1A1A1A;
+    }
+
+    .status-box-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    .status-box-value {
+      font-size: 32px;
+      font-weight: 200;
+      color: #1A1A1A;
+    }
+
+    .status-box-sub {
+      font-size: 13px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .sla-bar {
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: 4px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .sla-fill {
+      height: 100%;
+      background: #10B981;
+      border-radius: 4px;
+    }
+
+    .sla-fill.warning { background: #F59E0B; }
+    .sla-fill.danger { background: #E9041E; }
+
+    /* Kanban */
+    .kanban {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      height: 100%;
+    }
+
+    .kanban-column {
+      background: #FAFAFA;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .kanban-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kanban-count {
+      background: #E5E7EB;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+
+    .kanban-card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      border: 1px solid #E5E5E5;
+    }
+
+    .kanban-card.highlight {
+      border-color: #F59E0B;
+      background: #FFFBEB;
+    }
+
+    /* Priority First */
+    .attention-section {
+      background: white;
+      padding: 24px;
+    }
+
+    .attention-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #E9041E;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .attention-card {
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .attention-card.critical {
+      background: #FEE2E2;
+      border-left: 4px solid #E9041E;
+    }
+
+    .attention-card.warning {
+      background: #FEF3C7;
+      border-left: 4px solid #F59E0B;
+    }
+
+    .attention-text {
+      flex: 1;
+    }
+
+    .attention-main {
+      font-weight: 500;
+      color: #1A1A1A;
+      margin-bottom: 4px;
+    }
+
+    .attention-sub {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .status-strip {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px 24px;
+      background: #FAFAFA;
+      border-top: 1px solid #E5E5E5;
+      border-bottom: 1px solid #E5E5E5;
+    }
+
+    .strip-metric {
+      text-align: center;
+    }
+
+    .strip-value {
+      font-size: 24px;
+      font-weight: 300;
+      color: #1A1A1A;
+    }
+
+    .strip-label {
+      font-size: 12px;
+      color: #666;
+    }
+
+    /* Tabs Layout */
+    .inner-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 8px 24px;
+      background: #FAFAFA;
+      border-bottom: 1px solid #E5E5E5;
+    }
+
+    .inner-tab {
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #666;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .inner-tab.active {
+      background: white;
+      color: #1A1A1A;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .tab-panel {
+      padding: 24px;
+      background: white;
+    }
+
+    .live-queue {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .live-ticket {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: #FAFAFA;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .live-ticket.next {
+      background: #FEF3C7;
+      border: 1px solid #F59E0B;
+    }
+
+    .counter-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .timeline-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .timeline-counter {
+      width: 40px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .timeline-bar {
+      flex: 1;
+      height: 32px;
+      background: #FAFAFA;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .timeline-serving {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: #10B981;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Metric Hierarchy */
+    .mega-hero {
+      padding: 40px 32px;
+      background: white;
+      display: flex;
+      align-items: flex-end;
+      gap: 48px;
+    }
+
+    .mega-metric {
+      text-align: center;
+    }
+
+    .mega-metric.primary .mega-value {
+      font-size: 72px;
+    }
+
+    .mega-value {
+      font-size: 48px;
+      font-weight: 200;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .mega-value.green { color: #10B981; }
+    .mega-value.amber { color: #F59E0B; }
+    .mega-value.red { color: #E9041E; }
+
+    .mega-label {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .sla-inline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+    }
+
+    .sla-bar-inline {
+      flex: 1;
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .medium-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid #E5E5E5;
+    }
+
+    .medium-panel {
+      padding: 24px;
+      border-right: 1px solid #E5E5E5;
+    }
+
+    .medium-panel:last-child {
+      border-right: none;
+    }
+
+    .numbered-list {
+      list-style: none;
+    }
+
+    .numbered-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #F5F5F5;
+    }
+
+    .numbered-item:last-child {
+      border-bottom: none;
+    }
+
+    .item-number {
+      width: 24px;
+      height: 24px;
+      background: #E5E7EB;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .item-content {
+      flex: 1;
+    }
+
+    .item-main {
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+
+    .item-sub {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .item-time {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .item-time.warning {
+      color: #B45309;
+      font-weight: 500;
+    }
+
+    .collapsible-section {
+      background: #FAFAFA;
+      border-top: 1px solid #E5E5E5;
+    }
+
+    .collapsible-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      cursor: pointer;
+    }
+
+    .collapsible-title {
+      font-size: 13px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .collapsible-title span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Comparison Section */
+    .comparison-section {
+      max-width: 1400px;
+      margin: 0 auto 60px;
+    }
+
+    .comparison-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1A1A1A;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .comparison-table {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #E0E0E0;
+    }
+
+    .comparison-row {
+      display: grid;
+      grid-template-columns: 200px repeat(5, 1fr);
+      border-bottom: 1px solid #E5E5E5;
+    }
+
+    .comparison-row:last-child {
+      border-bottom: none;
+    }
+
+    .comparison-row.header {
+      background: #FAFAFA;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .comparison-cell {
+      padding: 16px;
+      font-size: 13px;
+      color: #666;
+      border-right: 1px solid #E5E5E5;
+      display: flex;
+      align-items: center;
+    }
+
+    .comparison-cell:last-child {
+      border-right: none;
+    }
+
+    .comparison-row.header .comparison-cell {
+      color: #1A1A1A;
+    }
+
+    .comparison-cell.feature {
+      font-weight: 500;
+      color: #1A1A1A;
+      background: #FAFAFA;
+    }
+
+    .comparison-cell.recommended {
+      background: #FEF2F2;
+    }
+
+    .check-icon {
+      color: #10B981;
+    }
+
+    .partial-icon {
+      color: #F59E0B;
+    }
+
+    .cross-icon {
+      color: #DC2626;
+    }
+
+    .recommendation-box {
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 32px;
+      background: #FEF2F2;
+      border: 2px solid #E9041E;
+      border-radius: 12px;
+    }
+
+    .recommendation-box h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #E9041E;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recommendation-box p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .recommendation-box ul {
+      margin-top: 16px;
+      padding-left: 20px;
+    }
+
+    .recommendation-box li {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tabs-container">
+    <h1>Branch Manager Dashboard - 5 Redesign Alternatives</h1>
+    <p class="subtitle">Critique-driven redesigns following SG Design System | Based on UX best practices for decision-making dashboards</p>
+
+    <div class="tabs">
+      <button class="tab-btn" onclick="showTab('current')">Current</button>
+      <button class="tab-btn active" onclick="showTab('alt1')">1. Command Center</button>
+      <button class="tab-btn" onclick="showTab('alt2')">2. Split-Screen</button>
+      <button class="tab-btn" onclick="showTab('alt3')">3. Priority-First</button>
+      <button class="tab-btn" onclick="showTab('alt4')">4. Tabbed Views</button>
+      <button class="tab-btn recommended" onclick="showTab('alt5')">5. Metric Hierarchy</button>
+      <button class="tab-btn" onclick="showTab('compare')">Compare All</button>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- CURRENT DASHBOARD CRITIQUE -->
+  <!-- ========================== -->
+  <div id="current" class="tab-content">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Current Dashboard - Critique</div>
+        <div class="alt-badge">Analysis</div>
+      </div>
+      <p class="alt-description">
+        The current BM dashboard provides comprehensive data but suffers from information overload with 7 distinct sections
+        competing for attention. Critical information like the real-time queue is buried below the fold, and related
+        decision-making data is scattered across multiple locations.
+      </p>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Strengths</h4>
+          <ul>
+            <li>Comprehensive data coverage - all operational data in one view</li>
+            <li>Real-time updates via Socket.io</li>
+            <li>Good trend indicators (vs yesterday comparisons)</li>
+            <li>Color-coded status indicators on counters</li>
+            <li>Branch ranking creates healthy competition</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Weaknesses</h4>
+          <ul>
+            <li>7 sections competing for attention - no clear hierarchy</li>
+            <li>Violates F-pattern - critical queue buried below fold</li>
+            <li>Alerts banner too subtle (inline text, easy to miss)</li>
+            <li>Counter controls separated from queue visualization</li>
+            <li>All cards use identical styling - no size differentiation</li>
+            <li>Mobile/tablet unfriendly - 5-column scorecard collapses poorly</li>
+            <li>Must mentally synthesize data from multiple sections</li>
+            <li>No "at a glance" answer to "Are we OK?"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="padding: 20px; background: #F5F5F5; border-radius: 12px; font-size: 13px; color: #666;">
+        <strong>Key insight:</strong> To answer "Do I need more counters?", the manager must check:
+        waiting count (top) + open counters (Quick Actions) + queue preview (scroll down) + SLA (right side).
+        Related information is spread across 4 locations.
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- ALTERNATIVE 1: COMMAND CENTER -->
+  <!-- ========================== -->
+  <div id="alt1" class="tab-content active">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Alternative 1: Command Center</div>
+        <div class="alt-badge">Operations Focus</div>
+      </div>
+      <p class="alt-description">
+        Single-screen operational command center with clear zones. Hero status panel shows 4 mega-metrics with traffic
+        light colors. Counter controls are placed directly adjacent to queue visualization so managers can see cause
+        and effect together. Secondary information (performance, ranking) is collapsed into an accordion.
+      </p>
+      <div class="alt-principles">
+        <div class="principle"><span class="principle-dot"></span>Hero status panel with 4 mega-metrics</div>
+        <div class="principle"><span class="principle-dot"></span>Traffic light colors (green/amber/red)</div>
+        <div class="principle"><span class="principle-dot"></span>Combined counters + queue view</div>
+        <div class="principle"><span class="principle-dot"></span>Progressive disclosure via accordion</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Immediate status comprehension from hero panel</li>
+            <li>Related data grouped together (counters + queue)</li>
+            <li>Fits on one screen without scrolling</li>
+            <li>Alerts integrated into header (always visible)</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Less detail visible by default</li>
+            <li>Requires clicks for performance data</li>
+            <li>Accordion may be forgotten</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dashboard-mockup">
+        <div class="dashboard-screen">
+          <!-- Header with Alert Badge -->
+          <div class="dashboard-header">
+            <div class="header-left">
+              <div class="logo-placeholder">SG</div>
+              <div>
+                <div class="branch-name">Agence Lac 2</div>
+                <div class="branch-subtitle">Tunis, Tunisia</div>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="alert-badge">
+                <span class="material-symbols-outlined" style="font-size: 16px;">warning</span>
+                2 alertes
+              </div>
+              <span class="last-updated">14:35</span>
+            </div>
+          </div>
+
+          <!-- Hero Status Panel -->
+          <div class="hero-status">
+            <div class="hero-metric">
+              <div class="hero-value amber">7</div>
+              <div class="hero-label">En attente</div>
+            </div>
+            <div class="hero-metric">
+              <div class="hero-value">~12</div>
+              <div class="hero-label">min attente moy.</div>
+            </div>
+            <div class="hero-metric">
+              <div class="hero-value green">85%</div>
+              <div class="hero-label">SLA respecte</div>
+            </div>
+            <div class="hero-metric">
+              <div class="hero-value">2/3</div>
+              <div class="hero-label">guichets ouverts</div>
+            </div>
+          </div>
+
+          <!-- Combined Counters + Queue -->
+          <div class="combined-section">
+            <div class="counters-panel">
+              <div class="panel-title">Guichets</div>
+              <div class="counter-item open">
+                <span class="counter-dot open"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G1</div>
+                  <div class="counter-teller">Mohamed A.</div>
+                </div>
+                <span class="counter-ticket">A-08</span>
+              </div>
+              <div class="counter-item">
+                <span class="counter-dot"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G2</div>
+                  <div class="counter-teller">Ferme</div>
+                </div>
+                <button class="btn-small">Ouvrir</button>
+              </div>
+              <div class="counter-item break">
+                <span class="counter-dot break"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G3</div>
+                  <div class="counter-teller">Pause (5 min)</div>
+                </div>
+              </div>
+            </div>
+            <div class="queue-panel">
+              <div class="panel-title">File d'attente - Prochains clients</div>
+              <div class="queue-flow">
+                <div class="queue-item warning">
+                  <div class="ticket-info">
+                    <span class="ticket-number">A-015</span>
+                    <span class="ticket-service">Retrait</span>
+                  </div>
+                  <span class="ticket-wait warning">22 min</span>
+                  <div class="ticket-actions">
+                    <button class="btn-small vip">VIP</button>
+                  </div>
+                </div>
+                <div class="queue-item warning">
+                  <div class="ticket-info">
+                    <span class="ticket-number">C-007</span>
+                    <span class="ticket-service">Depot</span>
+                  </div>
+                  <span class="ticket-wait warning">21 min</span>
+                  <div class="ticket-actions">
+                    <button class="btn-small vip">VIP</button>
+                  </div>
+                </div>
+                <div class="queue-item">
+                  <div class="ticket-info">
+                    <span class="ticket-number">A-016</span>
+                    <span class="ticket-service">Retrait</span>
+                  </div>
+                  <span class="ticket-wait">15 min</span>
+                </div>
+                <div class="queue-item">
+                  <div class="ticket-info">
+                    <span class="ticket-number">D-005</span>
+                    <span class="ticket-service">Virement</span>
+                  </div>
+                  <span class="ticket-wait">12 min</span>
+                </div>
+                <div class="queue-item vip">
+                  <div class="ticket-info">
+                    <span class="ticket-number">A-020</span>
+                    <span class="ticket-service">Retrait VIP</span>
+                  </div>
+                  <span class="ticket-wait">Bumped</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accordion for Secondary Info -->
+          <div class="accordion">
+            <div class="accordion-header">
+              <span>Performance | Ranking | SLA Details</span>
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- ALTERNATIVE 2: SPLIT-SCREEN -->
+  <!-- ========================== -->
+  <div id="alt2" class="tab-content">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Alternative 2: Split-Screen Operations</div>
+        <div class="alt-badge">Control vs Monitor</div>
+      </div>
+      <p class="alt-description">
+        Left = Control, Right = Monitor. Clear action vs. observation split with a fixed sidebar for all controls.
+        Kanban-style queue view (Waiting -> Called -> Serving) shows ticket flow visually. Horizontal mini-leaderboard
+        conserves space while still showing team performance.
+      </p>
+      <div class="alt-principles">
+        <div class="principle"><span class="principle-dot"></span>Fixed left sidebar for controls</div>
+        <div class="principle"><span class="principle-dot"></span>Kanban queue visualization</div>
+        <div class="principle"><span class="principle-dot"></span>Natural left-to-right workflow</div>
+        <div class="principle"><span class="principle-dot"></span>Alerts at bottom right (prominent but not blocking)</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Clear separation of concerns</li>
+            <li>Natural left-to-right workflow</li>
+            <li>Queue visualization more intuitive</li>
+            <li>Controls always visible</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Narrower control panel on small screens</li>
+            <li>Less space for detailed analytics</li>
+            <li>May feel cramped on tablets</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dashboard-mockup">
+        <div class="dashboard-screen">
+          <div class="dashboard-header">
+            <div class="header-left">
+              <div class="logo-placeholder">SG</div>
+              <div>
+                <div class="branch-name">Agence Lac 2</div>
+                <div class="branch-subtitle">Tunis, Tunisia</div>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="last-updated">14:35</span>
+            </div>
+          </div>
+
+          <div class="split-screen">
+            <!-- Control Side -->
+            <div class="control-side">
+              <div class="status-box">
+                <div class="status-box-title">File d'attente</div>
+                <div class="status-box-value">7 <span style="font-size: 16px; color: #666;">clients</span></div>
+                <div class="status-box-sub">~12 min attente moyenne</div>
+                <div class="sla-bar">
+                  <div class="sla-fill" style="width: 85%;"></div>
+                </div>
+                <div style="font-size: 12px; color: #10B981; margin-top: 8px;">SLA 85%</div>
+              </div>
+
+              <div class="panel-title" style="margin-top: 20px;">Guichets</div>
+              <div class="counter-item open">
+                <span class="counter-dot open"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G1</div>
+                </div>
+                <button class="btn-small" style="background: #FEE2E2; color: #DC2626;">Fermer</button>
+              </div>
+              <div class="counter-item">
+                <span class="counter-dot"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G2</div>
+                </div>
+                <button class="btn-small" style="background: #D1FAE5; color: #059669;">Ouvrir</button>
+              </div>
+              <div class="counter-item break">
+                <span class="counter-dot break"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G3</div>
+                  <div class="counter-teller">Pause</div>
+                </div>
+              </div>
+
+              <div class="panel-title" style="margin-top: 20px;">Actions rapides</div>
+              <button class="btn-small" style="width: 100%; padding: 12px; margin-bottom: 8px;">Ouvrir tous</button>
+              <button class="btn-small" style="width: 100%; padding: 12px; margin-bottom: 8px;">Fermer tous</button>
+              <button class="btn-small" style="width: 100%; padding: 12px; background: #E9041E; color: white;">Annonce</button>
+
+              <div style="margin-top: 24px; text-align: center; padding: 16px; background: white; border-radius: 8px;">
+                <div style="font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px;">Classement</div>
+                <div style="font-size: 32px; font-weight: 200;">#2</div>
+                <div style="font-size: 12px; color: #666;">sur 5 agences</div>
+              </div>
+            </div>
+
+            <!-- Monitor Side -->
+            <div class="monitor-side">
+              <div class="panel-title">Flux de la file</div>
+              <div class="kanban">
+                <div class="kanban-column">
+                  <div class="kanban-title">En attente <span class="kanban-count">5</span></div>
+                  <div class="kanban-card highlight">
+                    <div style="font-weight: 600;">A-015</div>
+                    <div style="font-size: 12px; color: #B45309;">22 min</div>
+                  </div>
+                  <div class="kanban-card highlight">
+                    <div style="font-weight: 600;">C-007</div>
+                    <div style="font-size: 12px; color: #B45309;">21 min</div>
+                  </div>
+                  <div class="kanban-card">
+                    <div style="font-weight: 600;">A-016</div>
+                    <div style="font-size: 12px; color: #666;">15 min</div>
+                  </div>
+                  <div class="kanban-card">
+                    <div style="font-weight: 600;">D-005</div>
+                    <div style="font-size: 12px; color: #666;">12 min</div>
+                  </div>
+                  <div class="kanban-card">
+                    <div style="font-weight: 600;">C-008</div>
+                    <div style="font-size: 12px; color: #666;">10 min</div>
+                  </div>
+                </div>
+                <div class="kanban-column">
+                  <div class="kanban-title">Appele <span class="kanban-count">1</span></div>
+                  <div class="kanban-card">
+                    <div style="font-weight: 600;">A-014</div>
+                    <div style="font-size: 12px; color: #666;">G1 - Mohamed</div>
+                  </div>
+                </div>
+                <div class="kanban-column">
+                  <div class="kanban-title">En service <span class="kanban-count">1</span></div>
+                  <div class="kanban-card" style="border-color: #10B981;">
+                    <div style="font-weight: 600;">A-008</div>
+                    <div style="font-size: 12px; color: #10B981;">G1 - 3 min</div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 24px; padding: 16px; background: #FAFAFA; border-radius: 8px;">
+                <div class="panel-title">Performance equipe</div>
+                <div style="display: flex; gap: 24px;">
+                  <div>Mohamed: <strong>12</strong> <span style="color: #10B981;">star</span></div>
+                  <div>Ahmed: <strong>8</strong></div>
+                  <div>Fatma: <strong>6</strong></div>
+                  <div style="color: #666;">Moy: 8.7</div>
+                </div>
+              </div>
+
+              <div style="margin-top: 16px; padding: 12px 16px; background: #FEF3C7; border-radius: 8px; border-left: 3px solid #F59E0B;">
+                <div style="font-size: 13px; color: #B45309;">
+                  <strong>Alerte:</strong> 2 clients attendent >20 min
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- ALTERNATIVE 3: PRIORITY-FIRST -->
+  <!-- ========================== -->
+  <div id="alt3" class="tab-content">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Alternative 3: Priority-First Dashboard</div>
+        <div class="alt-badge">Attention-Driven</div>
+      </div>
+      <p class="alt-description">
+        Show what needs attention first. Everything else is secondary. Attention section at top with actionable alerts
+        that include inline actions (bump VIP, open counter). Status strip provides key metrics in a single row.
+        Branch ranking moves to a separate tab to reduce clutter.
+      </p>
+      <div class="alt-principles">
+        <div class="principle"><span class="principle-dot"></span>Attention section at top</div>
+        <div class="principle"><span class="principle-dot"></span>Inline actions on alerts</div>
+        <div class="principle"><span class="principle-dot"></span>Status strip for key metrics</div>
+        <div class="principle"><span class="principle-dot"></span>Three-column operations</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Immediate focus on problems</li>
+            <li>Actions embedded in context</li>
+            <li>Cleaner visual hierarchy</li>
+            <li>Reduces cognitive load</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Empty "Attention" section when all is well</li>
+            <li>Less competitive context (no ranking)</li>
+            <li>May need empty state design</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dashboard-mockup">
+        <div class="dashboard-screen">
+          <div class="dashboard-header">
+            <div class="header-left">
+              <div class="logo-placeholder">SG</div>
+              <div>
+                <div class="branch-name">Agence Lac 2</div>
+                <div class="branch-subtitle">Tunis, Tunisia</div>
+              </div>
+            </div>
+            <div class="header-right">
+              <span class="last-updated">14:35</span>
+            </div>
+          </div>
+
+          <!-- Attention Section -->
+          <div class="attention-section">
+            <div class="attention-title">
+              <span class="material-symbols-outlined" style="font-size: 18px;">priority_high</span>
+              Attention requise
+            </div>
+
+            <div class="attention-card critical">
+              <div class="attention-text">
+                <div class="attention-main">2 clients attendent >20 min</div>
+                <div class="attention-sub">A-015 (Retrait, 22 min) - C-007 (Depot, 21 min)</div>
+              </div>
+              <div class="ticket-actions">
+                <button class="btn-small vip">Bump VIP</button>
+                <button class="btn-small">Voir</button>
+              </div>
+            </div>
+
+            <div class="attention-card warning">
+              <div class="attention-text">
+                <div class="attention-main">File a 7 clients (seuil: 10)</div>
+                <div class="attention-sub">Considerez ouvrir le Guichet G2</div>
+              </div>
+              <div class="ticket-actions">
+                <button class="btn-small" style="background: #D1FAE5; color: #059669;">Ouvrir G2</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status Strip -->
+          <div class="status-strip">
+            <div class="strip-metric">
+              <div class="strip-value">7</div>
+              <div class="strip-label">en attente</div>
+            </div>
+            <div class="strip-metric">
+              <div class="strip-value">12 min</div>
+              <div class="strip-label">attente moy.</div>
+            </div>
+            <div class="strip-metric">
+              <div class="strip-value">85%</div>
+              <div class="strip-label">SLA</div>
+            </div>
+            <div class="strip-metric">
+              <div class="strip-value">2/3</div>
+              <div class="strip-label">ouverts</div>
+            </div>
+            <div class="strip-metric">
+              <div class="strip-value">36</div>
+              <div class="strip-label">servis / #1</div>
+            </div>
+          </div>
+
+          <!-- Three Column Operations -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #E5E5E5;">
+            <div style="background: white; padding: 20px;">
+              <div class="panel-title">Guichets</div>
+              <div class="counter-item open">
+                <span class="counter-dot open"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G1</div>
+                  <div class="counter-teller">A-008 serving</div>
+                </div>
+              </div>
+              <div class="counter-item">
+                <span class="counter-dot"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G2</div>
+                  <div class="counter-teller">Ferme</div>
+                </div>
+              </div>
+              <div class="counter-item break">
+                <span class="counter-dot break"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G3</div>
+                  <div class="counter-teller">Pause 5 min</div>
+                </div>
+              </div>
+              <button class="btn-small" style="width: 100%; margin-top: 12px; padding: 10px;">Ouvrir tous</button>
+            </div>
+
+            <div style="background: white; padding: 20px;">
+              <div class="panel-title">Prochains 5</div>
+              <div style="font-size: 14px;">
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5; color: #B45309;"><strong>A-015</strong> - 22 min</div>
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5; color: #B45309;"><strong>C-007</strong> - 21 min</div>
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;"><strong>A-016</strong> - 15 min</div>
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;"><strong>D-005</strong> - 12 min</div>
+                <div style="padding: 8px 0;"><strong>C-008</strong> - 10 min</div>
+              </div>
+            </div>
+
+            <div style="background: white; padding: 20px;">
+              <div class="panel-title">Performance equipe</div>
+              <div style="font-size: 14px;">
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5; display: flex; justify-content: space-between;">
+                  <span>Mohamed</span>
+                  <span><strong>12</strong> <span style="color: #10B981;">star</span></span>
+                </div>
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5; display: flex; justify-content: space-between;">
+                  <span>Ahmed</span>
+                  <span><strong>8</strong></span>
+                </div>
+                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5; display: flex; justify-content: space-between;">
+                  <span>Fatma</span>
+                  <span><strong>6</strong></span>
+                </div>
+                <div style="padding: 8px 0; color: #666; display: flex; justify-content: space-between;">
+                  <span>Moy. equipe</span>
+                  <span><strong>8.7</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- ALTERNATIVE 4: TABBED VIEWS -->
+  <!-- ========================== -->
+  <div id="alt4" class="tab-content">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Alternative 4: Dashboard Tabs</div>
+        <div class="alt-badge">Role-Based Views</div>
+      </div>
+      <p class="alt-description">
+        Role-based views with different priorities at different times. Operations tab focuses on real-time queue,
+        Performance tab for team management, Analytics tab for trends and competition. Each tab can be fully expanded
+        without clutter from other sections.
+      </p>
+      <div class="alt-principles">
+        <div class="principle"><span class="principle-dot"></span>Tabbed interface separates concerns</div>
+        <div class="principle"><span class="principle-dot"></span>Operations tab = real-time</div>
+        <div class="principle"><span class="principle-dot"></span>Performance tab = team</div>
+        <div class="principle"><span class="principle-dot"></span>Analytics tab = trends</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Cleaner focused views</li>
+            <li>Less overwhelming</li>
+            <li>Can expand each tab fully</li>
+            <li>Good for different tasks</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Requires navigation</li>
+            <li>May miss alerts on other tabs</li>
+            <li>More clicks for full picture</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dashboard-mockup">
+        <div class="dashboard-screen">
+          <div class="dashboard-header">
+            <div class="header-left">
+              <div class="logo-placeholder">SG</div>
+              <div>
+                <div class="branch-name">Agence Lac 2</div>
+                <div class="branch-subtitle">Tunis, Tunisia</div>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="alert-badge">
+                <span class="material-symbols-outlined" style="font-size: 16px;">warning</span>
+                2
+              </div>
+              <span class="last-updated">14:35</span>
+            </div>
+          </div>
+
+          <!-- Inner Tabs -->
+          <div class="inner-tabs">
+            <button class="inner-tab active">Operations</button>
+            <button class="inner-tab">Performance</button>
+            <button class="inner-tab">Analytique</button>
+          </div>
+
+          <!-- Tab Content: Operations -->
+          <div class="tab-panel">
+            <!-- Mini Stats -->
+            <div style="display: flex; gap: 16px; margin-bottom: 24px;">
+              <div style="flex: 1; padding: 16px; background: #FAFAFA; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: 200; color: #F59E0B;">7</div>
+                <div style="font-size: 12px; color: #666;">En attente</div>
+              </div>
+              <div style="flex: 1; padding: 16px; background: #FAFAFA; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: 200;">~12 min</div>
+                <div style="font-size: 12px; color: #666;">Attente moy.</div>
+              </div>
+              <div style="flex: 1; padding: 16px; background: #FAFAFA; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: 200; color: #10B981;">85%</div>
+                <div style="font-size: 12px; color: #666;">SLA</div>
+              </div>
+              <div style="flex: 1; padding: 16px; background: #FAFAFA; border-radius: 8px; text-align: center;">
+                <div style="font-size: 28px; font-weight: 200;">2/3</div>
+                <div style="font-size: 12px; color: #666;">Capacite</div>
+                <button class="btn-small" style="margin-top: 8px; background: #D1FAE5; color: #059669;">+Ouvrir</button>
+              </div>
+            </div>
+
+            <!-- Live Queue + Counters -->
+            <div class="panel-title">File d'attente en direct + Guichets</div>
+            <div class="live-queue" style="margin-bottom: 24px;">
+              <div class="live-ticket next">
+                <span style="font-weight: 600;">A-015</span>
+                <span style="font-size: 12px; color: #B45309;">22 min</span>
+              </div>
+              <div class="live-ticket">
+                <span style="font-weight: 600;">C-007</span>
+                <span style="font-size: 12px; color: #B45309;">21 min</span>
+              </div>
+              <div class="live-ticket">
+                <span style="font-weight: 600;">A-016</span>
+                <span style="font-size: 12px; color: #666;">15 min</span>
+              </div>
+              <div class="live-ticket">
+                <span style="font-weight: 600;">D-005</span>
+                <span style="font-size: 12px; color: #666;">12 min</span>
+              </div>
+              <div class="live-ticket">
+                <span style="font-weight: 600;">C-008</span>
+                <span style="font-size: 12px; color: #666;">10 min</span>
+              </div>
+            </div>
+
+            <!-- Counter Timeline -->
+            <div class="counter-timeline">
+              <div class="timeline-row">
+                <span class="timeline-counter">G1</span>
+                <div class="timeline-bar">
+                  <div class="timeline-serving" style="width: 60%;">A-008 en service (3 min)</div>
+                </div>
+              </div>
+              <div class="timeline-row">
+                <span class="timeline-counter" style="color: #9CA3AF;">G2</span>
+                <div class="timeline-bar" style="background: #E5E7EB;">
+                  <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #9CA3AF;">Ferme</span>
+                </div>
+              </div>
+              <div class="timeline-row">
+                <span class="timeline-counter" style="color: #F59E0B;">G3</span>
+                <div class="timeline-bar" style="background: #FEF3C7;">
+                  <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; color: #B45309;">Pause (5 min restant)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alert Banner -->
+            <div style="margin-top: 24px; padding: 12px 16px; background: #FEF3C7; border-radius: 8px; border-left: 3px solid #F59E0B; font-size: 13px; color: #B45309;">
+              <strong>2 alertes:</strong> Long wait (2), Teller lent (1) - <a href="#" style="color: #B45309;">Voir tout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- ALTERNATIVE 5: METRIC HIERARCHY (RECOMMENDED) -->
+  <!-- ========================== -->
+  <div id="alt5" class="tab-content">
+    <div class="alternative-section">
+      <div class="alt-header">
+        <div class="alt-title">Alternative 5: Metric-Driven Hierarchy</div>
+        <div class="alt-badge recommended">Recommended</div>
+      </div>
+      <p class="alt-description">
+        Size = Importance. Visual weight guides attention. Mega hero metrics (text-6xl for waiting count) provide instant
+        status comprehension. Numbered queue list shows clearer priority than grid. Collapsible secondary section for
+        team/rank/daily keeps interface clean while information remains accessible.
+      </p>
+      <div class="alt-principles">
+        <div class="principle"><span class="principle-dot"></span>Mega hero metrics (size = importance)</div>
+        <div class="principle"><span class="principle-dot"></span>Numbered queue list (clear priority)</div>
+        <div class="principle"><span class="principle-dot"></span>Inline alert icons on long-wait tickets</div>
+        <div class="principle"><span class="principle-dot"></span>Collapsible secondary section</div>
+      </div>
+
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Instant comprehension of status</li>
+            <li>Clear visual hierarchy</li>
+            <li>Most important data largest</li>
+            <li>Follows F-pattern reading</li>
+            <li>Mobile-friendly - single column hero scales well</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Less information density</li>
+            <li>Team performance de-emphasized</li>
+            <li>Requires expand for full details</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dashboard-mockup">
+        <div class="dashboard-screen">
+          <!-- Header with Alert Count -->
+          <div class="dashboard-header">
+            <div class="header-left">
+              <div class="logo-placeholder">SG</div>
+              <div>
+                <div class="branch-name">Agence Lac 2</div>
+                <div class="branch-subtitle">Tunis, Tunisia</div>
+              </div>
+            </div>
+            <div class="header-right">
+              <div class="alert-badge">
+                <span class="material-symbols-outlined" style="font-size: 16px;">warning</span>
+                2
+              </div>
+              <span class="last-updated">18:45</span>
+            </div>
+          </div>
+
+          <!-- MEGA HERO Section -->
+          <div class="mega-hero">
+            <div class="mega-metric primary">
+              <div class="mega-value amber">7</div>
+              <div class="mega-label">EN ATTENTE</div>
+            </div>
+            <div class="mega-metric">
+              <div class="mega-value">~12 min</div>
+              <div class="mega-label">ATTENTE MOY.</div>
+            </div>
+            <div style="flex: 1;">
+              <div class="sla-inline">
+                <span style="font-size: 14px; color: #666;">SLA</span>
+                <div class="sla-bar-inline">
+                  <div class="sla-fill" style="width: 85%;"></div>
+                </div>
+                <span style="font-size: 14px; font-weight: 500; color: #10B981;">85%</span>
+              </div>
+              <div style="display: flex; gap: 24px; margin-top: 12px;">
+                <span style="font-size: 13px; color: #666;">2/3 guichets ouverts</span>
+                <button class="btn-small" style="background: #D1FAE5; color: #059669;">+Ouvrir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Medium Sections: Counters + Queue -->
+          <div class="medium-section">
+            <div class="medium-panel">
+              <div class="panel-title">Guichets</div>
+              <div class="counter-item open">
+                <span class="counter-dot open"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G1 - Mohamed</div>
+                  <div class="counter-teller">A-008 en service</div>
+                </div>
+              </div>
+              <div class="counter-item">
+                <span class="counter-dot"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G2</div>
+                  <div class="counter-teller">Ferme</div>
+                </div>
+                <button class="btn-small" style="background: #D1FAE5; color: #059669;">Ouvrir</button>
+              </div>
+              <div class="counter-item break">
+                <span class="counter-dot break"></span>
+                <div class="counter-info">
+                  <div class="counter-label">G3 - Fatma</div>
+                  <div class="counter-teller">Pause (5 min)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="medium-panel">
+              <div class="panel-title">Prochains en file</div>
+              <ul class="numbered-list">
+                <li class="numbered-item">
+                  <span class="item-number" style="background: #FEE2E2; color: #DC2626;">1</span>
+                  <div class="item-content">
+                    <div class="item-main">A-015 <span style="font-size: 12px; color: #666;">(Retrait)</span></div>
+                  </div>
+                  <span class="item-time warning">22 min <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span></span>
+                </li>
+                <li class="numbered-item">
+                  <span class="item-number" style="background: #FEE2E2; color: #DC2626;">2</span>
+                  <div class="item-content">
+                    <div class="item-main">C-007 <span style="font-size: 12px; color: #666;">(Depot)</span></div>
+                  </div>
+                  <span class="item-time warning">21 min <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">warning</span></span>
+                </li>
+                <li class="numbered-item">
+                  <span class="item-number">3</span>
+                  <div class="item-content">
+                    <div class="item-main">A-016 <span style="font-size: 12px; color: #666;">(Retrait)</span></div>
+                  </div>
+                  <span class="item-time">15 min</span>
+                </li>
+                <li class="numbered-item">
+                  <span class="item-number">4</span>
+                  <div class="item-content">
+                    <div class="item-main">D-005 <span style="font-size: 12px; color: #666;">(Virement)</span></div>
+                  </div>
+                  <span class="item-time">12 min</span>
+                </li>
+                <li class="numbered-item">
+                  <span class="item-number">5</span>
+                  <div class="item-content">
+                    <div class="item-main">C-008 <span style="font-size: 12px; color: #666;">(Depot)</span></div>
+                  </div>
+                  <span class="item-time">10 min</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Collapsible Secondary -->
+          <div class="collapsible-section">
+            <div class="collapsible-header">
+              <div class="collapsible-title">
+                <span><span class="material-symbols-outlined" style="font-size: 18px;">group</span> Equipe: Mohamed 12* | Ahmed 8 | Fatma 6</span>
+                <span><span class="material-symbols-outlined" style="font-size: 18px;">check_circle</span> Objectif: 36/100 (36%)</span>
+                <span><span class="material-symbols-outlined" style="font-size: 18px;">emoji_events</span> Classement: #2/5 (-4 vs leader)</span>
+              </div>
+              <span class="material-symbols-outlined" style="color: #999;">expand_more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- COMPARISON VIEW           -->
+  <!-- ========================== -->
+  <div id="compare" class="tab-content">
+    <div class="comparison-section">
+      <h2 class="comparison-title">Side-by-Side Comparison</h2>
+
+      <div class="comparison-table">
+        <div class="comparison-row header">
+          <div class="comparison-cell feature">Feature</div>
+          <div class="comparison-cell">1. Command Center</div>
+          <div class="comparison-cell">2. Split-Screen</div>
+          <div class="comparison-cell">3. Priority-First</div>
+          <div class="comparison-cell">4. Tabbed Views</div>
+          <div class="comparison-cell recommended">5. Metric Hierarchy</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Immediate Status</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">F-Pattern Compliance</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Visual Hierarchy</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Grouped Actions</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined cross-icon">cancel</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Progressive Disclosure</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined cross-icon">cancel</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Mobile Friendly</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined cross-icon">cancel</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Alerts Prominent</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell feature">Single Screen (No Scroll)</div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined partial-icon">circle</span></div>
+          <div class="comparison-cell"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+          <div class="comparison-cell recommended"><span class="material-symbols-outlined check-icon">check_circle</span></div>
+        </div>
+      </div>
+
+      <div class="recommendation-box">
+        <h3>
+          <span class="material-symbols-outlined">recommend</span>
+          Recommendation: Alternative 5 - Metric-Driven Hierarchy
+        </h3>
+        <p>
+          Alternative 5 is recommended because it addresses the core weaknesses of the current dashboard while
+          maintaining the SG design aesthetic:
+        </p>
+        <ul>
+          <li><strong>Follows F-pattern</strong> - Critical metrics (waiting count, wait time) positioned top-left with large visual weight</li>
+          <li><strong>Progressive disclosure</strong> - Secondary data (team, ranking, daily target) in collapsible section</li>
+          <li><strong>Immediate status</strong> - One glance tells health (green/amber/red on mega metrics)</li>
+          <li><strong>Actionable grouping</strong> - Counters placed directly adjacent to queue list</li>
+          <li><strong>Adheres to design system</strong> - Uses SG Red sparingly, monochrome foundation, Material Symbols</li>
+          <li><strong>Mobile-friendly</strong> - Single-column hero scales well, numbered list works on all screens</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        // Preserve recommended styling
+        if (btn.textContent.includes('Metric Hierarchy')) {
+          btn.classList.remove('recommended');
+        }
+      });
+
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+
+      // Restore recommended styling if it's alt5
+      if (tabId === 'alt5') {
+        event.target.classList.add('recommended');
+      }
+    }
+  </script>
+
+</body>
+</html>

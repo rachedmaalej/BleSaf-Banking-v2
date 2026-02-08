@@ -22,8 +22,13 @@ model Tenant {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  branches Branch[]
-  users    User[]
+  // Default Operating Hours (branches can override)
+  defaultOpeningTime String? // "08:30" format (24h)
+  defaultClosingTime String? // "16:30" format (24h)
+
+  branches         Branch[]
+  users            User[]
+  serviceTemplates ServiceTemplate[]
 
   @@index([subdomain])
 }
@@ -33,18 +38,27 @@ model Tenant {
 // ============================================================
 
 model Branch {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   tenantId         String
-  tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name             String
   code             String
   address          String?
   region           String?
-  timezone         String   @default("Africa/Tunis")
-  notifyAtPosition Int      @default(2) // Notify when X patients away
-  status           String   @default("active") // active | inactive
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  timezone         String    @default("Africa/Tunis")
+  notifyAtPosition Int       @default(2) // Notify when X patients away
+  status           String    @default("active") // active | inactive
+  queueStatus      String    @default("open") // open | paused | closed
+  queuePausedAt    DateTime?
+  queuePausedBy    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Operating Hours (Auto Queue Management)
+  autoQueueEnabled Boolean   @default(false) // Enable automatic open/close
+  openingTime      String?   // "08:30" format (24h, branch timezone) - overrides tenant default
+  closingTime      String?   // "16:30" format (24h, branch timezone) - overrides tenant default
+  closedOnWeekends Boolean   @default(true)  // Skip auto-open on Sat/Sun
 
   counters      Counter[]
   services      ServiceCategory[]
@@ -52,6 +66,8 @@ model Branch {
   users         User[]
   dailyStats    DailyBranchStats[]
   hourlyStats   HourlySnapshot[]
+  targets       BranchTarget[]
+  announcements Announcement[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -113,6 +129,28 @@ model ServiceCategory {
 }
 
 // ============================================================
+// SERVICE TEMPLATE (Bank-level reusable service definitions)
+// ============================================================
+
+model ServiceTemplate {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nameAr         String
+  nameFr         String
+  prefix         String   // Suggested prefix (A, B, C...) - can be changed on copy
+  icon           String?
+  priorityWeight Int      @default(1)
+  avgServiceTime Int      @default(10) // minutes
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, nameFr]) // Prevent duplicate template names per tenant
+  @@index([tenantId])
+}
+
+// ============================================================
 // COUNTER-SERVICE JOIN TABLE
 // ============================================================
 
@@ -131,27 +169,30 @@ model CounterService {
 // ============================================================
 
 model Ticket {
-  id                  String   @id @default(uuid())
+  id                  String    @id @default(uuid())
   branchId            String
-  branch              Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch              Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
   serviceCategoryId   String
   serviceCategory     ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
-  ticketNumber        String   // "A-042"
-  status              String   @default("waiting") // waiting | called | serving | completed | no_show | cancelled
-  priority            String   @default("normal") // normal | vip
+  ticketNumber        String    // "A-042"
+  status              String    @default("waiting") // waiting | called | serving | completed | no_show | cancelled
+  priority            String    @default("normal") // normal | vip
+  priorityReason      String?   // Reason for priority change (VIP, urgent, elderly, etc.)
+  prioritizedBy       String?   // userId who prioritized
+  prioritizedAt       DateTime? // When priority was changed
   customerPhone       String?
-  notificationChannel String?  // none | sms | whatsapp
-  checkinMethod       String   @default("kiosk") // kiosk | mobile | manual
+  notificationChannel String?   // none | sms | whatsapp
+  checkinMethod       String    @default("kiosk") // kiosk | mobile | manual
   counterId           String?
-  counter             Counter? @relation("ServedAtCounter", fields: [counterId], references: [id])
+  counter             Counter?  @relation("ServedAtCounter", fields: [counterId], references: [id])
   servedByUserId      String?
-  servedBy            User?    @relation("ServedTickets", fields: [servedByUserId], references: [id])
+  servedBy            User?     @relation("ServedTickets", fields: [servedByUserId], references: [id])
   calledAt            DateTime?
   servingStartedAt    DateTime?
   completedAt         DateTime?
   notes               String?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   // Relation for counter's current ticket
   currentAtCounter Counter? @relation("CurrentTicket")
@@ -192,6 +233,7 @@ model User {
   breaks          TellerBreak[]  @relation("UserBreaks")
   breaksStarted   TellerBreak[]  @relation("BreakStarter")
   breaksEnded     TellerBreak[]  @relation("BreakEnder")
+  announcements   Announcement[]
 
   @@index([tenantId])
   @@index([branchId])
@@ -240,22 +282,27 @@ model TicketHistory {
 // ============================================================
 
 model NotificationLog {
-  id          String   @id @default(uuid())
-  ticketId    String
-  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  channel     String   // sms | whatsapp
-  messageType String   // confirmation | almost_turn | your_turn
-  recipient   String   // phone number
-  providerId  String?  // Twilio message SID
-  status      String   // queued | sent | delivered | failed
-  cost        Decimal? @db.Decimal(10, 4)
-  errorMsg    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String    @id @default(uuid())
+  ticketId        String
+  ticket          Ticket    @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  channel         String    // sms | whatsapp
+  messageType     String    // confirmation | almost_turn | your_turn
+  recipient       String    // phone number
+  providerId      String?   // Twilio message SID or Meta wamid
+  provider        String?   // twilio | meta
+  status          String    // queued | sent | delivered | read | failed
+  deliveryStatus  String?   // sent | delivered | read | failed (Meta webhook updates)
+  deliveredAt     DateTime?
+  readAt          DateTime?
+  cost            Decimal?  @db.Decimal(10, 4)
+  errorMsg        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
   @@index([ticketId])
   @@index([status])
   @@index([createdAt])
+  @@index([providerId])
 }
 
 // ============================================================
@@ -332,4 +379,47 @@ model TellerBreak {
   @@index([counterId])
   @@index([branchId, startedAt])
   @@index([userId])
+}
+
+// ============================================================
+// BRANCH TARGET (Daily Goals)
+// ============================================================
+
+model BranchTarget {
+  id            String   @id @default(uuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  date          DateTime @db.Date
+  servedTarget  Int      @default(100)  // Daily served target
+  avgWaitTarget Int      @default(10)   // Target avg wait (minutes)
+  slaTarget     Int      @default(90)   // SLA percentage target
+  slaThreshold  Int      @default(15)   // Minutes for SLA calculation
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([branchId, date])
+  @@index([branchId])
+}
+
+// ============================================================
+// ANNOUNCEMENT (Broadcast messages to TV displays)
+// ============================================================
+
+model Announcement {
+  id              String    @id @default(uuid())
+  branchId        String
+  branch          Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  message         String    // Max 200 chars - message in French
+  messageAr       String?   // Optional Arabic version
+  priority        String    @default("normal") // normal | urgent
+  enableTts       Boolean   @default(false) // Text-to-speech
+  displayDuration Int       @default(30) // seconds to display
+  createdBy       String
+  creator         User      @relation(fields: [createdBy], references: [id])
+  dismissedBy     String?
+  dismissedAt     DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([branchId, createdAt])
 }

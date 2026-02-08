@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 // Auth
 import LoginPage from './pages/auth/LoginPage';
+import DemoLoginPage from './pages/auth/DemoLoginPage';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Public pages
@@ -17,10 +18,15 @@ import QueueDisplay from './pages/display/QueueDisplay';
 // Protected pages
 import TellerDashboard from './pages/teller/TellerDashboard';
 import BranchDashboard from './pages/manager/BranchDashboard';
+import BranchDashboardV2 from './pages/manager/BranchDashboardV2';
+import ManagerReports from './pages/manager/ManagerReports';
+import ManagerSettings from './pages/manager/ManagerSettings';
 import HQDashboard from './pages/admin/HQDashboard';
+import HQDashboardV2 from './pages/admin/HQDashboardV2';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminBranches from './pages/admin/AdminBranches';
 import AdminServices from './pages/admin/AdminServices';
+import AdminTemplates from './pages/admin/AdminTemplates';
 
 // Layout
 import AppLayout from './components/layout/AppLayout';
@@ -40,6 +46,7 @@ function App() {
       <Routes>
         {/* Auth */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/demo" element={<DemoLoginPage />} />
 
         {/* Public - Kiosk */}
         <Route path="/kiosk/:branchId" element={<KioskServiceSelect />} />
@@ -74,6 +81,9 @@ function App() {
           }
         >
           <Route path="/manager" element={<BranchDashboard />} />
+          <Route path="/manager/v2" element={<BranchDashboardV2 />} />
+          <Route path="/manager/reports" element={<ManagerReports />} />
+          <Route path="/manager/settings" element={<ManagerSettings />} />
         </Route>
 
         {/* Protected - HQ Admin */}
@@ -83,6 +93,16 @@ function App() {
             <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
               <AppLayout>
                 <HQDashboard />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/v2"
+          element={
+            <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
+              <AppLayout>
+                <HQDashboardV2 />
               </AppLayout>
             </ProtectedRoute>
           }
@@ -113,6 +133,16 @@ function App() {
             <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
               <AppLayout>
                 <AdminServices />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/templates"
+          element={
+            <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
+              <AppLayout>
+                <AdminTemplates />
               </AppLayout>
             </ProtectedRoute>
           }

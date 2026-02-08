@@ -9,6 +9,7 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "add": "Ajouter",
+    "create": "Créer",
     "search": "Rechercher",
     "filter": "Filtrer",
     "close": "Fermer",
@@ -149,6 +150,8 @@
     "settings": "Paramètres",
     "createUser": "Créer un utilisateur",
     "createBranch": "Créer une agence",
+    "editBranch": "Modifier l'agence",
+    "deleteBranch": "Supprimer l'agence",
     "createService": "Créer un service",
     "branchStatus": "Statut des agences",
     "healthy": "Normal",
@@ -160,7 +163,33 @@
     "manualAvgTime": "Temps moyen manuel",
     "calculatedTime": "Temps calculé",
     "basedOnLast24h": "dernières 24h",
-    "priority": "Priorité"
+    "priority": "Priorité",
+    "branchesCount": "agence(s)",
+    "searchBranches": "Rechercher une agence...",
+    "allRegions": "Toutes les régions",
+    "allStatuses": "Tous les statuts",
+    "branchUpdated": "Agence mise à jour",
+    "branchCreated": "Agence créée",
+    "branchDeleted": "Agence désactivée",
+    "deleteBranchConfirm": "Voulez-vous vraiment désactiver l'agence",
+    "deleteBranchWarning": "Cette action rendra l'agence inactive.",
+    "noBranches": "Aucune agence",
+    "adjustFilters": "Ajustez vos filtres de recherche",
+    "createFirstBranch": "Créez votre première agence",
+    "branchName": "Nom de l'agence",
+    "branchCode": "Code de l'agence",
+    "address": "Adresse",
+    "region": "Région",
+    "selectRegion": "Sélectionnez une région",
+    "notifyAtPosition": "Notifier à la position",
+    "notifyAtPositionHint": "Le client sera notifié à cette position dans la file",
+    "codeHint": "Majuscules et chiffres uniquement (ex: TUN-001)",
+    "errors": {
+      "nameRequired": "Le nom est requis (min. 2 caractères)",
+      "codeRequired": "Le code est requis (min. 2 caractères)",
+      "codeFormat": "Majuscules, chiffres et tirets uniquement",
+      "notifyAtPositionRange": "Doit être entre 1 et 10"
+    }
   },
   "services": {
     "withdrawal": "Retrait d'espèces",
@@ -176,6 +205,45 @@
     "branch_manager": "Cheffe d'Agence",
     "teller": "Agent"
   },
+  "dashboard": {
+    "ai": {
+      "healthScore": "Score de sante",
+      "health": {
+        "excellent": "Excellent",
+        "good": "Bon",
+        "attention": "Attention",
+        "critical": "Critique"
+      },
+      "waiting": "En attente",
+      "avgWait": "Min attente",
+      "capacity": "Capacite",
+      "served": "Servis",
+      "queueTitle": "File d'attente",
+      "actionsRequired": "Actions requises",
+      "forecastTitle": "Prevision d'affluence",
+      "forecastPredicted": "Prevu",
+      "forecastActual": "Actuel",
+      "forecastPeak": "Pic prevu : {{volume}} clients a {{hour}}h",
+      "urgency": {
+        "critical": "Critique",
+        "high": "Urgent",
+        "medium": "Moyen",
+        "low": "Info"
+      },
+      "executeNow": "Executer",
+      "executing": "Execution..."
+    },
+    "tooltips": {
+      "healthScore": "Score global de 0 a 100 combinant le temps d'attente, la conformite SLA et la capacite. Plus le score est eleve, mieux la file fonctionne.",
+      "waitingCount": "Nombre de clients actuellement en attente d'etre appeles au guichet.",
+      "avgWait": "Temps moyen qu'un client attend avant d'etre appele au guichet aujourd'hui.",
+      "capacity": "Pourcentage de guichets ouverts par rapport au besoin estime. Plus de 100% signifie sous-effectif.",
+      "slaTrajectory": "Projection de conformite SLA basee sur la tendance actuelle. Fleche rouge = deterioration, verte = bonne trajectoire.",
+      "ticketsServed": "Nombre total de clients servis aujourd'hui par rapport a l'objectif quotidien.",
+      "forecast": "Nombre de clients prevu dans les prochaines heures, base sur l'historique du meme jour et de la meme heure.",
+      "championScore": "Score de performance combine : 40% clients servis, 30% rapidite de service, 30% gestion du temps de pause."
+    }
+  },
   "errors": {
     "networkError": "Erreur de connexion",
     "serverError": "Erreur serveur",
@@ -184,5 +252,58 @@
     "forbidden": "Accès refusé",
     "validationError": "Erreur de validation",
     "tryAgain": "Veuillez réessayer"
+  },
+  "hq": {
+    "title": "Tableau de bord réseau",
+    "networkHealth": "Santé réseau",
+    "lastUpdate": "Dernière mise à jour",
+    "refresh": "Actualiser",
+    "loading": "Chargement...",
+    "branchMatrix": "Performance des agences",
+    "comparative": "Analyse comparative",
+    "recommendations": "Recommandations",
+    "noResults": "Aucun résultat",
+    "health": {
+      "excellent": "Excellent",
+      "good": "Bon",
+      "attention": "Attention",
+      "critical": "Critique"
+    },
+    "kpi": {
+      "waiting": "En attente",
+      "sla": "SLA réseau",
+      "served": "Servis",
+      "counters": "Guichets",
+      "problems": "Alertes",
+      "vsYesterday": "vs hier"
+    },
+    "filter": {
+      "all": "Toutes",
+      "critical": "Critiques",
+      "warning": "Attention",
+      "healthy": "Saines"
+    },
+    "col": {
+      "branch": "Agence",
+      "health": "Santé",
+      "waiting": "Attente",
+      "served": "Servis",
+      "avgWait": "Attente moy.",
+      "counters": "Guichets"
+    },
+    "ranking": {
+      "title": "Classement des agences",
+      "top5": "Top 5",
+      "bottom5": "Bas 5"
+    },
+    "trends": {
+      "title": "Tendances (7 jours)",
+      "served": "Servis",
+      "avgWait": "Attente moy.",
+      "sla": "SLA %",
+      "noShows": "Absences"
+    },
+    "noShows": "Absences",
+    "topService": "Service principal"
   }
 }

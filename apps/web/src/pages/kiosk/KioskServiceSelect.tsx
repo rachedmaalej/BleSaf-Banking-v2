@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { queueApi } from '@/lib/api';
+import { getSocket, connectSocket, SOCKET_EVENTS } from '@/lib/socket';
 
 interface ServiceCategory {
   id: string;
@@ -11,10 +12,8 @@ interface ServiceCategory {
   icon: string | null;
 }
 
-// Main service categories to display on kiosk (in display order)
-const MAIN_SERVICES = ["Retrait d'espèces", 'Relevés de compte', "Dépôt d'espèces"];
-
-// Service colors - Subtle Elegance (white cards with colored left border)
+// Default accent colors by service name (for known services)
+// For unknown services, colors are assigned based on prefix
 const SERVICE_COLORS: Record<string, { bg: string; accent: string; border: string }> = {
   "Retrait d'espèces": { bg: '#FFFFFF', accent: '#E9041E', border: '#E9041E' },      // SG Red
   'Relevés de compte': { bg: '#FFFFFF', accent: '#1A1A1A', border: '#1A1A1A' },      // Black
@@ -22,12 +21,29 @@ const SERVICE_COLORS: Record<string, { bg: string; accent: string; border: strin
   'Autres': { bg: '#FFFFFF', accent: '#666666', border: '#666666' },                 // Gray
 };
 
-// Material Symbols icon names for each service
+// Color palette for services without predefined colors (cycles through these)
+const ACCENT_COLORS = [
+  '#E9041E', // SG Red
+  '#1A1A1A', // Black
+  '#D66874', // Rose
+  '#2563EB', // Blue
+  '#059669', // Green
+  '#7C3AED', // Purple
+  '#EA580C', // Orange
+  '#0891B2', // Cyan
+];
+
+// Default icons for known service names
 const SERVICE_ICONS: Record<string, string> = {
   "Retrait d'espèces": 'local_atm',
   'Relevés de compte': 'receipt_long',
   "Dépôt d'espèces": 'payments',
   'Autres': 'more_horiz',
+  'Retrait de carte bancaire': 'credit_card',
+  'Change de devises': 'currency_exchange',
+  'Virement': 'swap_horiz',
+  'Ouverture de compte': 'person_add',
+  'Credit': 'account_balance',
 };
 
 interface DisplayOption {
@@ -51,6 +67,7 @@ export default function KioskServiceSelect() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [queuePaused, setQueuePaused] = useState(false);
 
   // Update clock every minute
   useEffect(() => {
@@ -74,9 +91,15 @@ export default function KioskServiceSelect() {
     const fetchServices = async () => {
       try {
         // Get branch queue status which includes services (public endpoint)
-        const response = await queueApi.getBranchStatus(branchId!);
-        setBranchName(response.data.data.branchName);
-        setServices(response.data.data.services || []);
+        const statusRes = await queueApi.getBranchStatus(branchId!);
+
+        setBranchName(statusRes.data.data.branchName);
+        setServices(statusRes.data.data.services || []);
+
+        // Check queue status from public endpoint
+        if (statusRes.data.data.queueStatus === 'paused') {
+          setQueuePaused(true);
+        }
       } catch (err) {
         setError(t('errors.networkError'));
       } finally {
@@ -89,52 +112,68 @@ export default function KioskServiceSelect() {
     }
   }, [branchId, t]);
 
-  // Build display options from services
-  const displayOptions: DisplayOption[] = [];
-  let autresServiceId: string | null = null;
+  // Socket connection for real-time queue status updates
+  useEffect(() => {
+    if (!branchId) return;
 
-  services.forEach((service) => {
-    if (MAIN_SERVICES.includes(service.nameFr)) {
-      const colors = SERVICE_COLORS[service.nameFr] || SERVICE_COLORS['Autres'];
-      // Add main services directly
-      displayOptions.push({
-        key: service.id,
-        nameFr: service.nameFr,
-        nameAr: service.nameAr,
-        icon: SERVICE_ICONS[service.nameFr] || 'category',
-        bgColor: colors.bg,
-        accentColor: colors.accent,
-        borderColor: colors.border,
-        serviceId: service.id,
-      });
-    } else if (service.nameFr === 'Autres') {
-      // Found a service explicitly named "Autres"
-      autresServiceId = service.id;
-    } else if (!autresServiceId) {
-      // Use the first "other" service as the catch-all for "Autres"
-      autresServiceId = service.id;
-    }
+    connectSocket();
+    const socket = getSocket();
+
+    // Join display room (public - no auth required)
+    socket.emit('join:display', { branchId });
+
+    // Listen for queue pause/resume events
+    const onQueuePaused = () => {
+      setQueuePaused(true);
+    };
+
+    const onQueueResumed = () => {
+      setQueuePaused(false);
+    };
+
+    socket.on(SOCKET_EVENTS.QUEUE_PAUSED, onQueuePaused);
+    socket.on(SOCKET_EVENTS.QUEUE_RESUMED, onQueueResumed);
+
+    return () => {
+      socket.off(SOCKET_EVENTS.QUEUE_PAUSED, onQueuePaused);
+      socket.off(SOCKET_EVENTS.QUEUE_RESUMED, onQueueResumed);
+    };
+  }, [branchId]);
+
+  // Build display options from ALL services
+  const displayOptions: DisplayOption[] = services.map((service, index) => {
+    // Check if service has predefined colors
+    const predefinedColors = SERVICE_COLORS[service.nameFr];
+
+    // If no predefined colors, assign based on position using ACCENT_COLORS palette
+    const accentColor = predefinedColors?.accent || ACCENT_COLORS[index % ACCENT_COLORS.length];
+    const colors = predefinedColors || {
+      bg: '#FFFFFF',
+      accent: accentColor,
+      border: accentColor,
+    };
+
+    // Get icon - use service's icon, or predefined icon, or default
+    const icon = service.icon || SERVICE_ICONS[service.nameFr] || 'category';
+
+    return {
+      key: service.id,
+      nameFr: service.nameFr,
+      nameAr: service.nameAr,
+      icon,
+      bgColor: colors.bg,
+      accentColor: colors.accent,
+      borderColor: colors.border,
+      serviceId: service.id,
+    };
   });
 
-  // Sort main services in the desired order
+  // Sort by prefix for consistent ordering
   displayOptions.sort((a, b) => {
-    return MAIN_SERVICES.indexOf(a.nameFr) - MAIN_SERVICES.indexOf(b.nameFr);
+    const serviceA = services.find(s => s.id === a.serviceId);
+    const serviceB = services.find(s => s.id === b.serviceId);
+    return (serviceA?.prefix || '').localeCompare(serviceB?.prefix || '');
   });
-
-  // Add "Autres" button if there's a service for it
-  if (autresServiceId) {
-    const autresColors = SERVICE_COLORS['Autres'];
-    displayOptions.push({
-      key: 'autres',
-      nameFr: 'Autres',
-      nameAr: 'أخرى',
-      icon: SERVICE_ICONS['Autres'],
-      bgColor: autresColors.bg,
-      accentColor: autresColors.accent,
-      borderColor: autresColors.border,
-      serviceId: autresServiceId,
-    });
-  }
 
   const handleSelectService = (option: DisplayOption) => {
     navigate(`/kiosk/${branchId}/confirm`, {
@@ -225,7 +264,34 @@ export default function KioskServiceSelect() {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-0">
+        <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 min-h-0 relative">
+          {/* Queue Paused Overlay */}
+          {queuePaused && (
+            <div className="absolute inset-0 bg-white/95 z-50 flex flex-col items-center justify-center">
+              <div className="text-center p-8 max-w-md">
+                <span
+                  className="material-symbols-outlined mb-6"
+                  style={{ fontSize: '80px', color: '#F59E0B' }}
+                >
+                  pause_circle
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 mb-4">
+                  {i18n.language === 'ar' ? 'الخدمة متوقفة مؤقتاً' : 'Service temporairement indisponible'}
+                </h2>
+                <p className="text-lg text-gray-600 mb-6">
+                  {i18n.language === 'ar'
+                    ? 'نعتذر عن الإزعاج. يرجى المحاولة لاحقاً.'
+                    : 'Nous nous excusons pour la gêne occasionnée. Veuillez réessayer plus tard.'}
+                </p>
+                <div className="animate-pulse">
+                  <span className="text-sm text-gray-500">
+                    {i18n.language === 'ar' ? 'في انتظار استئناف الخدمة...' : 'En attente de reprise...'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <h2 className="text-xl sm:text-2xl font-medium text-gray-900 mb-4 sm:mb-6">
             {t('kiosk.selectService')}
           </h2>
@@ -234,15 +300,20 @@ export default function KioskServiceSelect() {
           <div
             className="grid gap-3 sm:gap-4 lg:gap-6 w-full justify-center"
             style={{
-              gridTemplateColumns: `repeat(${Math.min(displayOptions.length, 4)}, minmax(140px, 200px))`,
-              maxWidth: '900px',
+              // For 1-4 services: show in single row
+              // For 5+ services: use 3 columns to keep cards reasonably sized
+              gridTemplateColumns: displayOptions.length <= 4
+                ? `repeat(${displayOptions.length}, minmax(140px, 200px))`
+                : `repeat(3, minmax(140px, 200px))`,
+              maxWidth: displayOptions.length <= 4 ? '900px' : '700px',
             }}
           >
             {displayOptions.map((option) => (
               <button
                 key={option.key}
                 onClick={() => handleSelectService(option)}
-                className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 sm:gap-4 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98]"
+                disabled={queuePaused}
+                className="aspect-square rounded-2xl flex flex-col items-center justify-center gap-3 sm:gap-4 cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   backgroundColor: option.bgColor,
                   border: '1px solid #E0E0E0',

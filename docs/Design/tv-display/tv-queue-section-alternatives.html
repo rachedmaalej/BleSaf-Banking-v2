@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TV Display - "Prochains en file" Section Alternatives</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <style>
+        :root {
+            /* SG Brand Colors */
+            --sg-red: #E9041E;
+            --sg-red-light: #FF4D5E;
+            --sg-black: #1A1A1A;
+            --sg-rose: #D66874;
+            --sg-gray: #666666;
+
+            /* Neutral Palette */
+            --gray-50: #FAFAFA;
+            --gray-100: #F5F5F5;
+            --gray-200: #E5E5E5;
+            --gray-300: #D4D4D4;
+            --gray-400: #A3A3A3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-700: #404040;
+            --gray-800: #262626;
+            --gray-900: #171717;
+
+            /* Service Colors */
+            --service-retrait: #E9041E;
+            --service-depot: #6B7280;
+            --service-ouverture: #2563EB;
+            --service-autres: #8B5CF6;
+
+            /* Functional */
+            --success: #22C55E;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0F0F0F;
+            color: white;
+            padding: 32px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .page-header p {
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        .alternatives-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 64px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .alternative {
+            background: var(--gray-900);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--gray-800);
+        }
+
+        .alt-header {
+            padding: 24px 32px;
+            background: var(--gray-800);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alt-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .alt-number {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--sg-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .alt-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .alt-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-recommended {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-modern {
+            background: var(--info);
+            color: white;
+        }
+
+        .badge-accessible {
+            background: var(--service-ouverture);
+            color: white;
+        }
+
+        .badge-minimal {
+            background: var(--gray-600);
+            color: white;
+        }
+
+        .badge-dynamic {
+            background: var(--service-autres);
+            color: white;
+        }
+
+        .alt-content {
+            padding: 32px;
+        }
+
+        .alt-description {
+            color: var(--gray-400);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            max-width: 800px;
+        }
+
+        .alt-pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+            max-width: 800px;
+        }
+
+        .pros, .cons {
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .pros {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .cons {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .pros h4, .cons h4 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .pros h4 { color: var(--success); }
+        .cons h4 { color: #EF4444; }
+
+        .pros ul, .cons ul {
+            list-style: none;
+            color: var(--gray-300);
+        }
+
+        .pros li::before {
+            content: "+ ";
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .cons li::before {
+            content: "- ";
+            color: #EF4444;
+            font-weight: 600;
+        }
+
+        /* Demo Container */
+        .demo-container {
+            background: #000;
+            border-radius: 12px;
+            padding: 24px;
+            overflow: hidden;
+        }
+
+        .demo-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-500);
+            margin-bottom: 16px;
+        }
+
+        /* ===========================================
+           ALTERNATIVE 1: Large Hero Cards
+           =========================================== */
+        .alt1-queue {
+            display: flex;
+            gap: 16px;
+            align-items: stretch;
+        }
+
+        .alt1-card {
+            flex: 1;
+            background: linear-gradient(180deg, var(--gray-800) 0%, var(--gray-900) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--gray-700);
+            min-width: 140px;
+        }
+
+        .alt1-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .alt1-card.retrait::before { background: var(--service-retrait); }
+        .alt1-card.depot::before { background: var(--service-depot); }
+        .alt1-card.ouverture::before { background: var(--service-ouverture); }
+        .alt1-card.autres::before { background: var(--service-autres); }
+
+        .alt1-position {
+            font-size: 12px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .alt1-ticket {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .alt1-card.retrait .alt1-ticket { color: var(--service-retrait); }
+        .alt1-card.depot .alt1-ticket { color: var(--gray-300); }
+        .alt1-card.ouverture .alt1-ticket { color: var(--service-ouverture); }
+        .alt1-card.autres .alt1-ticket { color: var(--service-autres); }
+
+        .alt1-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .alt1-service {
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: var(--gray-300);
+        }
+
+        .alt1-wait {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .alt1-wait .material-symbols-outlined {
+            font-size: 14px;
+        }
+
+        /* ===========================================
+           ALTERNATIVE 2: Vertical List with Progress
+           =========================================== */
+        .alt2-queue {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 600px;
+        }
+
+        .alt2-item {
+            display: grid;
+            grid-template-columns: 48px 100px 1fr 80px;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--gray-800);
+            border-radius: 8px;
+            border-left: 4px solid transparent;
+        }
+
+        .alt2-item.retrait { border-left-color: var(--service-retrait); }
+        .alt2-item.depot { border-left-color: var(--service-depot); }
+        .alt2-item.ouverture { border-left-color: var(--service-ouverture); }
+        .alt2-item.autres { border-left-color: var(--service-autres); }
+
+        .alt2-rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--gray-700);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .alt2-item:first-child .alt2-rank {
+            background: var(--sg-red);
+        }
+
+        .alt2-ticket {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .alt2-progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .alt2-service-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alt2-progress-bar {
+            height: 6px;
+            background: var(--gray-700);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .alt2-progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .alt2-item.retrait .alt2-progress-fill { background: var(--service-retrait); }
+        .alt2-item.depot .alt2-progress-fill { background: var(--service-depot); }
+        .alt2-item.ouverture .alt2-progress-fill { background: var(--service-ouverture); }
+        .alt2-item.autres .alt2-progress-fill { background: var(--service-autres); }
+
+        .alt2-wait {
+            font-size: 14px;
+            color: var(--gray-400);
+            text-align: right;
+        }
+
+        .alt2-wait span {
+            font-weight: 600;
+            color: white;
+        }
+
+        /* ===========================================
+           ALTERNATIVE 3: Timeline Journey
+           =========================================== */
+        .alt3-container {
+            padding: 20px 0;
+        }
+
+        .alt3-timeline {
+            display: flex;
+            align-items: flex-start;
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .alt3-timeline::before {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 48px;
+            right: 48px;
+            height: 4px;
+            background: var(--gray-700);
+            border-radius: 2px;
+        }
+
+        .alt3-timeline::after {
+            content: '';
+            position: absolute;
+            top: 24px;
+            left: 48px;
+            width: 20%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--sg-red), var(--sg-red-light));
+            border-radius: 2px;
+        }
+
+        .alt3-node {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .alt3-marker {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gray-800);
+            border: 3px solid var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .alt3-node:first-child .alt3-marker {
+            background: var(--sg-red);
+            border-color: var(--sg-red);
+            box-shadow: 0 0 20px rgba(233, 4, 30, 0.4);
+        }
+
+        .alt3-marker-number {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .alt3-info {
+            text-align: center;
+        }
+
+        .alt3-ticket {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .alt3-service {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .alt3-node.retrait .alt3-service { background: rgba(233, 4, 30, 0.2); color: var(--sg-red-light); }
+        .alt3-node.depot .alt3-service { background: rgba(107, 114, 128, 0.3); color: var(--gray-300); }
+        .alt3-node.ouverture .alt3-service { background: rgba(37, 99, 235, 0.2); color: #60A5FA; }
+        .alt3-node.autres .alt3-service { background: rgba(139, 92, 246, 0.2); color: #A78BFA; }
+
+        .alt3-wait {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .alt3-wait strong {
+            color: var(--gray-300);
+        }
+
+        .alt3-end {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 0.5;
+        }
+
+        .alt3-end-marker {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--gray-800);
+            border: 2px dashed var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+
+        .alt3-end-marker .material-symbols-outlined {
+            font-size: 24px;
+            color: var(--success);
+        }
+
+        .alt3-end-label {
+            font-size: 11px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===========================================
+           ALTERNATIVE 4: Compact Grid
+           =========================================== */
+        .alt4-queue {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 800px;
+        }
+
+        .alt4-card {
+            background: var(--gray-800);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alt4-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .alt4-card.retrait::after { background: var(--service-retrait); }
+        .alt4-card.depot::after { background: var(--service-depot); }
+        .alt4-card.ouverture::after { background: var(--service-ouverture); }
+        .alt4-card.autres::after { background: var(--service-autres); }
+
+        .alt4-icon-container {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alt4-card.retrait .alt4-icon-container { background: rgba(233, 4, 30, 0.15); }
+        .alt4-card.depot .alt4-icon-container { background: rgba(107, 114, 128, 0.2); }
+        .alt4-card.ouverture .alt4-icon-container { background: rgba(37, 99, 235, 0.15); }
+        .alt4-card.autres .alt4-icon-container { background: rgba(139, 92, 246, 0.15); }
+
+        .alt4-icon-container .material-symbols-outlined {
+            font-size: 22px;
+        }
+
+        .alt4-card.retrait .alt4-icon-container .material-symbols-outlined { color: var(--service-retrait); }
+        .alt4-card.depot .alt4-icon-container .material-symbols-outlined { color: var(--gray-400); }
+        .alt4-card.ouverture .alt4-icon-container .material-symbols-outlined { color: var(--service-ouverture); }
+        .alt4-card.autres .alt4-icon-container .material-symbols-outlined { color: var(--service-autres); }
+
+        .alt4-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .alt4-ticket {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 2px;
+        }
+
+        .alt4-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .alt4-position {
+            font-weight: 600;
+            padding: 2px 6px;
+            background: var(--gray-700);
+            border-radius: 4px;
+        }
+
+        /* ===========================================
+           ALTERNATIVE 5: Minimalist Numbered List
+           =========================================== */
+        .alt5-queue {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .alt5-item {
+            display: flex;
+            align-items: center;
+            background: var(--gray-800);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--gray-700);
+        }
+
+        .alt5-item:first-child {
+            border-color: var(--sg-red);
+            box-shadow: 0 0 12px rgba(233, 4, 30, 0.2);
+        }
+
+        .alt5-rank-badge {
+            padding: 12px 14px;
+            background: var(--gray-700);
+            font-weight: 700;
+            font-size: 16px;
+            min-width: 44px;
+            text-align: center;
+        }
+
+        .alt5-item:first-child .alt5-rank-badge {
+            background: var(--sg-red);
+        }
+
+        .alt5-content {
+            padding: 8px 16px 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alt5-ticket {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .alt5-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .alt5-item.retrait .alt5-dot { background: var(--service-retrait); }
+        .alt5-item.depot .alt5-dot { background: var(--service-depot); }
+        .alt5-item.ouverture .alt5-dot { background: var(--service-ouverture); }
+        .alt5-item.autres .alt5-dot { background: var(--service-autres); }
+
+        .alt5-wait {
+            font-size: 12px;
+            color: var(--gray-500);
+        }
+
+        .alt5-separator {
+            color: var(--gray-600);
+            font-size: 20px;
+        }
+
+        .alt5-more {
+            padding: 12px 20px;
+            background: var(--gray-800);
+            border-radius: 8px;
+            color: var(--gray-400);
+            font-size: 14px;
+            border: 1px dashed var(--gray-700);
+        }
+
+        /* Section Title Styles (used in demos) */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .section-title-text {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--gray-500);
+        }
+
+        .section-title-line {
+            flex: 1;
+            height: 1px;
+            background: var(--gray-800);
+        }
+
+        /* Comparison Table */
+        .comparison-section {
+            margin-top: 64px;
+            padding-top: 48px;
+            border-top: 1px solid var(--gray-800);
+        }
+
+        .comparison-section h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-800);
+        }
+
+        .comparison-table th {
+            background: var(--gray-800);
+            font-weight: 600;
+            color: var(--gray-300);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-table td {
+            color: var(--gray-400);
+        }
+
+        .comparison-table tr:hover td {
+            background: var(--gray-900);
+        }
+
+        .rating {
+            display: flex;
+            gap: 2px;
+        }
+
+        .rating-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--gray-700);
+        }
+
+        .rating-dot.filled {
+            background: var(--sg-red);
+        }
+
+        .check {
+            color: var(--success);
+        }
+
+        .partial {
+            color: var(--warning);
+        }
+
+        /* Recommendation Box */
+        .recommendation {
+            margin-top: 48px;
+            padding: 24px;
+            background: rgba(233, 4, 30, 0.1);
+            border: 1px solid rgba(233, 4, 30, 0.3);
+            border-radius: 12px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .recommendation h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--sg-red-light);
+        }
+
+        .recommendation p {
+            color: var(--gray-300);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-header">
+        <h1>TV Display - "Prochains en file" Section</h1>
+        <p>5 Alternative Design Approaches for the Next-in-Queue Visualization</p>
+    </div>
+
+    <div class="alternatives-grid">
+
+        <!-- ALTERNATIVE 1: Large Hero Cards -->
+        <div class="alternative">
+            <div class="alt-header">
+                <div class="alt-title">
+                    <div class="alt-number">1</div>
+                    <span class="alt-name">Large Hero Cards</span>
+                </div>
+                <span class="alt-badge badge-recommended">Recommended</span>
+            </div>
+            <div class="alt-content">
+                <p class="alt-description">
+                    Bold, high-visibility cards with prominent ticket numbers. Each position gets equal visual weight with color-coded top borders indicating service type. Optimized for distance readability following the 1:10 typography rule.
+                </p>
+                <div class="alt-pros-cons">
+                    <div class="pros">
+                        <h4>Strengths</h4>
+                        <ul>
+                            <li>Maximum readability from 20+ meters</li>
+                            <li>Clear visual hierarchy per ticket</li>
+                            <li>Service type immediately visible</li>
+                            <li>Works well with 4-6 items</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>Considerations</h4>
+                        <ul>
+                            <li>Requires more horizontal space</li>
+                            <li>Limited to ~6 visible items</li>
+                            <li>May need responsive adjustments</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-label">Live Preview</div>
+                    <div class="section-title">
+                        <span class="section-title-text">Prochains en file</span>
+                        <span class="section-title-line"></span>
+                    </div>
+                    <div class="alt1-queue">
+                        <div class="alt1-card retrait">
+                            <div class="alt1-position">Position 1</div>
+                            <div class="alt1-ticket">A-016</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Retrait</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    5 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alt1-card depot">
+                            <div class="alt1-position">Position 2</div>
+                            <div class="alt1-ticket">B-007</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Dépôt</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    10 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alt1-card ouverture">
+                            <div class="alt1-position">Position 3</div>
+                            <div class="alt1-ticket">C-012</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Ouverture</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    15 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alt1-card retrait">
+                            <div class="alt1-position">Position 4</div>
+                            <div class="alt1-ticket">A-017</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Retrait</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    20 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alt1-card autres">
+                            <div class="alt1-position">Position 5</div>
+                            <div class="alt1-ticket">D-003</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Autres</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    25 min
+                                </span>
+                            </div>
+                        </div>
+                        <div class="alt1-card depot">
+                            <div class="alt1-position">Position 6</div>
+                            <div class="alt1-ticket">B-008</div>
+                            <div class="alt1-meta">
+                                <span class="alt1-service">Dépôt</span>
+                                <span class="alt1-wait">
+                                    <span class="material-symbols-outlined">schedule</span>
+                                    30 min
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALTERNATIVE 2: Vertical List with Progress -->
+        <div class="alternative">
+            <div class="alt-header">
+                <div class="alt-title">
+                    <div class="alt-number">2</div>
+                    <span class="alt-name">Vertical List with Progress Bars</span>
+                </div>
+                <span class="alt-badge badge-accessible">Accessible</span>
+            </div>
+            <div class="alt-content">
+                <p class="alt-description">
+                    A scannable vertical list with progress bars showing estimated time until service. The left border accent provides instant service-type recognition. Progress bars fill as customers approach the front, reducing perceived wait anxiety.
+                </p>
+                <div class="alt-pros-cons">
+                    <div class="pros">
+                        <h4>Strengths</h4>
+                        <ul>
+                            <li>Clear top-to-bottom reading order</li>
+                            <li>Progress visualization reduces anxiety</li>
+                            <li>Can display 8-10 items comfortably</li>
+                            <li>Excellent accessibility (ADA compliant)</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>Considerations</h4>
+                        <ul>
+                            <li>Requires more vertical space</li>
+                            <li>Progress bars need accurate data</li>
+                            <li>Less impactful from distance</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-label">Live Preview</div>
+                    <div class="section-title">
+                        <span class="section-title-text">Prochains en file</span>
+                        <span class="section-title-line"></span>
+                    </div>
+                    <div class="alt2-queue">
+                        <div class="alt2-item retrait">
+                            <div class="alt2-rank">1</div>
+                            <div class="alt2-ticket">A-016</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Retrait</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>5</span> min</div>
+                        </div>
+                        <div class="alt2-item depot">
+                            <div class="alt2-rank">2</div>
+                            <div class="alt2-ticket">B-007</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Dépôt</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 70%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>10</span> min</div>
+                        </div>
+                        <div class="alt2-item ouverture">
+                            <div class="alt2-rank">3</div>
+                            <div class="alt2-ticket">C-012</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Ouverture</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 50%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>15</span> min</div>
+                        </div>
+                        <div class="alt2-item retrait">
+                            <div class="alt2-rank">4</div>
+                            <div class="alt2-ticket">A-017</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Retrait</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 35%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>20</span> min</div>
+                        </div>
+                        <div class="alt2-item autres">
+                            <div class="alt2-rank">5</div>
+                            <div class="alt2-ticket">D-003</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Autres</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 20%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>25</span> min</div>
+                        </div>
+                        <div class="alt2-item depot">
+                            <div class="alt2-rank">6</div>
+                            <div class="alt2-ticket">B-008</div>
+                            <div class="alt2-progress-container">
+                                <span class="alt2-service-label">Dépôt</span>
+                                <div class="alt2-progress-bar">
+                                    <div class="alt2-progress-fill" style="width: 10%"></div>
+                                </div>
+                            </div>
+                            <div class="alt2-wait"><span>30</span> min</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALTERNATIVE 3: Timeline Journey -->
+        <div class="alternative">
+            <div class="alt-header">
+                <div class="alt-title">
+                    <div class="alt-number">3</div>
+                    <span class="alt-name">Timeline Journey Map</span>
+                </div>
+                <span class="alt-badge badge-modern">Modern</span>
+            </div>
+            <div class="alt-content">
+                <p class="alt-description">
+                    A horizontal timeline that visualizes the customer journey from waiting to being served. The progress line shows advancement through the queue, with each node representing a waiting customer. Creates a sense of forward momentum and anticipation.
+                </p>
+                <div class="alt-pros-cons">
+                    <div class="pros">
+                        <h4>Strengths</h4>
+                        <ul>
+                            <li>Communicates "journey" metaphor</li>
+                            <li>Progress line shows queue movement</li>
+                            <li>Modern, engaging visual design</li>
+                            <li>Clear endpoint destination</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>Considerations</h4>
+                        <ul>
+                            <li>Limited to 5-6 visible positions</li>
+                            <li>Complex animation requirements</li>
+                            <li>May be unfamiliar to some users</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-label">Live Preview</div>
+                    <div class="section-title">
+                        <span class="section-title-text">Prochains en file</span>
+                        <span class="section-title-line"></span>
+                    </div>
+                    <div class="alt3-container">
+                        <div class="alt3-timeline">
+                            <div class="alt3-node retrait">
+                                <div class="alt3-marker">
+                                    <span class="alt3-marker-number">1</span>
+                                </div>
+                                <div class="alt3-info">
+                                    <div class="alt3-ticket">A-016</div>
+                                    <span class="alt3-service">Retrait</span>
+                                    <div class="alt3-wait"><strong>5</strong> min</div>
+                                </div>
+                            </div>
+                            <div class="alt3-node depot">
+                                <div class="alt3-marker">
+                                    <span class="alt3-marker-number">2</span>
+                                </div>
+                                <div class="alt3-info">
+                                    <div class="alt3-ticket">B-007</div>
+                                    <span class="alt3-service">Dépôt</span>
+                                    <div class="alt3-wait"><strong>10</strong> min</div>
+                                </div>
+                            </div>
+                            <div class="alt3-node ouverture">
+                                <div class="alt3-marker">
+                                    <span class="alt3-marker-number">3</span>
+                                </div>
+                                <div class="alt3-info">
+                                    <div class="alt3-ticket">C-012</div>
+                                    <span class="alt3-service">Ouverture</span>
+                                    <div class="alt3-wait"><strong>15</strong> min</div>
+                                </div>
+                            </div>
+                            <div class="alt3-node retrait">
+                                <div class="alt3-marker">
+                                    <span class="alt3-marker-number">4</span>
+                                </div>
+                                <div class="alt3-info">
+                                    <div class="alt3-ticket">A-017</div>
+                                    <span class="alt3-service">Retrait</span>
+                                    <div class="alt3-wait"><strong>20</strong> min</div>
+                                </div>
+                            </div>
+                            <div class="alt3-node autres">
+                                <div class="alt3-marker">
+                                    <span class="alt3-marker-number">5</span>
+                                </div>
+                                <div class="alt3-info">
+                                    <div class="alt3-ticket">D-003</div>
+                                    <span class="alt3-service">Autres</span>
+                                    <div class="alt3-wait"><strong>25</strong> min</div>
+                                </div>
+                            </div>
+                            <div class="alt3-end">
+                                <div class="alt3-end-marker">
+                                    <span class="material-symbols-outlined">check_circle</span>
+                                </div>
+                                <span class="alt3-end-label">Service</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALTERNATIVE 4: Compact Grid -->
+        <div class="alternative">
+            <div class="alt-header">
+                <div class="alt-title">
+                    <div class="alt-number">4</div>
+                    <span class="alt-name">Compact Grid Layout</span>
+                </div>
+                <span class="alt-badge badge-minimal">Space-Efficient</span>
+            </div>
+            <div class="alt-content">
+                <p class="alt-description">
+                    A 3x2 or 2x3 grid that maximizes information density while maintaining readability. Service icons provide instant recognition, with subtle bottom borders for service-type color coding. Ideal when screen real estate is limited.
+                </p>
+                <div class="alt-pros-cons">
+                    <div class="pros">
+                        <h4>Strengths</h4>
+                        <ul>
+                            <li>Efficient use of screen space</li>
+                            <li>Shows 6 tickets in compact area</li>
+                            <li>Service icons add visual interest</li>
+                            <li>Balanced information density</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>Considerations</h4>
+                        <ul>
+                            <li>Reading order less obvious (Z or N?)</li>
+                            <li>Smaller text than hero cards</li>
+                            <li>Position hierarchy less clear</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-label">Live Preview</div>
+                    <div class="section-title">
+                        <span class="section-title-text">Prochains en file</span>
+                        <span class="section-title-line"></span>
+                    </div>
+                    <div class="alt4-queue">
+                        <div class="alt4-card retrait">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">local_atm</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">A-016</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#1</span>
+                                    <span>5 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt4-card depot">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">savings</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">B-007</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#2</span>
+                                    <span>10 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt4-card ouverture">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">person_add</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">C-012</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#3</span>
+                                    <span>15 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt4-card retrait">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">local_atm</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">A-017</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#4</span>
+                                    <span>20 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt4-card autres">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">more_horiz</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">D-003</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#5</span>
+                                    <span>25 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="alt4-card depot">
+                            <div class="alt4-icon-container">
+                                <span class="material-symbols-outlined">savings</span>
+                            </div>
+                            <div class="alt4-details">
+                                <div class="alt4-ticket">B-008</div>
+                                <div class="alt4-meta">
+                                    <span class="alt4-position">#6</span>
+                                    <span>30 min</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALTERNATIVE 5: Minimalist Inline -->
+        <div class="alternative">
+            <div class="alt-header">
+                <div class="alt-title">
+                    <div class="alt-number">5</div>
+                    <span class="alt-name">Minimalist Inline Tags</span>
+                </div>
+                <span class="alt-badge badge-dynamic">Clean</span>
+            </div>
+            <div class="alt-content">
+                <p class="alt-description">
+                    Ultra-clean inline tags that prioritize ticket numbers above all else. The bold rank badge immediately identifies position, while colored dots provide subtle service-type indication. Best for displays where simplicity trumps detail.
+                </p>
+                <div class="alt-pros-cons">
+                    <div class="pros">
+                        <h4>Strengths</h4>
+                        <ul>
+                            <li>Maximum simplicity and clarity</li>
+                            <li>Can fit 8+ tickets in one row</li>
+                            <li>Position number is dominant</li>
+                            <li>Minimal cognitive load</li>
+                        </ul>
+                    </div>
+                    <div class="cons">
+                        <h4>Considerations</h4>
+                        <ul>
+                            <li>Less information per ticket</li>
+                            <li>Service type is de-emphasized</li>
+                            <li>May feel too sparse for some</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="demo-container">
+                    <div class="demo-label">Live Preview</div>
+                    <div class="section-title">
+                        <span class="section-title-text">Prochains en file</span>
+                        <span class="section-title-line"></span>
+                    </div>
+                    <div class="alt5-queue">
+                        <div class="alt5-item retrait">
+                            <div class="alt5-rank-badge">1</div>
+                            <div class="alt5-content">
+                                <span class="alt5-ticket">A-016</span>
+                                <span class="alt5-dot"></span>
+                                <span class="alt5-wait">5 min</span>
+                            </div>
+                        </div>
+                        <span class="alt5-separator">›</span>
+                        <div class="alt5-item depot">
+                            <div class="alt5-rank-badge">2</div>
+                            <div class="alt5-content">
+                                <span class="alt5-ticket">B-007</span>
+                                <span class="alt5-dot"></span>
+                                <span class="alt5-wait">10 min</span>
+                            </div>
+                        </div>
+                        <span class="alt5-separator">›</span>
+                        <div class="alt5-item ouverture">
+                            <div class="alt5-rank-badge">3</div>
+                            <div class="alt5-content">
+                                <span class="alt5-ticket">C-012</span>
+                                <span class="alt5-dot"></span>
+                                <span class="alt5-wait">15 min</span>
+                            </div>
+                        </div>
+                        <span class="alt5-separator">›</span>
+                        <div class="alt5-item retrait">
+                            <div class="alt5-rank-badge">4</div>
+                            <div class="alt5-content">
+                                <span class="alt5-ticket">A-017</span>
+                                <span class="alt5-dot"></span>
+                                <span class="alt5-wait">20 min</span>
+                            </div>
+                        </div>
+                        <span class="alt5-separator">›</span>
+                        <div class="alt5-item autres">
+                            <div class="alt5-rank-badge">5</div>
+                            <div class="alt5-content">
+                                <span class="alt5-ticket">D-003</span>
+                                <span class="alt5-dot"></span>
+                                <span class="alt5-wait">25 min</span>
+                            </div>
+                        </div>
+                        <span class="alt5-separator">›</span>
+                        <div class="alt5-more">+3 more</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Comparison Table -->
+    <div class="comparison-section">
+        <h2>Comparison Matrix</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Alternative</th>
+                    <th>Distance Readability</th>
+                    <th>Information Density</th>
+                    <th>Service Visibility</th>
+                    <th>Wait Time Display</th>
+                    <th>Animation Friendly</th>
+                    <th>Best For</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Large Hero Cards</strong></td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td><span class="check">✓ Excellent</span></td>
+                    <td><span class="check">✓ Clear</span></td>
+                    <td><span class="check">✓ Yes</span></td>
+                    <td>Large lobbies, 4-6 tickets</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Vertical List + Progress</strong></td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td><span class="check">✓ Good</span></td>
+                    <td><span class="check">✓ Visual progress</span></td>
+                    <td><span class="check">✓ Yes</span></td>
+                    <td>Longer queues, anxiety reduction</td>
+                </tr>
+                <tr>
+                    <td><strong>3. Timeline Journey</strong></td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td><span class="partial">◐ Moderate</span></td>
+                    <td><span class="check">✓ With endpoint</span></td>
+                    <td><span class="check">✓ Excellent</span></td>
+                    <td>Modern banks, 5-6 tickets</td>
+                </tr>
+                <tr>
+                    <td><strong>4. Compact Grid</strong></td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                        </div>
+                    </td>
+                    <td><span class="check">✓ Icons</span></td>
+                    <td><span class="partial">◐ Compact</span></td>
+                    <td><span class="partial">◐ Limited</span></td>
+                    <td>Space-constrained displays</td>
+                </tr>
+                <tr>
+                    <td><strong>5. Minimalist Inline</strong></td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating">
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot filled"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                            <span class="rating-dot"></span>
+                        </div>
+                    </td>
+                    <td><span class="partial">◐ Dot only</span></td>
+                    <td><span class="check">✓ Simple</span></td>
+                    <td><span class="check">✓ Yes</span></td>
+                    <td>High ticket volume, simplicity</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="recommendation">
+            <h3>
+                <span class="material-symbols-outlined">lightbulb</span>
+                Recommendation
+            </h3>
+            <p>
+                For BléSaf's banking context, <strong>Alternative 1 (Large Hero Cards)</strong> is recommended as the primary choice due to its excellent distance readability and clear service-type visibility—critical for busy bank lobbies. Consider <strong>Alternative 2 (Vertical List with Progress)</strong> as a secondary option if the display area is vertically oriented or if user testing reveals anxiety about wait times. The progress bar visualization has been shown to reduce perceived wait time by up to 25%.
+            </p>
+        </div>
+    </div>
+
+</body>
+</html>

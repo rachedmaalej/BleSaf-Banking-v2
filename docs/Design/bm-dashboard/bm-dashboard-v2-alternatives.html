@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BM Dashboard V2 — 3 Full Redesign Alternatives</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    :root {
+      --sg-red: #E9041E;
+      --sg-black: #1A1A1A;
+      --sg-rose: #D66874;
+      --sg-gray: #666666;
+      --sg-green: #10B981;
+      --sg-amber: #F59E0B;
+      --sg-light: #F5F5F5;
+    }
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    body { background: #E5E7EB; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+
+    /* Gauge animation */
+    @keyframes ring-fill { from { stroke-dasharray: 0 283; } }
+    .ring-arc { animation: ring-fill 1s ease-out; }
+    @keyframes gauge-fill { from { stroke-dasharray: 0 157; } }
+    .gauge-arc { animation: gauge-fill 1s ease-out; }
+
+    /* Pulse for critical */
+    @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .pulse-critical { animation: pulse-soft 2s ease-in-out infinite; }
+
+    /* Card hover */
+    .card-hover { transition: box-shadow 0.2s, transform 0.2s; }
+    .card-hover:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-1px); }
+
+    /* Separator between alternatives */
+    .alt-divider { border-top: 4px solid var(--sg-red); margin: 64px 0; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+
+    .tier-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 4px;
+      position: absolute;
+      left: 16px;
+      top: -12px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <div class="max-w-[1440px] mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-3xl font-bold mb-2" style="color: var(--sg-black)">BM Dashboard V2 — Full Redesign</h1>
+      <p class="text-sm" style="color: var(--sg-gray)">
+        3 alternatives following the ACDD 4-tier layout &bull; SG brand guidelines &bull; Same real data
+      </p>
+      <div class="flex justify-center gap-8 mt-4 text-xs" style="color: var(--sg-gray)">
+        <span>Health: <strong style="color: var(--sg-amber)">51 (Attention)</strong></span>
+        <span>Waiting: <strong>6</strong></span>
+        <span>Avg Wait: <strong>~41 min</strong></span>
+        <span>Capacity: <strong>100%</strong></span>
+        <span>SLA: <strong style="color: var(--sg-red)">67% ↓</strong></span>
+        <span>Served: <strong>8/100</strong></span>
+      </div>
+    </div>
+
+
+    <!-- ================================================================== -->
+    <!-- ALTERNATIVE 1 — "Gauge Trio + Action Card"                         -->
+    <!-- Faithful to Plan 2 mockup, adapted to SG branding                  -->
+    <!-- ================================================================== -->
+    <div class="mb-4">
+      <div class="inline-block px-4 py-1.5 rounded text-white text-sm font-bold" style="background: var(--sg-red)">ALTERNATIVE 1</div>
+      <h2 class="text-xl font-bold mt-2 mb-1" style="color: var(--sg-black)">Gauge Trio + Action Card</h2>
+      <p class="text-sm mb-6 max-w-3xl" style="color: var(--sg-gray)">
+        Faithful to the Plan 2 mockup structure. Three circular gauges for the core composite metrics plus a prominent
+        "Next Action" card. 3-column operational context. 2-column main content. Bottom AI recommendations.
+        The manager's eye flows: <strong>status → context → details → actions</strong>.
+      </p>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden shadow-xl" style="background: #FAFAFA">
+
+      <!-- TIER 1: Hero Metrics — 4-column (3 gauges + action card) -->
+      <div class="relative bg-white border-b border-gray-200 p-6">
+        <span class="tier-label" style="background: var(--sg-red); color: white;">Tier 1 — Hero Metrics</span>
+        <div class="grid grid-cols-4 gap-6 mt-2">
+          <!-- Gauge 1: Queue Health -->
+          <div class="flex flex-col items-center p-5 rounded-xl card-hover" style="background: #FAFAFA">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-3">Score de Sante</div>
+            <div class="relative w-28 h-28">
+              <svg viewBox="0 0 100 100" class="w-full h-full" style="transform: rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" stroke-width="8" stroke-linecap="round"
+                  stroke-dasharray="134 264" class="ring-arc" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black" style="color: var(--sg-amber)">51</span>
+              </div>
+            </div>
+            <div class="text-xs font-bold uppercase tracking-wider mt-2" style="color: var(--sg-amber)">Attention</div>
+            <div class="flex items-center gap-1 mt-1 text-xs text-gray-400">
+              <span class="material-symbols-outlined" style="font-size: 14px">trending_flat</span> Stable
+            </div>
+          </div>
+
+          <!-- Gauge 2: Capacity -->
+          <div class="flex flex-col items-center p-5 rounded-xl card-hover" style="background: #FAFAFA">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-3">Capacite</div>
+            <div class="relative w-28 h-28">
+              <svg viewBox="0 0 100 100" class="w-full h-full" style="transform: rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#10B981" stroke-width="8" stroke-linecap="round"
+                  stroke-dasharray="264 264" class="ring-arc" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black" style="color: var(--sg-green)">100%</span>
+              </div>
+            </div>
+            <div class="text-xs font-bold uppercase tracking-wider mt-2" style="color: var(--sg-green)">Adequate</div>
+            <div class="text-xs text-gray-400 mt-1">2/4 guichets ouverts</div>
+          </div>
+
+          <!-- Gauge 3: SLA -->
+          <div class="flex flex-col items-center p-5 rounded-xl card-hover" style="background: #FAFAFA">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-3">SLA</div>
+            <div class="relative w-28 h-28">
+              <svg viewBox="0 0 100 100" class="w-full h-full" style="transform: rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E5E7EB" stroke-width="8" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E9041E" stroke-width="8" stroke-linecap="round"
+                  stroke-dasharray="177 264" class="ring-arc" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-4xl font-black" style="color: var(--sg-red)">67%</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-1 text-xs font-bold uppercase tracking-wider mt-2" style="color: var(--sg-red)">
+              <span class="material-symbols-outlined" style="font-size: 14px">trending_down</span> En baisse
+            </div>
+            <div class="text-xs text-gray-400 mt-1">Projection: 0%</div>
+          </div>
+
+          <!-- Next Action Card -->
+          <div class="rounded-xl p-5 flex flex-col justify-between card-hover" style="background: linear-gradient(135deg, #E9041E 0%, #B8031A 100%); color: white;">
+            <div>
+              <div class="flex items-center gap-2 mb-3">
+                <span class="material-symbols-outlined" style="font-size: 20px">warning</span>
+                <span class="text-[10px] uppercase tracking-widest font-bold opacity-80">Action urgente</span>
+              </div>
+              <div class="text-lg font-bold leading-tight mb-2">Ouvrir le guichet G3</div>
+              <div class="text-xs opacity-75">6 clients en attente, temps moyen ~41 min</div>
+            </div>
+            <button class="mt-4 w-full py-2.5 rounded-lg bg-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition" style="color: var(--sg-red)">
+              <span class="material-symbols-outlined" style="font-size: 18px">bolt</span> Executer maintenant
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 2: Operational Context — 3 columns -->
+      <div class="relative p-6 bg-white border-b border-gray-200">
+        <span class="tier-label" style="background: var(--sg-amber); color: white;">Tier 2 — Contexte Operationnel</span>
+        <div class="grid grid-cols-3 gap-5 mt-2">
+          <!-- Service Breakdown -->
+          <div class="bg-white rounded-xl border border-gray-200 p-5 card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-black)">category</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Repartition par service</span>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium" style="color: var(--sg-black)">Retrait d'especes</span>
+                  <div class="flex items-center gap-1">
+                    <span class="text-xs font-bold" style="color: var(--sg-red)">3</span>
+                    <span class="material-symbols-outlined pulse-critical" style="font-size: 14px; color: var(--sg-red)">warning</span>
+                  </div>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 50%; background: var(--sg-red)"></div></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium" style="color: var(--sg-black)">Depot d'especes</span>
+                  <span class="text-xs font-bold" style="color: var(--sg-amber)">2</span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 33%; background: var(--sg-amber)"></div></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-medium" style="color: var(--sg-black)">Releves de compte</span>
+                  <span class="text-xs font-bold text-gray-500">1</span>
+                </div>
+                <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 17%; background: #9CA3AF"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Counter Performance -->
+          <div class="bg-white rounded-xl border border-gray-200 p-5 card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-black)">speed</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Performance guichets</span>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between p-3 rounded-lg" style="background: #ECFDF5; border-left: 3px solid var(--sg-green)">
+                <div>
+                  <div class="font-semibold text-sm" style="color: var(--sg-black)">G1 — Amira Ben Ali</div>
+                  <div class="text-xs text-gray-500">Actif &bull; Rapide</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-sm" style="color: var(--sg-green)">8 t/h</div>
+                  <span class="material-symbols-outlined" style="font-size: 14px; color: var(--sg-green)">trending_up</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg" style="background: #FEF3C7; border-left: 3px solid var(--sg-amber)">
+                <div>
+                  <div class="font-semibold text-sm" style="color: var(--sg-black)">G2 — Karim Mansouri</div>
+                  <div class="text-xs" style="color: #B45309">En pause (+5 min)</div>
+                </div>
+                <div class="text-right">
+                  <div class="font-bold text-sm" style="color: var(--sg-amber)">5 t/h</div>
+                  <span class="material-symbols-outlined" style="font-size: 14px; color: var(--sg-amber)">coffee</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 text-xs text-gray-400 pt-1">
+                <span class="w-2 h-2 rounded-full bg-gray-300"></span> G3 Inactif
+                <span class="w-2 h-2 rounded-full bg-gray-300 ml-2"></span> G4 Inactif
+              </div>
+            </div>
+          </div>
+
+          <!-- Predicted Demand -->
+          <div class="bg-white rounded-xl border border-gray-200 p-5 card-hover">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-black)">trending_up</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Prevision d'affluence</span>
+            </div>
+            <div class="text-center py-4">
+              <div class="flex items-center justify-center gap-2 mb-1">
+                <span class="text-5xl font-black" style="color: var(--sg-black)">12-15</span>
+                <span class="material-symbols-outlined" style="font-size: 28px; color: var(--sg-amber)">warning</span>
+              </div>
+              <div class="text-sm text-gray-500 mb-4">Clients attendus prochaine heure</div>
+              <div class="text-xs text-gray-400">Base sur l'historique du meme jour/heure</div>
+            </div>
+            <!-- Mini sparkline bars -->
+            <div class="flex items-end gap-1 h-10 mt-2">
+              <div class="flex-1 rounded-t" style="height: 40%; background: #D1D5DB"></div>
+              <div class="flex-1 rounded-t" style="height: 60%; background: #D1D5DB"></div>
+              <div class="flex-1 rounded-t" style="height: 80%; background: var(--sg-amber)"></div>
+              <div class="flex-1 rounded-t pulse-critical" style="height: 100%; background: var(--sg-red)"></div>
+              <div class="flex-1 rounded-t" style="height: 70%; background: var(--sg-amber)"></div>
+              <div class="flex-1 rounded-t" style="height: 45%; background: #D1D5DB"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-gray-400 mt-1">
+              <span>Maintenant</span><span>+1h</span><span>+2h</span><span>+3h</span><span>+4h</span><span>+5h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 3: Main Content — Queue left, Counters+Actions right -->
+      <div class="relative flex" style="min-height: 380px">
+        <span class="tier-label" style="background: var(--sg-green); color: white;">Tier 3 — Contenu Principal</span>
+        <!-- Left: Queue -->
+        <div class="flex-1 p-6">
+          <div class="flex items-center justify-between mb-4 mt-1">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">File d'attente</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white" style="background: var(--sg-red)">6</span>
+            </div>
+            <span class="text-xs text-gray-400">Mis a jour 15:30</span>
+          </div>
+
+          <!-- Service group: Retrait -->
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--sg-red)">Retrait d'especes</span>
+              <span class="text-xs text-gray-400">(3, moy. 35 min)</span>
+              <span class="material-symbols-outlined" style="font-size: 14px; color: var(--sg-red)">warning</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover" style="border-left: 3px solid var(--sg-red)">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm" style="color: var(--sg-black)">R-001</span>
+                  <span class="text-sm text-gray-500">Salma Trabelsi</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-bold" style="color: var(--sg-red)">47 min</span>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white" style="background: var(--sg-red)">SLA</span>
+                  <button class="px-2 py-1 rounded text-xs font-medium text-white" style="background: var(--sg-red)">
+                    <span class="material-symbols-outlined" style="font-size: 14px">priority_high</span> Prioriser
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm" style="color: var(--sg-black)">R-002</span>
+                  <span class="text-sm text-gray-500">Ahmed Bouazizi</span>
+                </div>
+                <span class="text-xs text-gray-500">32 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm" style="color: var(--sg-black)">R-003</span>
+                  <span class="text-sm text-gray-500">Fatma Chaabane</span>
+                </div>
+                <span class="text-xs text-gray-500">18 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service group: Depot -->
+          <div class="mb-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--sg-amber)">Depot d'especes</span>
+              <span class="text-xs text-gray-400">(2, moy. 12 min)</span>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm" style="color: var(--sg-black)">D-004</span>
+                  <span class="text-sm text-gray-500">Mohamed Jelassi</span>
+                </div>
+                <span class="text-xs text-gray-500">15 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm" style="color: var(--sg-black)">D-005</span>
+                  <span class="text-sm text-gray-500">Leila Kouki</span>
+                </div>
+                <span class="text-xs text-gray-500">8 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Service group: Releves -->
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Releves de compte</span>
+              <span class="text-xs text-gray-400">(1, moy. 5 min)</span>
+            </div>
+            <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200 card-hover">
+              <div class="flex items-center gap-3">
+                <span class="font-bold text-sm" style="color: var(--sg-black)">C-006</span>
+                <span class="text-sm text-gray-500">Nadia Maatouk</span>
+              </div>
+              <span class="text-xs text-gray-500">5 min</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Counters & Quick Actions -->
+        <div class="w-80 border-l border-gray-200 bg-white p-5">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Guichets &amp; Actions</span>
+            <button class="text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1">
+              <span class="material-symbols-outlined" style="font-size: 14px">settings</span> Config
+            </button>
+          </div>
+
+          <div class="space-y-2 mb-6">
+            <!-- G1: Active -->
+            <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #ECFDF5; border-left: 3px solid var(--sg-green)">
+              <span class="w-2.5 h-2.5 rounded-full" style="background: var(--sg-green)"></span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">G1 <span class="font-normal text-gray-500">Amira</span></div>
+                <div class="text-xs text-gray-500">Sert R-000</div>
+              </div>
+              <span class="font-bold text-xs" style="color: var(--sg-green)">Actif</span>
+            </div>
+            <!-- G2: On break -->
+            <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #FEF3C7; border-left: 3px solid var(--sg-amber)">
+              <span class="w-2.5 h-2.5 rounded-full" style="background: var(--sg-amber)"></span>
+              <div class="flex-1">
+                <div class="font-medium text-sm">G2 <span class="font-normal text-gray-500">Karim</span></div>
+                <div class="text-xs" style="color: #B45309">Pause (+5 min)</div>
+              </div>
+              <button class="px-2 py-1 rounded text-xs font-medium" style="background: var(--sg-amber); color: white">Fin pause</button>
+            </div>
+            <!-- G3: Inactive -->
+            <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+              <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+              <div class="flex-1">
+                <div class="font-medium text-sm text-gray-400">G3</div>
+                <div class="text-xs text-gray-400">Inactif</div>
+              </div>
+              <button class="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600">Ouvrir</button>
+            </div>
+            <!-- G4: Inactive -->
+            <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+              <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+              <div class="flex-1">
+                <div class="font-medium text-sm text-gray-400">G4</div>
+                <div class="text-xs text-gray-400">Inactif</div>
+              </div>
+              <button class="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600">Ouvrir</button>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="border-t border-gray-200 pt-4 space-y-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Actions rapides</span>
+            <button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border hover:bg-gray-50" style="border-color: var(--sg-red); color: var(--sg-red)">
+              <span class="material-symbols-outlined" style="font-size: 18px">campaign</span> Annonce
+            </button>
+            <button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium bg-gray-100 text-gray-600 hover:bg-gray-200">
+              <span class="material-symbols-outlined" style="font-size: 18px">pause</span> Pause file
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 4: Alerts & Recommendations -->
+      <div class="relative border-t border-gray-200">
+        <span class="tier-label" style="background: var(--sg-black); color: white;">Tier 4 — Alertes &amp; Recommandations</span>
+
+        <!-- Critical Alert Banner -->
+        <div class="flex items-center gap-4 px-6 py-3 mt-2" style="background: #FEE2E2; border-left: 4px solid var(--sg-red)">
+          <span class="material-symbols-outlined" style="font-size: 22px; color: var(--sg-red)">warning</span>
+          <span class="text-sm font-semibold" style="color: #991B1B">
+            ALERTE SLA — 2 clients risquent de depasser le seuil SLA (R-001: 47 min, R-002: 32 min)
+          </span>
+        </div>
+
+        <!-- AI Recommendations -->
+        <div class="p-6 pt-4">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-red)">auto_awesome</span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-500">Recommandations IA</span>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Rec 1: Critical -->
+            <div class="rounded-xl border-2 p-4 card-hover" style="border-color: var(--sg-red); background: rgba(233,4,30,0.02)">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white" style="background: var(--sg-red)">CRITIQUE</span>
+              </div>
+              <div class="font-semibold text-sm mb-1" style="color: var(--sg-black)">Ouvrir le guichet G3</div>
+              <div class="text-xs text-gray-500 mb-3">Reduire l'attente de 41 min a ~20 min. 6 clients affectes. Confiance: 94%</div>
+              <button class="w-full py-2 rounded-lg text-xs font-bold text-white" style="background: var(--sg-red)">
+                <span class="material-symbols-outlined" style="font-size: 14px">bolt</span> Executer
+              </button>
+            </div>
+            <!-- Rec 2: High -->
+            <div class="rounded-xl border-2 p-4 card-hover" style="border-color: var(--sg-amber); background: rgba(245,158,11,0.02)">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white" style="background: var(--sg-amber)">URGENT</span>
+              </div>
+              <div class="font-semibold text-sm mb-1" style="color: var(--sg-black)">Fin de pause G2</div>
+              <div class="text-xs text-gray-500 mb-3">Karim depasse de 5 min. Impact: -15% d'attente. Confiance: 92%</div>
+              <button class="w-full py-2 rounded-lg text-xs font-bold text-white" style="background: var(--sg-amber)">
+                <span class="material-symbols-outlined" style="font-size: 14px">alarm_off</span> Executer
+              </button>
+            </div>
+            <!-- Rec 3: Medium -->
+            <div class="rounded-xl border-2 p-4 card-hover" style="border-color: #9CA3AF; background: rgba(156,163,175,0.02)">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold text-white bg-gray-500">INFO</span>
+              </div>
+              <div class="font-semibold text-sm mb-1" style="color: var(--sg-black)">Prioriser R-001</div>
+              <div class="text-xs text-gray-500 mb-3">Salma Trabelsi attend depuis 47 min. Risque SLA eleve. Confiance: 88%</div>
+              <button class="w-full py-2 rounded-lg text-xs font-bold bg-gray-100 text-gray-600">
+                <span class="material-symbols-outlined" style="font-size: 14px">priority_high</span> Executer
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="alt-divider"></div>
+
+
+    <!-- ================================================================== -->
+    <!-- ALTERNATIVE 2 — "Compact Operations Grid"                          -->
+    <!-- Dense, data-first layout for experienced managers                  -->
+    <!-- ================================================================== -->
+    <div class="mb-4">
+      <div class="inline-block px-4 py-1.5 rounded text-white text-sm font-bold" style="background: var(--sg-red)">ALTERNATIVE 2</div>
+      <h2 class="text-xl font-bold mt-2 mb-1" style="color: var(--sg-black)">Compact Operations Grid</h2>
+      <p class="text-sm mb-6 max-w-3xl" style="color: var(--sg-gray)">
+        Dense, data-first layout for experienced managers. Compact KPI strip at top. 4-panel operational
+        grid gives maximum information density. Full-width queue with inline actions. Bottom alert + recommendation
+        drawer. Optimized for <strong>minimum scrolling, maximum data per pixel</strong>.
+      </p>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden shadow-xl" style="background: #FAFAFA">
+
+      <!-- TIER 1: Compact KPI Strip -->
+      <div class="relative bg-white border-b border-gray-200">
+        <span class="tier-label" style="background: var(--sg-red); color: white;">Tier 1 — Hero Metrics</span>
+        <div class="flex items-stretch mt-2">
+          <!-- Health Score (accent strip) -->
+          <div class="w-24 flex-shrink-0 flex flex-col items-center justify-center py-4 transition-colors duration-700"
+            style="background: linear-gradient(180deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%); border-right: 3px solid var(--sg-amber)">
+            <div class="relative w-16 h-16">
+              <svg viewBox="0 0 100 100" class="w-full h-full" style="transform: rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#E5E7EB" stroke-width="7" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"
+                  stroke-dasharray="134 264" class="ring-arc" />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-xl font-black" style="color: var(--sg-amber)">51</span>
+              </div>
+            </div>
+            <div class="text-[8px] uppercase tracking-widest font-bold mt-1" style="color: var(--sg-amber)">Attention</div>
+          </div>
+
+          <!-- KPI Row -->
+          <div class="flex-1 grid grid-cols-5 divide-x divide-gray-100">
+            <!-- Waiting -->
+            <div class="flex flex-col items-center justify-center py-4 px-3">
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-red)">groups</span>
+              <span class="text-2xl font-bold mt-1" style="color: var(--sg-black)">6</span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Attente</span>
+              <div class="h-1 bg-gray-100 rounded-full mt-1.5 w-12">
+                <div class="h-full rounded-full" style="width: 30%; background: var(--sg-red)"></div>
+              </div>
+            </div>
+            <!-- Avg Wait -->
+            <div class="flex flex-col items-center justify-center py-4 px-3">
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-red)">schedule</span>
+              <span class="text-2xl font-bold mt-1" style="color: var(--sg-black)">~41<span class="text-xs font-normal text-gray-400">m</span></span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Moy.</span>
+              <div class="h-1 bg-gray-100 rounded-full mt-1.5 w-12">
+                <div class="h-full rounded-full" style="width: 68%; background: var(--sg-red)"></div>
+              </div>
+            </div>
+            <!-- Capacity -->
+            <div class="flex flex-col items-center justify-center py-4 px-3">
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-green)">storefront</span>
+              <span class="text-2xl font-bold mt-1" style="color: var(--sg-black)">100%</span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Capacite</span>
+              <div class="h-1 bg-gray-100 rounded-full mt-1.5 w-12">
+                <div class="h-full rounded-full" style="width: 100%; background: var(--sg-green)"></div>
+              </div>
+            </div>
+            <!-- SLA -->
+            <div class="flex flex-col items-center justify-center py-4 px-3">
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-red)">trending_down</span>
+              <span class="text-2xl font-bold mt-1" style="color: var(--sg-red)">67%</span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">SLA</span>
+              <div class="h-1 bg-gray-100 rounded-full mt-1.5 w-12">
+                <div class="h-full rounded-full" style="width: 67%; background: var(--sg-red)"></div>
+              </div>
+            </div>
+            <!-- Served -->
+            <div class="flex flex-col items-center justify-center py-4 px-3">
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-green)">check_circle</span>
+              <span class="text-2xl font-bold mt-1" style="color: var(--sg-black)">8<span class="text-sm font-normal text-gray-400">/100</span></span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Servis</span>
+              <div class="h-1 bg-gray-100 rounded-full mt-1.5 w-12">
+                <div class="h-full rounded-full" style="width: 8%; background: var(--sg-green)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions (integrated) -->
+          <div class="flex items-center gap-2 px-4 border-l border-gray-100">
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center text-white" style="background: var(--sg-red)" title="VIP">
+              <span class="material-symbols-outlined" style="font-size: 16px">priority_high</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500" title="Pauses">
+              <span class="material-symbols-outlined" style="font-size: 16px">coffee</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500" title="Config">
+              <span class="material-symbols-outlined" style="font-size: 16px">storefront</span>
+            </button>
+            <button class="w-8 h-8 rounded-lg flex items-center justify-center border" style="border-color: var(--sg-amber); color: var(--sg-amber)" title="Pause">
+              <span class="material-symbols-outlined" style="font-size: 16px">pause</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 2: 4-Panel Operational Grid -->
+      <div class="relative p-5 bg-white border-b border-gray-200">
+        <span class="tier-label" style="background: var(--sg-amber); color: white;">Tier 2 — Contexte Operationnel</span>
+        <div class="grid grid-cols-4 gap-4 mt-2">
+          <!-- Services -->
+          <div class="rounded-lg border border-gray-200 p-4">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">Services</div>
+            <!-- Stacked horizontal bar -->
+            <div class="h-5 rounded-full overflow-hidden flex mb-3">
+              <div style="width: 50%; background: var(--sg-red)" title="Retrait: 3"></div>
+              <div style="width: 33%; background: var(--sg-amber)" title="Depot: 2"></div>
+              <div style="width: 17%; background: #9CA3AF" title="Releves: 1"></div>
+            </div>
+            <div class="space-y-1 text-xs">
+              <div class="flex items-center justify-between"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background: var(--sg-red)"></span>Retrait</span><span class="font-bold">3</span></div>
+              <div class="flex items-center justify-between"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background: var(--sg-amber)"></span>Depot</span><span class="font-bold">2</span></div>
+              <div class="flex items-center justify-between"><span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gray-400"></span>Releves</span><span class="font-bold">1</span></div>
+            </div>
+          </div>
+
+          <!-- Counters Grid -->
+          <div class="rounded-lg border border-gray-200 p-4">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">Guichets</div>
+            <div class="grid grid-cols-2 gap-2">
+              <div class="text-center p-2 rounded" style="background: #ECFDF5">
+                <div class="font-bold text-sm" style="color: var(--sg-green)">G1</div>
+                <div class="text-[9px] text-gray-500">8 t/h</div>
+              </div>
+              <div class="text-center p-2 rounded" style="background: #FEF3C7">
+                <div class="font-bold text-sm" style="color: var(--sg-amber)">G2</div>
+                <div class="text-[9px]" style="color: #B45309">Pause</div>
+              </div>
+              <div class="text-center p-2 rounded bg-gray-100">
+                <div class="font-bold text-sm text-gray-400">G3</div>
+                <div class="text-[9px] text-gray-400">Ferme</div>
+              </div>
+              <div class="text-center p-2 rounded bg-gray-100">
+                <div class="font-bold text-sm text-gray-400">G4</div>
+                <div class="text-[9px] text-gray-400">Ferme</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SLA Progress -->
+          <div class="rounded-lg border border-gray-200 p-4">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">Objectif SLA</div>
+            <div class="relative pt-2">
+              <div class="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
+                <div class="h-full rounded-full" style="width: 67%; background: var(--sg-red)"></div>
+              </div>
+              <div class="flex justify-between text-xs">
+                <span class="font-bold" style="color: var(--sg-red)">67%</span>
+                <span class="text-gray-400">Cible: 80%</span>
+              </div>
+              <div class="mt-3 flex items-center gap-1 text-xs" style="color: var(--sg-red)">
+                <span class="material-symbols-outlined" style="font-size: 14px">trending_down</span> En deterioration
+              </div>
+            </div>
+          </div>
+
+          <!-- Forecast Sparkline -->
+          <div class="rounded-lg border border-gray-200 p-4">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">Prevision +4h</div>
+            <div class="flex items-end gap-1 h-12">
+              <div class="flex-1 rounded-t transition-all" style="height: 35%; background: #D1D5DB"></div>
+              <div class="flex-1 rounded-t transition-all" style="height: 55%; background: var(--sg-amber)"></div>
+              <div class="flex-1 rounded-t transition-all pulse-critical" style="height: 95%; background: var(--sg-red)"></div>
+              <div class="flex-1 rounded-t transition-all" style="height: 70%; background: var(--sg-amber)"></div>
+            </div>
+            <div class="flex justify-between text-[8px] text-gray-400 mt-1">
+              <span>16h</span><span>17h</span><span>18h</span><span>19h</span>
+            </div>
+            <div class="mt-2 text-xs text-center">
+              <span class="font-bold" style="color: var(--sg-red)">Pic: 15 clients a 18h</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 3: Full-Width Queue Table -->
+      <div class="relative p-5">
+        <span class="tier-label" style="background: var(--sg-green); color: white;">Tier 3 — File d'Attente</span>
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mt-2">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-200" style="background: #FAFAFA">
+                <th class="text-left py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Ticket</th>
+                <th class="text-left py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Client</th>
+                <th class="text-left py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Service</th>
+                <th class="text-left py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Attente</th>
+                <th class="text-left py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Statut</th>
+                <th class="text-right py-3 px-4 text-[10px] uppercase tracking-widest font-semibold text-gray-400">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-gray-100 hover:bg-gray-50" style="background: rgba(233,4,30,0.02)">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">R-001</td>
+                <td class="py-3 px-4 text-gray-600">Salma Trabelsi</td>
+                <td class="py-3 px-4 text-gray-600">Retrait</td>
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-red)">47 min</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold text-white" style="background: var(--sg-red)">SLA</span></td>
+                <td class="py-3 px-4 text-right"><button class="px-3 py-1 rounded text-xs font-medium text-white" style="background: var(--sg-red)">Prioriser</button></td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">R-002</td>
+                <td class="py-3 px-4 text-gray-600">Ahmed Bouazizi</td>
+                <td class="py-3 px-4 text-gray-600">Retrait</td>
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-amber)">32 min</td>
+                <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] font-bold" style="background: #FEF3C7; color: #92400E">A risque</span></td>
+                <td class="py-3 px-4 text-right"><button class="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-600">Prioriser</button></td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">R-003</td>
+                <td class="py-3 px-4 text-gray-600">Fatma Chaabane</td>
+                <td class="py-3 px-4 text-gray-600">Retrait</td>
+                <td class="py-3 px-4 text-gray-500">18 min</td>
+                <td class="py-3 px-4"><span class="text-xs text-gray-400">Normal</span></td>
+                <td class="py-3 px-4"></td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">D-004</td>
+                <td class="py-3 px-4 text-gray-600">Mohamed Jelassi</td>
+                <td class="py-3 px-4 text-gray-600">Depot</td>
+                <td class="py-3 px-4 text-gray-500">15 min</td>
+                <td class="py-3 px-4"><span class="text-xs text-gray-400">Normal</span></td>
+                <td class="py-3 px-4"></td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">D-005</td>
+                <td class="py-3 px-4 text-gray-600">Leila Kouki</td>
+                <td class="py-3 px-4 text-gray-600">Depot</td>
+                <td class="py-3 px-4 text-gray-500">8 min</td>
+                <td class="py-3 px-4"><span class="text-xs text-gray-400">Normal</span></td>
+                <td class="py-3 px-4"></td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="py-3 px-4 font-bold" style="color: var(--sg-black)">C-006</td>
+                <td class="py-3 px-4 text-gray-600">Nadia Maatouk</td>
+                <td class="py-3 px-4 text-gray-600">Releves</td>
+                <td class="py-3 px-4 text-gray-500">5 min</td>
+                <td class="py-3 px-4"><span class="text-xs text-gray-400">Normal</span></td>
+                <td class="py-3 px-4"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TIER 4: Bottom Alert + Expandable Recommendations -->
+      <div class="relative border-t border-gray-200">
+        <span class="tier-label" style="background: var(--sg-black); color: white;">Tier 4 — Recommandations</span>
+
+        <div class="flex items-center gap-4 px-6 py-3 mt-2" style="background: #FEE2E2; border-left: 4px solid var(--sg-red)">
+          <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-red)">warning</span>
+          <span class="flex-1 text-sm font-semibold" style="color: #991B1B">2 alertes: R-001 attend 47 min | G2 depasse la pause de 5 min</span>
+        </div>
+
+        <div class="p-5">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-red)">auto_awesome</span>
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">3 recommandations</span>
+          </div>
+          <div class="flex gap-3">
+            <!-- Compact rec cards as horizontal chips -->
+            <div class="flex-1 flex items-center gap-3 p-3 rounded-lg border-2" style="border-color: var(--sg-red); background: rgba(233,4,30,0.02)">
+              <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-red)">door_open</span>
+              <div class="flex-1">
+                <div class="font-semibold text-sm">Ouvrir G3</div>
+                <div class="text-xs text-gray-500">-21 min attente estimee</div>
+              </div>
+              <button class="px-3 py-1.5 rounded-lg text-xs font-bold text-white" style="background: var(--sg-red)">Executer</button>
+            </div>
+            <div class="flex-1 flex items-center gap-3 p-3 rounded-lg border-2" style="border-color: var(--sg-amber); background: rgba(245,158,11,0.02)">
+              <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-amber)">alarm_off</span>
+              <div class="flex-1">
+                <div class="font-semibold text-sm">Fin pause G2</div>
+                <div class="text-xs text-gray-500">+5 min depassement</div>
+              </div>
+              <button class="px-3 py-1.5 rounded-lg text-xs font-bold text-white" style="background: var(--sg-amber)">Executer</button>
+            </div>
+            <div class="flex-1 flex items-center gap-3 p-3 rounded-lg border border-gray-200">
+              <span class="material-symbols-outlined" style="font-size: 20px; color: #6B7280">priority_high</span>
+              <div class="flex-1">
+                <div class="font-semibold text-sm">Prioriser R-001</div>
+                <div class="text-xs text-gray-500">47 min d'attente</div>
+              </div>
+              <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gray-100 text-gray-600">Executer</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="alt-divider"></div>
+
+
+    <!-- ================================================================== -->
+    <!-- ALTERNATIVE 3 — "Split Monitor + Action Panel"                     -->
+    <!-- 60/40 split: Monitor left, Actions right                           -->
+    <!-- ================================================================== -->
+    <div class="mb-4">
+      <div class="inline-block px-4 py-1.5 rounded text-white text-sm font-bold" style="background: var(--sg-red)">ALTERNATIVE 3</div>
+      <h2 class="text-xl font-bold mt-2 mb-1" style="color: var(--sg-black)">Split Monitor + Action Panel</h2>
+      <p class="text-sm mb-6 max-w-3xl" style="color: var(--sg-gray)">
+        Two clear halves: <strong>"Monitor"</strong> (left 60%) and <strong>"Act"</strong> (right 40%).
+        The manager's left eye scans the queue, the right hand acts on counters and recommendations.
+        Hero bar spans full width. Service breakdown and forecast are embedded in the left column.
+        All actionable items (counters, recommendations, quick actions) consolidated on the right.
+      </p>
+    </div>
+
+    <div class="rounded-2xl overflow-hidden shadow-xl" style="background: #FAFAFA">
+
+      <!-- TIER 1: Full-Width Hero Strip (dark) -->
+      <div class="relative" style="background: var(--sg-black)">
+        <span class="tier-label" style="background: var(--sg-red); color: white;">Tier 1 — Hero Metrics</span>
+        <div class="flex items-center justify-between px-6 py-5 mt-2">
+          <!-- Health Ring -->
+          <div class="flex items-center gap-4">
+            <div class="relative w-16 h-16">
+              <svg viewBox="0 0 100 100" class="w-full h-full" style="transform: rotate(-90deg)">
+                <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="7" />
+                <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"
+                  stroke-dasharray="134 264" class="ring-arc" />
+              </svg>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-xl font-black" style="color: #F59E0B">51</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-xs font-bold uppercase tracking-widest" style="color: #F59E0B">Attention</div>
+              <div class="text-[10px] text-gray-500 uppercase tracking-wide">Score de sante</div>
+            </div>
+          </div>
+
+          <!-- Metrics strip -->
+          <div class="flex items-center gap-8">
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: #EF4444">groups</span>
+                <span class="text-2xl font-bold text-white">6</span>
+              </div>
+              <div class="text-[9px] uppercase tracking-widest text-gray-500">Attente</div>
+            </div>
+            <div class="h-8 w-px bg-gray-700"></div>
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: #F59E0B">schedule</span>
+                <span class="text-2xl font-bold text-white">~41<span class="text-sm text-gray-500">m</span></span>
+              </div>
+              <div class="text-[9px] uppercase tracking-widest text-gray-500">Moy.</div>
+            </div>
+            <div class="h-8 w-px bg-gray-700"></div>
+            <div class="text-center">
+              <span class="text-2xl font-bold text-white">100%</span>
+              <div class="text-[9px] uppercase tracking-widest text-gray-500">Capacite</div>
+            </div>
+            <div class="h-8 w-px bg-gray-700"></div>
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span class="text-2xl font-bold" style="color: #EF4444">67%</span>
+                <span class="material-symbols-outlined" style="font-size: 14px; color: #EF4444">trending_down</span>
+              </div>
+              <div class="text-[9px] uppercase tracking-widest text-gray-500">SLA</div>
+            </div>
+            <div class="h-8 w-px bg-gray-700"></div>
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: #10B981">check_circle</span>
+                <span class="text-2xl font-bold text-white">8<span class="text-sm text-gray-500">/100</span></span>
+              </div>
+              <div class="text-[9px] uppercase tracking-widest text-gray-500">Servis</div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center gap-2">
+            <button class="px-3 py-2 rounded-lg text-sm font-medium text-white" style="background: var(--sg-red)">
+              <span class="material-symbols-outlined" style="font-size: 16px">priority_high</span> VIP
+            </button>
+            <button class="px-3 py-2 rounded-lg text-sm font-medium border border-gray-600 text-gray-300">
+              <span class="material-symbols-outlined" style="font-size: 16px">pause</span> Pause
+            </button>
+            <span class="text-xs text-gray-600 ml-2">
+              <span class="material-symbols-outlined" style="font-size: 14px">schedule</span> 15:30
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert Banner -->
+      <div class="flex items-center gap-4 px-6 py-2.5" style="background: #FEE2E2; border-bottom: 1px solid #FECACA">
+        <span class="material-symbols-outlined pulse-critical" style="font-size: 18px; color: var(--sg-red)">warning</span>
+        <span class="text-xs font-semibold" style="color: #991B1B">SLA ALERTE — R-001 attend depuis 47 min &bull; G2 depasse la pause de 5 min</span>
+      </div>
+
+      <!-- TIER 2 + 3: Split View -->
+      <div class="relative flex" style="min-height: 520px">
+
+        <!-- LEFT 60%: Monitor (Tier 2 + Queue) -->
+        <div class="w-[60%] border-r border-gray-200">
+          <span class="tier-label" style="background: var(--sg-green); color: white; left: 16px">Tier 2+3 — Monitoring</span>
+
+          <!-- Operational Context: Service Breakdown + Forecast side by side -->
+          <div class="grid grid-cols-2 gap-4 p-5 pt-6 border-b border-gray-200">
+            <!-- Service Breakdown -->
+            <div class="rounded-lg border border-gray-200 p-4 bg-white">
+              <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">
+                <span class="material-symbols-outlined" style="font-size: 14px">category</span> Par service
+              </div>
+              <div class="space-y-2.5">
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="font-medium">Retrait</span><span class="font-bold" style="color: var(--sg-red)">3 <span class="material-symbols-outlined" style="font-size: 12px">warning</span></span></div>
+                  <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 50%; background: var(--sg-red)"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="font-medium">Depot</span><span class="font-bold" style="color: var(--sg-amber)">2</span></div>
+                  <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 33%; background: var(--sg-amber)"></div></div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1"><span class="font-medium">Releves</span><span class="font-bold text-gray-500">1</span></div>
+                  <div class="h-2 bg-gray-100 rounded-full"><div class="h-full rounded-full" style="width: 17%; background: #9CA3AF"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Forecast mini chart -->
+            <div class="rounded-lg border border-gray-200 p-4 bg-white">
+              <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-400 mb-3">
+                <span class="material-symbols-outlined" style="font-size: 14px">trending_up</span> Prevision
+              </div>
+              <div class="flex items-end gap-1.5 h-14">
+                <div class="flex-1 rounded-t" style="height: 30%; background: #D1D5DB"></div>
+                <div class="flex-1 rounded-t" style="height: 50%; background: #D1D5DB"></div>
+                <div class="flex-1 rounded-t" style="height: 75%; background: var(--sg-amber)"></div>
+                <div class="flex-1 rounded-t pulse-critical" style="height: 100%; background: var(--sg-red)"></div>
+                <div class="flex-1 rounded-t" style="height: 65%; background: var(--sg-amber)"></div>
+                <div class="flex-1 rounded-t" style="height: 40%; background: #D1D5DB"></div>
+              </div>
+              <div class="flex justify-between text-[8px] text-gray-400 mt-1">
+                <span>15h</span><span>16h</span><span>17h</span><span>18h</span><span>19h</span><span>20h</span>
+              </div>
+              <div class="text-xs text-center mt-2 font-semibold" style="color: var(--sg-red)">Pic: 15 a 18h</div>
+            </div>
+          </div>
+
+          <!-- Queue List -->
+          <div class="p-5">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">File d'attente</span>
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold text-white" style="background: var(--sg-red)">6</span>
+            </div>
+            <div class="space-y-2">
+              <!-- Ticket cards with service color coding -->
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid var(--sg-red)">
+                <div class="flex items-center gap-3">
+                  <span class="font-bold text-sm">R-001</span>
+                  <span class="text-sm text-gray-500">Salma Trabelsi</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded font-semibold text-white" style="background: var(--sg-red)">SLA</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold" style="color: var(--sg-red)">47 min</span>
+                  <button class="px-2 py-1 rounded text-xs font-medium text-white" style="background: var(--sg-red)">Prioriser</button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid var(--sg-red)">
+                <div class="flex items-center gap-3"><span class="font-bold text-sm">R-002</span><span class="text-sm text-gray-500">Ahmed Bouazizi</span></div>
+                <span class="text-xs font-medium" style="color: var(--sg-amber)">32 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid var(--sg-red)">
+                <div class="flex items-center gap-3"><span class="font-bold text-sm">R-003</span><span class="text-sm text-gray-500">Fatma Chaabane</span></div>
+                <span class="text-xs text-gray-500">18 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid var(--sg-amber)">
+                <div class="flex items-center gap-3"><span class="font-bold text-sm">D-004</span><span class="text-sm text-gray-500">Mohamed Jelassi</span></div>
+                <span class="text-xs text-gray-500">15 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid var(--sg-amber)">
+                <div class="flex items-center gap-3"><span class="font-bold text-sm">D-005</span><span class="text-sm text-gray-500">Leila Kouki</span></div>
+                <span class="text-xs text-gray-500">8 min</span>
+              </div>
+              <div class="flex items-center justify-between p-3 rounded-lg bg-white border border-gray-200" style="border-left: 3px solid #9CA3AF">
+                <div class="flex items-center gap-3"><span class="font-bold text-sm">C-006</span><span class="text-sm text-gray-500">Nadia Maatouk</span></div>
+                <span class="text-xs text-gray-500">5 min</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT 40%: Action Panel (Tier 3 actions + Tier 4 recs) -->
+        <div class="w-[40%] bg-white">
+          <span class="tier-label" style="background: var(--sg-black); color: white; left: auto; right: 16px">Tier 3+4 — Actions</span>
+
+          <!-- Counters -->
+          <div class="p-5 pt-6 border-b border-gray-200">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Guichets</span>
+              <button class="text-xs text-gray-400 flex items-center gap-1"><span class="material-symbols-outlined" style="font-size: 14px">settings</span>Config</button>
+            </div>
+            <div class="space-y-2">
+              <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #ECFDF5; border-left: 3px solid var(--sg-green)">
+                <span class="w-2.5 h-2.5 rounded-full" style="background: var(--sg-green)"></span>
+                <div class="flex-1"><div class="font-medium text-sm">G1 <span class="font-normal text-gray-500">Amira</span></div><div class="text-xs text-gray-500">Sert R-000 &bull; 8 t/h</div></div>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg" style="background: #FEF3C7; border-left: 3px solid var(--sg-amber)">
+                <span class="w-2.5 h-2.5 rounded-full" style="background: var(--sg-amber)"></span>
+                <div class="flex-1"><div class="font-medium text-sm">G2 <span class="font-normal text-gray-500">Karim</span></div><div class="text-xs" style="color: #B45309">Pause +5 min</div></div>
+                <button class="px-2 py-1 rounded text-xs font-medium" style="background: var(--sg-amber); color: white">Fin</button>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+                <div class="flex-1"><div class="font-medium text-sm text-gray-400">G3</div></div>
+                <button class="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600">Ouvrir</button>
+              </div>
+              <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+                <div class="flex-1"><div class="font-medium text-sm text-gray-400">G4</div></div>
+                <button class="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600">Ouvrir</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Recommendations -->
+          <div class="p-5 border-b border-gray-200">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-red)">auto_awesome</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Recommandations</span>
+            </div>
+            <div class="space-y-3">
+              <div class="p-3 rounded-lg border-2" style="border-color: var(--sg-red); background: rgba(233,4,30,0.02)">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white" style="background: var(--sg-red)">CRITIQUE</span>
+                  <span class="font-semibold text-sm">Ouvrir G3</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-2">Reduire l'attente de 41 a ~20 min</div>
+                <button class="w-full py-2 rounded-lg text-xs font-bold text-white" style="background: var(--sg-red)">
+                  <span class="material-symbols-outlined" style="font-size: 14px">bolt</span> Executer
+                </button>
+              </div>
+              <div class="p-3 rounded-lg border-2" style="border-color: var(--sg-amber); background: rgba(245,158,11,0.02)">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white" style="background: var(--sg-amber)">URGENT</span>
+                  <span class="font-semibold text-sm">Fin pause G2</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-2">Karim depasse de 5 min</div>
+                <button class="w-full py-2 rounded-lg text-xs font-bold text-white" style="background: var(--sg-amber)">
+                  <span class="material-symbols-outlined" style="font-size: 14px">alarm_off</span> Executer
+                </button>
+              </div>
+              <div class="p-3 rounded-lg border border-gray-200">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white bg-gray-500">INFO</span>
+                  <span class="font-semibold text-sm">Prioriser R-001</span>
+                </div>
+                <div class="text-xs text-gray-500 mb-2">47 min d'attente, risque SLA</div>
+                <button class="w-full py-2 rounded-lg text-xs font-bold bg-gray-100 text-gray-600">Executer</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="p-5">
+            <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 block mb-3">Autres actions</span>
+            <div class="space-y-2">
+              <button class="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border" style="border-color: var(--sg-red); color: var(--sg-red)">
+                <span class="material-symbols-outlined" style="font-size: 18px">campaign</span> Annonce
+              </button>
+              <div class="flex gap-2">
+                <button class="flex-1 py-2 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 flex items-center justify-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size: 16px">door_open</span> Ouvrir tous
+                </button>
+                <button class="flex-1 py-2 rounded-lg text-xs font-medium bg-gray-100 text-gray-600 flex items-center justify-center gap-1">
+                  <span class="material-symbols-outlined" style="font-size: 16px">logout</span> Fin journee
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ================================================================== -->
+    <!-- COMPARISON TABLE                                                    -->
+    <!-- ================================================================== -->
+    <div class="mt-16 mb-8">
+      <h2 class="text-xl font-bold mb-6" style="color: var(--sg-black)">Comparison</h2>
+      <div class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b-2 border-gray-200" style="background: #FAFAFA">
+              <th class="text-left py-4 px-5 font-semibold text-gray-700 w-40">Critere</th>
+              <th class="text-left py-4 px-5 font-semibold" style="color: var(--sg-red)">1. Gauge Trio</th>
+              <th class="text-left py-4 px-5 font-semibold" style="color: var(--sg-red)">2. Compact Grid</th>
+              <th class="text-left py-4 px-5 font-semibold" style="color: var(--sg-red)">3. Split Monitor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Tier 1 (Hero)</td>
+              <td class="py-3 px-5 text-gray-600">3 large gauges + action card (Plan 2 style)</td>
+              <td class="py-3 px-5 text-gray-600">Traffic light strip + icon-only actions</td>
+              <td class="py-3 px-5 text-gray-600">Dark bar + metrics + inline actions</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Tier 2 (Context)</td>
+              <td class="py-3 px-5 text-gray-600">3-column cards (service, counters, forecast)</td>
+              <td class="py-3 px-5 text-gray-600">4-panel grid (stacked bar, counter grid, SLA, sparkline)</td>
+              <td class="py-3 px-5 text-gray-600">Embedded in left column (2 mini-cards)</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Tier 3 (Content)</td>
+              <td class="py-3 px-5 text-gray-600">Queue cards grouped by service + sidebar</td>
+              <td class="py-3 px-5 text-gray-600">Full-width sortable table</td>
+              <td class="py-3 px-5 text-gray-600">Queue cards left + action panel right</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Tier 4 (AI)</td>
+              <td class="py-3 px-5 text-gray-600">Alert banner + 3-column rec cards</td>
+              <td class="py-3 px-5 text-gray-600">Alert strip + horizontal rec chips</td>
+              <td class="py-3 px-5 text-gray-600">Recs embedded in right action panel</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Fidelite Plan 2</td>
+              <td class="py-3 px-5 font-bold" style="color: var(--sg-green)">Tres fidele</td>
+              <td class="py-3 px-5">Moderee (plus compact)</td>
+              <td class="py-3 px-5">Interpretation libre</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Densite d'info</td>
+              <td class="py-3 px-5">Moyenne (genereux espacement)</td>
+              <td class="py-3 px-5 font-bold" style="color: var(--sg-green)">Haute (max data/pixel)</td>
+              <td class="py-3 px-5">Moyenne (split clair)</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-5 font-medium text-gray-700">Accessibilite actions</td>
+              <td class="py-3 px-5">Action card proeminente + sidebar</td>
+              <td class="py-3 px-5">Icones compactes en haut</td>
+              <td class="py-3 px-5 font-bold" style="color: var(--sg-green)">Panneau dedie a droite</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-5 font-medium text-gray-700">Ideal pour</td>
+              <td class="py-3 px-5 text-gray-600">Nouveaux managers, presentations</td>
+              <td class="py-3 px-5 text-gray-600">Managers experimentes, suivi intensif</td>
+              <td class="py-3 px-5 text-gray-600">Workflow "scanner puis agir"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -138,6 +138,92 @@ router.get('/branch/:branchId/comparison', requireRole('bank_admin', 'branch_man
 });
 
 /**
+ * GET /api/analytics/branch/:branchId/charts
+ * Get chart data for historical trends visualization
+ * Query params: period=week|month, metrics=served,avgWait,slaPercent,noShows
+ */
+router.get('/branch/:branchId/charts', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+    const { period = 'week', metrics = 'served' } = req.query;
+
+    const validPeriod = period === 'month' ? 'month' : 'week';
+    const validMetrics = (metrics as string)
+      .split(',')
+      .filter((m) => ['served', 'avgWait', 'slaPercent', 'noShows'].includes(m)) as (
+      | 'served'
+      | 'avgWait'
+      | 'slaPercent'
+      | 'noShows'
+    )[];
+
+    if (validMetrics.length === 0) {
+      validMetrics.push('served');
+    }
+
+    const result = await analyticsService.getChartData(
+      branchId,
+      validPeriod,
+      validMetrics,
+      req.tenantId!,
+      req.user!
+    );
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/analytics/branch/:branchId/teller/:tellerId/timeline
+ * Get detailed teller activity timeline for a specific day
+ * Query params: date (optional, defaults to today)
+ */
+router.get('/branch/:branchId/teller/:tellerId/timeline', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId, tellerId } = req.params;
+    const { date } = req.query;
+
+    const result = await analyticsService.getTellerTimeline(
+      branchId,
+      tellerId,
+      date ? new Date(date as string) : new Date(),
+      req.tenantId!,
+      req.user!
+    );
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/analytics/branch/:branchId/top-services
+ * Get top 3 services for today (for branch objectives card)
+ */
+router.get('/branch/:branchId/top-services', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
+  try {
+    const { branchId } = req.params;
+    const result = await analyticsService.getTopServices(branchId, req.tenantId!, req.user!);
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /api/analytics/tenant/ranking
  * Get branch ranking for competitive awareness (accessible by branch managers)
  */

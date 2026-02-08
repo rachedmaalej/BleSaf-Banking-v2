@@ -227,8 +227,8 @@ export default function TellerDashboard() {
   const currentTicket = tellerQueue.currentTicket;
   // Use global FIFO queue for "next" ticket - all tellers see the same next customer
   const nextTicket = tellerQueue.globalQueue?.[0] || null;
-  // Use global FIFO queue for footer (same for all tellers in branch)
-  const queueTickets = tellerQueue.globalQueue?.slice(0, 6) || [];
+  // Use global FIFO queue for footer (same for all tellers in branch) - show all tickets
+  const queueTickets = tellerQueue.globalQueue || [];
   const totalWaiting = tellerQueue.totalWaitingInBranch ?? tellerQueue.nextTickets.length;
 
   const currentColors = currentTicket ? getServiceColors(currentTicket.serviceName) : null;
@@ -451,54 +451,50 @@ export default function TellerDashboard() {
 
         {/* Queue Bar at Bottom - Refined */}
         <footer
-          className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between flex-shrink-0"
+          className="px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-4 flex-shrink-0"
           style={{ background: '#FAFAFA', borderTop: '1px solid #E5E5E5' }}
         >
-          <div className="flex items-center gap-2 sm:gap-4 overflow-hidden">
-            <span
-              className="text-xs font-semibold uppercase tracking-wider flex-shrink-0"
-              style={{ color: '#999' }}
-            >
-              File
-            </span>
-            <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto">
-              {queueTickets.length > 0 ? (
-                queueTickets.map((ticket, index) => {
-                  const colors = getServiceColors(ticket.serviceName);
-                  // Hide tickets beyond index 2 on small screens (show first 3)
-                  const hiddenOnMobile = index > 2 ? 'hidden sm:flex' : 'flex';
-                  return (
-                    <div key={ticket.id} className={`${hiddenOnMobile} items-center gap-1 sm:gap-2 flex-shrink-0`}>
-                      {index > 0 && (
-                        <span
-                          className="material-symbols-outlined hidden sm:inline"
-                          style={{ fontSize: '16px', color: '#79747E' }}
-                        >
-                          chevron_right
-                        </span>
-                      )}
-                      <div className="flex items-center gap-1 text-xs sm:text-sm font-medium" style={{ color: '#1C1B1F' }}>
-                        <span
-                          className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full"
-                          style={{ background: colors.accent }}
-                        />
-                        {ticket.ticketNumber}
-                      </div>
+          <span
+            className="text-xs font-semibold uppercase tracking-wider flex-shrink-0"
+            style={{ color: '#999' }}
+          >
+            File d'attente
+          </span>
+
+          <div className="flex-1 flex items-center gap-2 overflow-hidden min-w-0">
+            {queueTickets.length > 0 ? (
+              queueTickets.map((ticket, index) => {
+                const colors = getServiceColors(ticket.serviceName);
+                return (
+                  <div key={ticket.id} className="flex items-center gap-2 flex-shrink-0">
+                    {index > 0 && (
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ fontSize: '16px', color: '#79747E' }}
+                      >
+                        chevron_right
+                      </span>
+                    )}
+                    <div className="flex items-center gap-1 text-sm font-medium" style={{ color: '#1C1B1F' }}>
+                      <span
+                        className="w-2 h-2 rounded-full"
+                        style={{ background: colors.accent }}
+                      />
+                      {ticket.ticketNumber}
                     </div>
-                  );
-                })
-              ) : (
-                <span className="text-xs sm:text-sm" style={{ color: '#79747E' }}>
-                  Aucun ticket en attente
-                </span>
-              )}
-            </div>
+                  </div>
+                );
+              })
+            ) : (
+              <span className="text-sm" style={{ color: '#79747E' }}>
+                Aucun ticket en attente
+              </span>
+            )}
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm flex-shrink-0" style={{ color: '#666' }}>
+          <div className="flex items-center gap-2 text-sm flex-shrink-0" style={{ color: '#666' }}>
             <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>groups</span>
-            <span className="hidden sm:inline">{totalWaiting} en attente</span>
-            <span className="sm:hidden">{totalWaiting}</span>
+            <span>{totalWaiting} en attente</span>
           </div>
         </footer>
       </div>

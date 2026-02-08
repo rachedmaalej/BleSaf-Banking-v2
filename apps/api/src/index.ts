@@ -16,6 +16,12 @@ import queueRoutes from './routes/queue';
 import adminRoutes from './routes/admin';
 import analyticsRoutes from './routes/analytics';
 import breaksRoutes from './routes/breaks';
+import announcementRoutes from './routes/announcements';
+import webhookRoutes from './routes/webhooks';
+import templateRoutes from './routes/templates';
+import aiRoutes from './routes/ai';
+import hqRoutes from './routes/hq';
+import { scheduleService } from './services/scheduleService';
 
 // Initialize Sentry
 if (config.SENTRY_DSN) {
@@ -95,6 +101,11 @@ app.use('/api/queue', queueRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/breaks', breaksRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/templates', templateRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/hq', hqRoutes);
 
 // 404 handler
 app.use((_req, res) => {
@@ -180,6 +191,10 @@ async function gracefulShutdown(signal: string) {
     logger.info('Socket.IO closed');
   });
 
+  // Close schedule service
+  await scheduleService.close();
+  logger.info('Schedule service closed');
+
   // Disconnect Redis
   await disconnectRedis();
   logger.info('Redis disconnected');
@@ -204,6 +219,10 @@ async function start() {
     // Test database connection
     await prisma.$connect();
     logger.info('Database connected');
+
+    // Initialize schedule service (auto queue open/close)
+    await scheduleService.initialize();
+    logger.info('Schedule service initialized');
 
     // Start HTTP server
     httpServer.listen(config.PORT, () => {

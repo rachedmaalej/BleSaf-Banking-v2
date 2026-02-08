@@ -171,7 +171,7 @@ export function AlertPanel({
       case 'queue_backup':
         return 'File longue';
       case 'slow_teller':
-        return 'Guichetier lent';
+        return 'Agent lent';
       case 'break_overtime':
         return 'Pause dépassée';
       default:
@@ -400,6 +400,7 @@ export function buildEnhancedAlerts(
     userId: string;
     userName: string;
     avgServiceMins: number;
+    totalServed: number;
   }>,
   stats: { waiting: number } | null,
   activeBreaks: Record<string, {
@@ -453,14 +454,14 @@ export function buildEnhancedAlerts(
     });
   }
 
-  // Slow teller alerts
+  // Slow teller alerts (require minimum 5 served for reliable average)
   agentStats.forEach((agent) => {
-    if (agent.avgServiceMins > thresholds.SLOW_TELLER_MINS) {
+    if (agent.totalServed >= 5 && agent.avgServiceMins > thresholds.SLOW_TELLER_MINS) {
       alerts.push({
         id: `slow-teller-${agent.userId}`,
         type: 'slow_teller',
         severity: 'warning',
-        title: 'Guichetier lent',
+        title: 'Agent lent',
         details: `${agent.userName} - moyenne ${Math.round(agent.avgServiceMins)} min/client`,
         timestamp: now,
         tellerId: agent.userId,

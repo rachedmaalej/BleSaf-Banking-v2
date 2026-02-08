@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiosk Workflow - Refined SG Style Alternatives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0&display=swap" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F8F8F8;
+      padding: 40px 20px;
+      min-height: 100vh;
+      color: #1A1A1A;
+    }
+
+    h1 {
+      text-align: center;
+      color: #000;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 28px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 40px;
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    /* Tab Navigation - Refined */
+    .tab-nav {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 32px;
+      background: #EFEFEF;
+      padding: 4px;
+      border-radius: 8px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: #666;
+    }
+
+    .tab-btn:hover {
+      color: #333;
+    }
+
+    .tab-btn.active {
+      background: white;
+      color: #1A1A1A;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Service Workflow Section */
+    .workflow-section {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid #E8E8E8;
+    }
+
+    .workflow-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .workflow-color-indicator {
+      width: 4px;
+      height: 32px;
+      border-radius: 2px;
+    }
+
+    .workflow-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .workflow-hex {
+      font-family: 'SF Mono', 'Monaco', monospace;
+      font-size: 11px;
+      color: #888;
+      margin-left: auto;
+    }
+
+    /* Screen Flow Container */
+    .screen-flow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 4px 0;
+    }
+
+    .flow-arrow {
+      color: #D0D0D0;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Mini Screen Mockups - More Refined */
+    .mini-screen {
+      width: 180px;
+      height: 300px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid #E0E0E0;
+      position: relative;
+      background: white;
+    }
+
+    .screen-label {
+      position: absolute;
+      top: -22px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 500;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Screen 1: Service Selection */
+    .screen1 {
+      background: #FAFAFA;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen1 .mini-header {
+      background: white;
+      padding: 8px 10px;
+      border-bottom: 1px solid #EBEBEB;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .screen1 .mini-logo {
+      width: 32px;
+      height: 12px;
+      background: linear-gradient(90deg, #E9041E 0%, #E9041E 30%, #1A1A1A 30%);
+      border-radius: 1px;
+    }
+
+    .screen1 .mini-time {
+      margin-left: auto;
+      font-size: 9px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .screen1 .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 12px 10px;
+      flex: 1;
+    }
+
+    .mini-service-card {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .mini-service-card .material-symbols-outlined {
+      font-size: 20px;
+    }
+
+    .mini-service-card.selected {
+      transform: scale(1.02);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    /* Screen 2: Phone Entry */
+    .screen2 {
+      background: #FAFAFA;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen2 .mini-header {
+      background: white;
+      padding: 8px 10px;
+      border-bottom: 1px solid #EBEBEB;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .screen2 .back-icon {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .screen2 .mini-logo {
+      width: 28px;
+      height: 10px;
+      background: linear-gradient(90deg, #E9041E 0%, #E9041E 30%, #1A1A1A 30%);
+      border-radius: 1px;
+    }
+
+    .screen2 .mini-time {
+      margin-left: auto;
+      font-size: 9px;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .screen2 .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .screen2 .service-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .screen2 .service-indicator .material-symbols-outlined {
+      font-size: 10px;
+    }
+
+    .screen2 .title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 3px;
+    }
+
+    .screen2 .subtitle-text {
+      font-size: 7px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .screen2 .phone-input {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: white;
+      padding: 3px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      width: 100%;
+      border: 1px solid #E0E0E0;
+    }
+
+    .screen2 .phone-prefix {
+      padding: 5px 6px;
+      font-size: 8px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .screen2 .phone-field {
+      flex: 1;
+      font-size: 8px;
+      color: #AAA;
+      padding: 5px;
+    }
+
+    .screen2 .cta-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 8px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      width: 100%;
+    }
+
+    .screen2 .cta-button .material-symbols-outlined {
+      font-size: 10px;
+    }
+
+    .screen2 .skip-button {
+      padding: 5px 10px;
+      font-size: 7px;
+      color: #888;
+      background: transparent;
+      border: none;
+    }
+
+    /* Screen 3: Ticket Confirmation */
+    .screen3 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .screen3 .ticket-card {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      width: 100%;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    .screen3 .ticket-title {
+      font-size: 9px;
+      color: #888;
+      margin-bottom: 4px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .screen3 .ticket-number {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 2px;
+      letter-spacing: -1px;
+    }
+
+    .screen3 .ticket-service {
+      font-size: 8px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .screen3 .info-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .screen3 .info-box {
+      flex: 1;
+      background: #F5F5F5;
+      border-radius: 4px;
+      padding: 6px;
+    }
+
+    .screen3 .info-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    .screen3 .info-label {
+      font-size: 6px;
+      color: #888;
+      text-transform: uppercase;
+    }
+
+    .screen3 .qr-placeholder {
+      width: 40px;
+      height: 40px;
+      background: #F0F0F0;
+      border-radius: 4px;
+      margin: 0 auto 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screen3 .qr-placeholder .material-symbols-outlined {
+      font-size: 20px;
+      color: #CCC;
+    }
+
+    .screen3 .new-ticket-btn {
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 8px;
+      font-weight: 600;
+    }
+
+    /* Alternative Description */
+    .alt-description {
+      background: white;
+      border: 1px solid #E8E8E8;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .alt-description h2 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+    }
+
+    .alt-description p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .alt-description .key-points {
+      display: flex;
+      gap: 24px;
+    }
+
+    .alt-description .point {
+      flex: 1;
+    }
+
+    .alt-description .point h4 {
+      font-size: 11px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .alt-description .point ul {
+      font-size: 12px;
+      color: #666;
+      padding-left: 16px;
+      line-height: 1.6;
+    }
+
+    /* Color Reference */
+    .color-reference {
+      background: white;
+      border: 1px solid #E8E8E8;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 32px;
+    }
+
+    .color-reference h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 16px;
+    }
+
+    .color-swatches {
+      display: flex;
+      justify-content: flex-start;
+      gap: 32px;
+    }
+
+    .color-swatch-item {
+      text-align: left;
+    }
+
+    .color-swatch-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .color-swatch-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+
+    .color-swatch-hex {
+      font-size: 10px;
+      font-family: 'SF Mono', monospace;
+      color: #888;
+    }
+
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* SG Refined Color Tokens */
+    :root {
+      --sg-red: #E9041E;
+      --sg-black: #1A1A1A;
+      --sg-dark-gray: #4A4A4A;
+      --sg-medium-gray: #888888;
+      --sg-light-gray: #E8E8E8;
+      --sg-surface: #FAFAFA;
+      --sg-white: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kiosk Workflow - Refined Alternatives</h1>
+  <p class="subtitle">Inspired by Société Générale's restrained, prestigious design language</p>
+
+  <!-- Tab Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab(1)">Subtle Elegance</button>
+    <button class="tab-btn" onclick="showTab(2)">Corporate Refinement</button>
+    <button class="tab-btn" onclick="showTab(3)">Prestige Minimal</button>
+  </div>
+
+  <!-- ====================== -->
+  <!-- ALTERNATIVE 1: SUBTLE ELEGANCE -->
+  <!-- ====================== -->
+  <div id="tab1" class="tab-content active">
+    <div class="alt-description">
+      <h2>Alternative 1: "Subtle Elegance"</h2>
+      <p>Service colors are used sparingly as thin accent lines and badges. Primary CTA uses SG Red consistently. Clean white surfaces with generous breathing room. The focus is on typography and subtle color cues rather than bold blocks.</p>
+      <div class="key-points">
+        <div class="point">
+          <h4>Design Principles</h4>
+          <ul>
+            <li>Service color as thin accent line only</li>
+            <li>White/light gray backgrounds throughout</li>
+            <li>SG Red (#E9041E) for primary actions</li>
+            <li>Subtle shadows, no heavy elevation</li>
+          </ul>
+        </div>
+        <div class="point">
+          <h4>Color Application</h4>
+          <ul>
+            <li>Screen 1: Outlined cards with colored left border</li>
+            <li>Screen 2: Small colored badge, red CTA</li>
+            <li>Screen 3: Light tint background, colored ticket number</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RETRAIT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #E9041E;"></div>
+        <div class="workflow-title">Retrait</div>
+        <div class="workflow-hex">#E9041E</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card selected" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #E9041E; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #E9041E;">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #1A1A1A;">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #D66874; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #D66874;">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #888; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #888;">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #FEE2E2; color: #E9041E;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Continuer sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: #FEF7F7; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #E9041E;">A-020</div>
+            <div class="ticket-service" style="color: #888;">Retrait</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#5</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~13</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #E9041E; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DÉPÔT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #1A1A1A;"></div>
+        <div class="workflow-title">Dépôt</div>
+        <div class="workflow-hex">#1A1A1A</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #E9041E; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #E9041E;">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #1A1A1A;">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #D66874; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #D66874;">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #888; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #888;">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #F0F0F0; color: #1A1A1A;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Continuer sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: #F5F5F5; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #1A1A1A;">B-010</div>
+            <div class="ticket-service" style="color: #888;">Dépôt</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#4</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~14</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #1A1A1A; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUVERTURE Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #D66874;"></div>
+        <div class="workflow-title">Ouverture de compte</div>
+        <div class="workflow-hex">#D66874</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #E9041E; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #E9041E;">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #1A1A1A;">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #D66874; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #D66874;">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #888; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #888;">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #FCE8EB; color: #D66874;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Continuer sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: #FDF5F6; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #D66874;">C-007</div>
+            <div class="ticket-service" style="color: #888;">Ouverture</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#3</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #D66874; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTRES Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #888888;"></div>
+        <div class="workflow-title">Autres</div>
+        <div class="workflow-hex">#888888</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #E9041E; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #E9041E;">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #1A1A1A;">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #D66874; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #D66874;">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 1px solid #E0E0E0; border-left: 3px solid #888; color: #1A1A1A;">
+              <span class="material-symbols-outlined" style="color: #888;">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #F0F0F0; color: #666;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Continuer sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: #F5F5F5; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #666;">D-004</div>
+            <div class="ticket-service" style="color: #888;">Autres</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#2</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #666; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== -->
+  <!-- ALTERNATIVE 2: CORPORATE REFINEMENT -->
+  <!-- ====================== -->
+  <div id="tab2" class="tab-content">
+    <div class="alt-description">
+      <h2>Alternative 2: "Corporate Refinement"</h2>
+      <p>Black and white foundation with strategic red accents. Service differentiation through icons and typography rather than color blocks. Buttons use outlined style with subtle fills. The prestige comes from restraint and precision.</p>
+      <div class="key-points">
+        <div class="point">
+          <h4>Design Principles</h4>
+          <ul>
+            <li>Primarily black, white, and gray</li>
+            <li>Red (#E9041E) only for key actions</li>
+            <li>Outlined buttons for secondary actions</li>
+            <li>Service icons in black, context through labels</li>
+          </ul>
+        </div>
+        <div class="point">
+          <h4>Color Application</h4>
+          <ul>
+            <li>Screen 1: White cards, black icons, thin borders</li>
+            <li>Screen 2: Red primary CTA, outlined skip button</li>
+            <li>Screen 3: White background, subtle service tint</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RETRAIT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #E9041E;"></div>
+        <div class="workflow-title">Retrait</div>
+        <div class="workflow-hex">#E9041E</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card selected" style="background: white; border: 2px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: transparent; border: 1px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button" style="border: 1px solid #E0E0E0; border-radius: 4px; padding: 5px 10px;">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card" style="box-shadow: none; border: 1px solid #E0E0E0;">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #E9041E;">A-020</div>
+            <div class="ticket-service" style="color: #1A1A1A;">Retrait</div>
+            <div class="info-row">
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">#5</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">~13</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: white; color: #1A1A1A; border: 1px solid #1A1A1A;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DÉPÔT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #1A1A1A;"></div>
+        <div class="workflow-title">Dépôt</div>
+        <div class="workflow-hex">#1A1A1A</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 2px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: transparent; border: 1px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button" style="border: 1px solid #E0E0E0; border-radius: 4px; padding: 5px 10px;">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card" style="box-shadow: none; border: 1px solid #E0E0E0;">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #1A1A1A;">B-010</div>
+            <div class="ticket-service" style="color: #1A1A1A;">Dépôt</div>
+            <div class="info-row">
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">#4</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">~14</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: white; color: #1A1A1A; border: 1px solid #1A1A1A;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUVERTURE Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #D66874;"></div>
+        <div class="workflow-title">Ouverture de compte</div>
+        <div class="workflow-hex">#D66874</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 2px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: transparent; border: 1px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button" style="border: 1px solid #E0E0E0; border-radius: 4px; padding: 5px 10px;">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card" style="box-shadow: none; border: 1px solid #E0E0E0;">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #D66874;">C-007</div>
+            <div class="ticket-service" style="color: #1A1A1A;">Ouverture</div>
+            <div class="info-row">
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">#3</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: white; color: #1A1A1A; border: 1px solid #1A1A1A;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTRES Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #888888;"></div>
+        <div class="workflow-title">Autres</div>
+        <div class="workflow-hex">#888888</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #666;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card selected" style="background: white; border: 2px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: transparent; border: 1px solid #1A1A1A; color: #1A1A1A;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #E9041E; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button" style="border: 1px solid #E0E0E0; border-radius: 4px; padding: 5px 10px;">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card" style="box-shadow: none; border: 1px solid #E0E0E0;">
+            <div class="ticket-title">Votre ticket</div>
+            <div class="ticket-number" style="color: #666;">D-004</div>
+            <div class="ticket-service" style="color: #1A1A1A;">Autres</div>
+            <div class="info-row">
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">#2</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box" style="background: white; border: 1px solid #E0E0E0;">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: white; color: #1A1A1A; border: 1px solid #1A1A1A;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== -->
+  <!-- ALTERNATIVE 3: PRESTIGE MINIMAL -->
+  <!-- ====================== -->
+  <div id="tab3" class="tab-content">
+    <div class="alt-description">
+      <h2>Alternative 3: "Prestige Minimal"</h2>
+      <p>Maximum restraint. Almost entirely monochromatic until the final ticket reveal. Color is earned through the workflow - the ticket confirmation screen celebrates with a subtle color wash. Ultra-clean typography carries the experience.</p>
+      <div class="key-points">
+        <div class="point">
+          <h4>Design Principles</h4>
+          <ul>
+            <li>Screens 1-2: Pure black and white</li>
+            <li>Color appears only on final screen</li>
+            <li>Typography-driven hierarchy</li>
+            <li>No colored icons until ticket</li>
+          </ul>
+        </div>
+        <div class="point">
+          <h4>Color Application</h4>
+          <ul>
+            <li>Screen 1: Black icons on white, no color</li>
+            <li>Screen 2: Black CTA button, monochrome</li>
+            <li>Screen 3: Service color celebration</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RETRAIT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #E9041E;"></div>
+        <div class="workflow-title">Retrait</div>
+        <div class="workflow-hex">#E9041E</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card selected" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input" style="border-color: #1A1A1A;">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: linear-gradient(180deg, #E9041E 0%, #C50318 100%); margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title" style="color: #E9041E;">Votre ticket</div>
+            <div class="ticket-number" style="color: #E9041E; font-size: 32px;">A-020</div>
+            <div class="ticket-service" style="color: #E9041E;">Retrait</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#5</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~13</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #E9041E; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DÉPÔT Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #1A1A1A;"></div>
+        <div class="workflow-title">Dépôt</div>
+        <div class="workflow-hex">#1A1A1A</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card selected" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input" style="border-color: #1A1A1A;">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: linear-gradient(180deg, #2D2D2D 0%, #1A1A1A 100%); margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title" style="color: #1A1A1A;">Votre ticket</div>
+            <div class="ticket-number" style="color: #1A1A1A; font-size: 32px;">B-010</div>
+            <div class="ticket-service" style="color: #1A1A1A;">Dépôt</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#4</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~14</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #1A1A1A; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUVERTURE Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #D66874;"></div>
+        <div class="workflow-title">Ouverture de compte</div>
+        <div class="workflow-hex">#D66874</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card selected" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input" style="border-color: #1A1A1A;">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: linear-gradient(180deg, #D66874 0%, #A8505E 100%); margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title" style="color: #D66874;">Votre ticket</div>
+            <div class="ticket-number" style="color: #D66874; font-size: 32px;">C-007</div>
+            <div class="ticket-service" style="color: #D66874;">Ouverture</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#3</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #D66874; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTRES Workflow -->
+    <div class="workflow-section">
+      <div class="workflow-header">
+        <div class="workflow-color-indicator" style="background: #888888;"></div>
+        <div class="workflow-title">Autres</div>
+        <div class="workflow-hex">#888888</div>
+      </div>
+      <div class="screen-flow">
+        <div class="mini-screen screen1" style="margin-top: 26px;">
+          <span class="screen-label">Selection</span>
+          <div class="mini-header">
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="cards-grid">
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">local_atm</span>
+              Retrait
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">savings</span>
+              Dépôt
+            </div>
+            <div class="mini-service-card" style="background: white; border: 1px solid #E0E0E0; color: #888;">
+              <span class="material-symbols-outlined">person_add</span>
+              Ouverture
+            </div>
+            <div class="mini-service-card selected" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen2" style="background: white; margin-top: 26px;">
+          <span class="screen-label">Phone</span>
+          <div class="mini-header">
+            <span class="material-symbols-outlined back-icon">arrow_back</span>
+            <div class="mini-logo"></div>
+            <span class="mini-time">14:35</span>
+          </div>
+          <div class="content">
+            <div class="service-indicator" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">more_horiz</span>
+              Autres
+            </div>
+            <div class="title">Optionnel</div>
+            <div class="subtitle-text">Numéro pour notifications</div>
+            <div class="phone-input" style="border-color: #1A1A1A;">
+              <div class="phone-prefix">+216</div>
+              <div class="phone-field">XX XXX XXX</div>
+            </div>
+            <div class="cta-button" style="background: #1A1A1A; color: white;">
+              <span class="material-symbols-outlined">confirmation_number</span>
+              Prendre un ticket
+            </div>
+            <div class="skip-button">Sans téléphone</div>
+          </div>
+        </div>
+
+        <span class="flow-arrow">→</span>
+
+        <div class="mini-screen screen3" style="background: linear-gradient(180deg, #888 0%, #555 100%); margin-top: 26px;">
+          <span class="screen-label">Ticket</span>
+          <div class="ticket-card">
+            <div class="ticket-title" style="color: #666;">Votre ticket</div>
+            <div class="ticket-number" style="color: #666; font-size: 32px;">D-004</div>
+            <div class="ticket-service" style="color: #666;">Autres</div>
+            <div class="info-row">
+              <div class="info-box">
+                <div class="info-value">#2</div>
+                <div class="info-label">Position</div>
+              </div>
+              <div class="info-box">
+                <div class="info-value">~60</div>
+                <div class="info-label">Minutes</div>
+              </div>
+            </div>
+            <div class="qr-placeholder">
+              <span class="material-symbols-outlined">qr_code_2</span>
+            </div>
+            <div class="new-ticket-btn" style="background: #666; color: white;">Nouveau ticket</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Color Reference -->
+  <div class="color-reference">
+    <h3>Service Color Palette</h3>
+    <div class="color-swatches">
+      <div class="color-swatch-item">
+        <div class="color-swatch-box" style="background: #E9041E;"></div>
+        <div class="color-swatch-name">Retrait</div>
+        <div class="color-swatch-hex">#E9041E</div>
+      </div>
+      <div class="color-swatch-item">
+        <div class="color-swatch-box" style="background: #1A1A1A;"></div>
+        <div class="color-swatch-name">Dépôt</div>
+        <div class="color-swatch-hex">#1A1A1A</div>
+      </div>
+      <div class="color-swatch-item">
+        <div class="color-swatch-box" style="background: #D66874;"></div>
+        <div class="color-swatch-name">Ouverture</div>
+        <div class="color-swatch-hex">#D66874</div>
+      </div>
+      <div class="color-swatch-item">
+        <div class="color-swatch-box" style="background: #888888;"></div>
+        <div class="color-swatch-name">Autres</div>
+        <div class="color-swatch-hex">#888888</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabNum) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('tab' + tabNum).classList.add('active');
+      document.querySelectorAll('.tab-btn')[tabNum - 1].classList.add('active');
+    }
+  </script>
+</body>
+</html>

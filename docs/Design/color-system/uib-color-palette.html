@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UIB Color Palette - 6 Variations</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #F5F5F5;
+      padding: 40px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1C1B1F;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #49454F;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .logo-preview {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-preview img {
+      max-width: 300px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .color-section {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .base-color-swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1C1B1F;
+    }
+
+    .section-subtitle {
+      font-size: 14px;
+      color: #49454F;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .color-card {
+      flex: 1;
+      min-width: 120px;
+      max-width: 160px;
+    }
+
+    .color-swatch {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-swatch::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .color-info {
+      text-align: center;
+    }
+
+    .color-hex {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1C1B1F;
+      background: #F5F5F5;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .color-hex:hover {
+      background: #E8E8E8;
+    }
+
+    .color-hex:active {
+      background: #D5D5D5;
+    }
+
+    .color-name {
+      font-size: 12px;
+      color: #79747E;
+    }
+
+    .usage-examples {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #E8E8E8;
+    }
+
+    .usage-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #49454F;
+      margin-bottom: 15px;
+    }
+
+    .usage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .usage-item {
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .css-vars {
+      background: #1C1B1F;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 40px;
+      overflow-x: auto;
+    }
+
+    .css-vars pre {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 13px;
+      color: #A5D6FF;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .css-vars .comment {
+      color: #8B949E;
+    }
+
+    .css-vars .property {
+      color: #79C0FF;
+    }
+
+    .css-vars .value {
+      color: #A5D6FF;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+
+      .color-card {
+        min-width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>UIB Brand Color Palette</h1>
+  <p class="subtitle">6 variations for each brand color, following the ColorSchema pattern</p>
+
+  <div class="logo-preview">
+    <img src="uib-logo.jpg" alt="UIB Logo">
+  </div>
+
+  <!-- UIB RED -->
+  <div class="color-section">
+    <div class="section-header">
+      <div class="base-color-swatch" style="background: #E30613;"></div>
+      <div>
+        <div class="section-title">UIB Red</div>
+        <div class="section-subtitle">Base color: #E30613 (Societe Generale brand red)</div>
+      </div>
+    </div>
+
+    <div class="color-row">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #FDECEE;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#FDECEE')">#FDECEE</div>
+          <div class="color-name">Red 50</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #F9B8BC;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#F9B8BC')">#F9B8BC</div>
+          <div class="color-name">Red 100</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #F17178;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#F17178')">#F17178</div>
+          <div class="color-name">Red 200</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #E30613;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#E30613')">#E30613</div>
+          <div class="color-name">Red 500 (Base)</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #B3050F;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#B3050F')">#B3050F</div>
+          <div class="color-name">Red 700</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #7A030A;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#7A030A')">#7A030A</div>
+          <div class="color-name">Red 900</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-examples">
+      <div class="usage-title">Usage Examples</div>
+      <div class="usage-grid">
+        <div class="usage-item" style="background: #FDECEE; color: #7A030A;">
+          Light background with dark text
+        </div>
+        <div class="usage-item" style="background: #E30613; color: white;">
+          Primary buttons & CTAs
+        </div>
+        <div class="usage-item" style="background: #B3050F; color: white;">
+          Hover states
+        </div>
+        <div class="usage-item" style="background: white; color: #E30613; border: 2px solid #E30613;">
+          Outlined buttons
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UIB BLACK -->
+  <div class="color-section">
+    <div class="section-header">
+      <div class="base-color-swatch" style="background: #1C1B1F;"></div>
+      <div>
+        <div class="section-title">UIB Black / Charcoal</div>
+        <div class="section-subtitle">Base color: #1C1B1F (Dark charcoal from logo text)</div>
+      </div>
+    </div>
+
+    <div class="color-row">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #F5F5F5;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#F5F5F5')">#F5F5F5</div>
+          <div class="color-name">Gray 50</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #E8E8E8;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#E8E8E8')">#E8E8E8</div>
+          <div class="color-name">Gray 100</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #CAC4D0;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#CAC4D0')">#CAC4D0</div>
+          <div class="color-name">Gray 200</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #79747E;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#79747E')">#79747E</div>
+          <div class="color-name">Gray 500</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #49454F;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#49454F')">#49454F</div>
+          <div class="color-name">Gray 700</div>
+        </div>
+      </div>
+
+      <div class="color-card">
+        <div class="color-swatch" style="background: #1C1B1F;"></div>
+        <div class="color-info">
+          <div class="color-hex" onclick="copyColor('#1C1B1F')">#1C1B1F</div>
+          <div class="color-name">Gray 900 (Base)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="usage-examples">
+      <div class="usage-title">Usage Examples</div>
+      <div class="usage-grid">
+        <div class="usage-item" style="background: #F5F5F5; color: #1C1B1F;">
+          Page backgrounds
+        </div>
+        <div class="usage-item" style="background: white; color: #49454F;">
+          Secondary text
+        </div>
+        <div class="usage-item" style="background: white; color: #1C1B1F;">
+          Primary text / headings
+        </div>
+        <div class="usage-item" style="background: #1C1B1F; color: white;">
+          Dark mode surfaces
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSS Variables -->
+  <div class="css-vars">
+    <pre><span class="comment">/* UIB Brand Color Palette - CSS Variables */</span>
+
+:root {
+  <span class="comment">/* UIB Red Palette */</span>
+  <span class="property">--uib-red-50</span>: <span class="value">#FDECEE</span>;
+  <span class="property">--uib-red-100</span>: <span class="value">#F9B8BC</span>;
+  <span class="property">--uib-red-200</span>: <span class="value">#F17178</span>;
+  <span class="property">--uib-red-500</span>: <span class="value">#E30613</span>;  <span class="comment">/* Base */</span>
+  <span class="property">--uib-red-700</span>: <span class="value">#B3050F</span>;
+  <span class="property">--uib-red-900</span>: <span class="value">#7A030A</span>;
+
+  <span class="comment">/* UIB Gray/Black Palette */</span>
+  <span class="property">--uib-gray-50</span>: <span class="value">#F5F5F5</span>;
+  <span class="property">--uib-gray-100</span>: <span class="value">#E8E8E8</span>;
+  <span class="property">--uib-gray-200</span>: <span class="value">#CAC4D0</span>;
+  <span class="property">--uib-gray-500</span>: <span class="value">#79747E</span>;
+  <span class="property">--uib-gray-700</span>: <span class="value">#49454F</span>;
+  <span class="property">--uib-gray-900</span>: <span class="value">#1C1B1F</span>;  <span class="comment">/* Base */</span>
+}</pre>
+  </div>
+
+  <script>
+    function copyColor(hex) {
+      navigator.clipboard.writeText(hex).then(() => {
+        // Show brief feedback
+        const el = event.target;
+        const original = el.textContent;
+        el.textContent = 'Copied!';
+        el.style.background = '#22C55E';
+        el.style.color = 'white';
+        setTimeout(() => {
+          el.textContent = original;
+          el.style.background = '';
+          el.style.color = '';
+        }, 800);
+      });
+    }
+  </script>
+</body>
+</html>

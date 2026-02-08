@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BM Dashboard — Hero Bar Redesign Alternatives</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
+  <style>
+    :root {
+      --sg-red: #E9041E;
+      --sg-black: #1A1A1A;
+      --sg-rose: #D66874;
+      --sg-gray: #666666;
+      --sg-green: #10B981;
+      --sg-amber: #F59E0B;
+      --sg-light: #F5F5F5;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #F3F4F6; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+
+    /* Gauge animation */
+    @keyframes gauge-fill { from { stroke-dasharray: 0 157; } }
+    .gauge-arc { animation: gauge-fill 1s ease-out; }
+
+    /* Ring animation for Alt 5 */
+    @keyframes ring-fill { from { stroke-dasharray: 0 283; } }
+    .ring-arc { animation: ring-fill 1.2s ease-out; }
+
+    /* Subtle pulse for critical values */
+    @keyframes pulse-soft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .pulse-critical { animation: pulse-soft 2s ease-in-out infinite; }
+
+    .alt-section { margin-bottom: 48px; }
+    .alt-label {
+      display: inline-block;
+      padding: 4px 14px;
+      background: var(--sg-red);
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .alt-desc {
+      color: #4B5563;
+      font-size: 14px;
+      margin-bottom: 16px;
+      max-width: 720px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body class="p-8">
+
+  <div class="max-w-[1400px] mx-auto">
+    <h1 class="text-2xl font-bold mb-1" style="color: var(--sg-black)">Hero Bar — 5 Redesign Alternatives</h1>
+    <p class="text-sm mb-8" style="color: var(--sg-gray)">
+      Same content: Health Score (51), 6 En attente, ~41 min, 100% Capacite, 67% SLA (declining), 8/100 Servis, Quick Actions (VIP, Pauses, 2/4, Pause)
+    </p>
+
+    <!-- ============================================== -->
+    <!-- ALTERNATIVE 1 — DARK COMMAND STRIP             -->
+    <!-- ============================================== -->
+    <div class="alt-section">
+      <span class="alt-label">ALTERNATIVE 1</span>
+      <h2 class="text-lg font-bold mb-1" style="color: var(--sg-black)">Dark Command Strip</h2>
+      <p class="alt-desc">
+        Full-width dark bar inspired by cockpit status displays. Health score as a color-coded badge on the far left,
+        KPIs as bright-text segments separated by subtle dividers, quick actions as ghost-bordered pills on the right.
+        High contrast for at-a-glance scanning in a busy branch environment.
+      </p>
+
+      <div class="rounded-xl overflow-hidden shadow-lg" style="background: var(--sg-black)">
+        <div class="flex items-center justify-between px-6 py-4">
+          <!-- Left: Health Badge + KPIs -->
+          <div class="flex items-center gap-5">
+            <!-- Health Score Badge -->
+            <div class="flex items-center gap-3">
+              <div class="relative">
+                <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background: rgba(245, 158, 11, 0.15); border: 2.5px solid #F59E0B;">
+                  <span class="text-xl font-black" style="color: #F59E0B">51</span>
+                </div>
+              </div>
+              <div>
+                <div class="text-xs font-semibold uppercase tracking-widest" style="color: #F59E0B">Attention</div>
+                <div class="text-[10px] uppercase tracking-wide text-gray-500">Score de sante</div>
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-10 w-px bg-gray-700"></div>
+
+            <!-- Waiting -->
+            <div class="text-center min-w-[64px]">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-red-400" style="font-size: 16px">groups</span>
+                <span class="text-2xl font-bold text-white">6</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-wide text-gray-500">En attente</div>
+            </div>
+
+            <div class="h-10 w-px bg-gray-700"></div>
+
+            <!-- Avg Wait -->
+            <div class="text-center min-w-[64px]">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-emerald-400" style="font-size: 16px">schedule</span>
+                <span class="text-2xl font-bold text-white">~41</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-wide text-gray-500">Min attente</div>
+            </div>
+
+            <div class="h-10 w-px bg-gray-700"></div>
+
+            <!-- Capacity -->
+            <div class="text-center min-w-[64px]">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-gray-400" style="font-size: 16px">storefront</span>
+                <span class="text-2xl font-bold text-white">100%</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-wide text-gray-500">Capacite</div>
+            </div>
+
+            <div class="h-10 w-px bg-gray-700"></div>
+
+            <!-- SLA -->
+            <div class="text-center min-w-[64px]">
+              <div class="flex items-center justify-center gap-1">
+                <span class="text-2xl font-bold" style="color: #E9041E">67%</span>
+                <span class="material-symbols-outlined" style="font-size: 14px; color: #E9041E">trending_down</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-wide text-gray-500">SLA</div>
+            </div>
+
+            <div class="h-10 w-px bg-gray-700"></div>
+
+            <!-- Served -->
+            <div class="text-center min-w-[64px]">
+              <div class="flex items-center justify-center gap-1">
+                <span class="material-symbols-outlined text-emerald-400" style="font-size: 16px">check_circle</span>
+                <span class="text-2xl font-bold text-white">8</span>
+                <span class="text-sm text-gray-500">/100</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-wide text-gray-500">Servis</div>
+            </div>
+          </div>
+
+          <!-- Right: Quick Actions -->
+          <div class="flex items-center gap-2">
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium" style="background: var(--sg-red); color: white;">
+              <span class="material-symbols-outlined" style="font-size: 18px">priority_high</span>VIP
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition">
+              <span class="material-symbols-outlined" style="font-size: 18px">coffee</span>Pauses
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition">
+              <span class="material-symbols-outlined" style="font-size: 18px">storefront</span>2/4
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border border-amber-600 hover:bg-amber-900/30 transition" style="color: #F59E0B">
+              <span class="material-symbols-outlined" style="font-size: 18px">pause</span>Pause
+            </button>
+            <span class="text-xs text-gray-600 ml-2">
+              <span class="material-symbols-outlined" style="font-size: 14px">schedule</span> 15:30
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- ALTERNATIVE 2 — METRIC CARD GRID               -->
+    <!-- ============================================== -->
+    <div class="alt-section">
+      <span class="alt-label">ALTERNATIVE 2</span>
+      <h2 class="text-lg font-bold mb-1" style="color: var(--sg-black)">Metric Card Grid</h2>
+      <p class="alt-desc">
+        Each KPI lives in its own mini-card, forming a uniform grid. The health score gets a double-width card
+        with the gauge. Quick actions sit in a compact toolbar card on the right. Easier to scan than a dense strip,
+        and each card can independently flash when values cross thresholds.
+      </p>
+
+      <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+        <div class="grid grid-cols-12 gap-3">
+          <!-- Health Score Card (2 cols) -->
+          <div class="col-span-2 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center border border-gray-100">
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mb-2">Score de sante</div>
+            <!-- Mini gauge -->
+            <div class="relative w-24 h-14">
+              <svg viewBox="0 0 120 70" class="w-full h-full">
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#E5E7EB" stroke-width="8" stroke-linecap="round" />
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#F59E0B" stroke-width="8" stroke-linecap="round" stroke-dasharray="80 157" class="gauge-arc" />
+                <line x1="60" y1="60" x2="60" y2="22" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" transform="rotate(-8, 60, 60)" />
+                <circle cx="60" cy="60" r="4" fill="#F59E0B" />
+              </svg>
+              <div class="absolute inset-x-0 bottom-0 text-center">
+                <span class="text-xl font-bold" style="color: #F59E0B">51</span>
+              </div>
+            </div>
+            <div class="text-xs font-bold uppercase tracking-wider mt-1" style="color: #F59E0B">Attention</div>
+          </div>
+
+          <!-- Waiting Card -->
+          <div class="col-span-2 rounded-xl p-4 flex flex-col items-center justify-center border" style="background: rgba(233, 4, 30, 0.03); border-color: rgba(233, 4, 30, 0.12);">
+            <span class="material-symbols-outlined mb-1" style="font-size: 22px; color: var(--sg-red)">groups</span>
+            <div class="text-2xl font-bold" style="color: var(--sg-black)">6</div>
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mt-1">En attente</div>
+          </div>
+
+          <!-- Avg Wait Card -->
+          <div class="col-span-2 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center border border-gray-100">
+            <span class="material-symbols-outlined mb-1" style="font-size: 22px; color: var(--sg-green)">schedule</span>
+            <div class="text-2xl font-bold" style="color: var(--sg-black)">~41<span class="text-sm font-normal text-gray-400">min</span></div>
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mt-1">Attente moy.</div>
+          </div>
+
+          <!-- Capacity Card -->
+          <div class="col-span-2 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-center border border-gray-100">
+            <span class="material-symbols-outlined mb-1" style="font-size: 22px; color: var(--sg-black)">storefront</span>
+            <div class="text-2xl font-bold" style="color: var(--sg-black)">100%</div>
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mt-1">Capacite</div>
+          </div>
+
+          <!-- SLA Card -->
+          <div class="col-span-2 rounded-xl p-4 flex flex-col items-center justify-center border" style="background: rgba(233, 4, 30, 0.03); border-color: rgba(233, 4, 30, 0.12);">
+            <span class="material-symbols-outlined mb-1" style="font-size: 22px; color: var(--sg-red)">trending_down</span>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-bold" style="color: var(--sg-red)">67%</span>
+              <span class="text-xs" style="color: var(--sg-red)">
+                <span class="material-symbols-outlined" style="font-size: 12px">arrow_downward</span>0%
+              </span>
+            </div>
+            <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mt-1">SLA</div>
+          </div>
+
+          <!-- Served + Actions Card (2 cols) -->
+          <div class="col-span-2 bg-gray-50 rounded-xl p-4 flex flex-col items-center justify-between border border-gray-100">
+            <div class="text-center mb-2">
+              <span class="material-symbols-outlined mb-1" style="font-size: 22px; color: var(--sg-green)">check_circle</span>
+              <div class="text-2xl font-bold" style="color: var(--sg-black)">8<span class="text-sm font-normal text-gray-400">/100</span></div>
+              <div class="text-[10px] uppercase tracking-widest font-semibold text-gray-500 mt-1">Servis</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Row -->
+        <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+          <div class="flex items-center gap-2">
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: var(--sg-red); color: white;">
+              <span class="material-symbols-outlined" style="font-size: 16px">priority_high</span>VIP
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+              <span class="material-symbols-outlined" style="font-size: 16px">coffee</span>Pauses
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+              <span class="material-symbols-outlined" style="font-size: 16px">storefront</span>2/4
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border" style="color: var(--sg-amber); border-color: var(--sg-amber); background: rgba(245,158,11,0.06)">
+              <span class="material-symbols-outlined" style="font-size: 16px">pause</span>Pause
+            </button>
+          </div>
+          <span class="text-xs text-gray-400">
+            <span class="material-symbols-outlined" style="font-size: 14px">schedule</span> 15:30
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- ALTERNATIVE 3 — SPLIT-LEVEL WITH PROGRESS BAR  -->
+    <!-- ============================================== -->
+    <div class="alt-section">
+      <span class="alt-label">ALTERNATIVE 3</span>
+      <h2 class="text-lg font-bold mb-1" style="color: var(--sg-black)">Split-Level with Progress Bar</h2>
+      <p class="alt-desc">
+        Two distinct rows. Top row: large health score left, three primary KPIs center (waiting, wait time, served),
+        and quick actions right. Bottom row: a full-width dual progress bar showing Capacity and SLA as
+        side-by-side colored tracks. The progress bar gives an instant visual read of the two most actionable metrics.
+      </p>
+
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <!-- Top Row -->
+        <div class="flex items-center justify-between px-6 py-5">
+          <!-- Left: Health + Score -->
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl flex flex-col items-center justify-center" style="background: rgba(245,158,11,0.08); border: 2px solid rgba(245,158,11,0.3)">
+              <span class="text-2xl font-black" style="color: #F59E0B">51</span>
+              <span class="text-[8px] font-bold uppercase tracking-widest" style="color: #F59E0B">ATT.</span>
+            </div>
+            <div>
+              <div class="text-sm font-semibold" style="color: var(--sg-black)">Score de Sante</div>
+              <div class="text-xs text-gray-400">File d'attente sous pression</div>
+            </div>
+          </div>
+
+          <!-- Center: 3 Primary KPIs -->
+          <div class="flex items-center gap-8">
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5 mb-1">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(233,4,30,0.08)">
+                  <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-red)">groups</span>
+                </div>
+                <span class="text-3xl font-black" style="color: var(--sg-black)">6</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">En attente</div>
+            </div>
+
+            <div class="h-8 w-px bg-gray-200"></div>
+
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5 mb-1">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(16,185,129,0.08)">
+                  <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-green)">schedule</span>
+                </div>
+                <span class="text-3xl font-black" style="color: var(--sg-black)">~41</span>
+                <span class="text-sm text-gray-400">min</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Attente moy.</div>
+            </div>
+
+            <div class="h-8 w-px bg-gray-200"></div>
+
+            <div class="text-center">
+              <div class="flex items-center justify-center gap-1.5 mb-1">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(16,185,129,0.08)">
+                  <span class="material-symbols-outlined" style="font-size: 18px; color: var(--sg-green)">check_circle</span>
+                </div>
+                <span class="text-3xl font-black" style="color: var(--sg-black)">8</span>
+                <span class="text-sm text-gray-400">/100</span>
+              </div>
+              <div class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Servis</div>
+            </div>
+          </div>
+
+          <!-- Right: Actions -->
+          <div class="flex items-center gap-2">
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium" style="background: var(--sg-red); color: white;">
+              <span class="material-symbols-outlined" style="font-size: 18px">priority_high</span>VIP
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 border border-gray-200 text-gray-600">
+              <span class="material-symbols-outlined" style="font-size: 18px">coffee</span>Pauses
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 border border-gray-200 text-gray-600">
+              <span class="material-symbols-outlined" style="font-size: 18px">storefront</span>2/4
+            </button>
+            <button class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border" style="color: var(--sg-amber); border-color: var(--sg-amber); background: rgba(245,158,11,0.04)">
+              <span class="material-symbols-outlined" style="font-size: 18px">pause</span>Pause
+            </button>
+            <span class="text-xs text-gray-400 ml-2">
+              <span class="material-symbols-outlined" style="font-size: 14px">schedule</span> 15:30
+            </span>
+          </div>
+        </div>
+
+        <!-- Bottom: Dual Progress Bars -->
+        <div class="px-6 pb-4">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Capacity Bar -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] uppercase tracking-widest font-semibold text-gray-500">
+                  <span class="material-symbols-outlined" style="font-size: 13px">storefront</span> Capacite
+                </span>
+                <span class="text-xs font-bold" style="color: var(--sg-black)">100%</span>
+              </div>
+              <div class="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-700" style="width: 100%; background: linear-gradient(90deg, #10B981, #059669)"></div>
+              </div>
+            </div>
+            <!-- SLA Bar -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] uppercase tracking-widest font-semibold text-gray-500">
+                  <span class="material-symbols-outlined" style="font-size: 13px">verified</span> SLA
+                </span>
+                <div class="flex items-center gap-1">
+                  <span class="text-xs font-bold" style="color: var(--sg-red)">67%</span>
+                  <span class="material-symbols-outlined" style="font-size: 12px; color: var(--sg-red)">trending_down</span>
+                </div>
+              </div>
+              <div class="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-700" style="width: 67%; background: linear-gradient(90deg, #E9041E, #D66874)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- ALTERNATIVE 4 — CENTERED COMMAND               -->
+    <!-- ============================================== -->
+    <div class="alt-section">
+      <span class="alt-label">ALTERNATIVE 4</span>
+      <h2 class="text-lg font-bold mb-1" style="color: var(--sg-black)">Centered Command</h2>
+      <p class="alt-desc">
+        The health score is the undeniable focal point — a large radial gauge centered at the top, flanked
+        symmetrically by KPIs on each side (3 left, 2 right + actions). This layout draws the eye to the
+        single most important number first, then spreads detail outward. Quick actions are icon-only circles
+        along the bottom edge for a clean, minimal footprint.
+      </p>
+
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div class="flex items-center justify-center px-6 py-5 gap-6">
+          <!-- Left KPIs -->
+          <div class="flex items-center gap-5">
+            <!-- Waiting -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mb-1" style="background: rgba(233,4,30,0.06)">
+                <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-red)">groups</span>
+              </div>
+              <span class="text-xl font-bold" style="color: var(--sg-black)">6</span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-500 font-semibold">Attente</span>
+            </div>
+
+            <!-- Avg Wait -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mb-1" style="background: rgba(16,185,129,0.06)">
+                <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-green)">schedule</span>
+              </div>
+              <span class="text-xl font-bold" style="color: var(--sg-black)">~41<span class="text-xs font-normal text-gray-400">m</span></span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-500 font-semibold">Moy.</span>
+            </div>
+
+            <!-- Capacity -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mb-1" style="background: rgba(26,26,26,0.04)">
+                <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-black)">storefront</span>
+              </div>
+              <span class="text-xl font-bold" style="color: var(--sg-black)">100%</span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-500 font-semibold">Capacite</span>
+            </div>
+          </div>
+
+          <!-- Center: Large Health Gauge -->
+          <div class="flex flex-col items-center mx-4">
+            <div class="relative w-36 h-[78px]">
+              <svg viewBox="0 0 120 70" class="w-full h-full">
+                <!-- Background arc -->
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#E5E7EB" stroke-width="10" stroke-linecap="round" />
+                <!-- Colored segments: red | amber | green -->
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#E9041E" stroke-width="10" stroke-linecap="round" stroke-dasharray="47 157" />
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#F59E0B" stroke-width="10" stroke-linecap="round" stroke-dasharray="110 157" stroke-dashoffset="-47" opacity="0.15" />
+                <!-- Value arc -->
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#F59E0B" stroke-width="10" stroke-linecap="round" stroke-dasharray="80 157" class="gauge-arc" />
+                <!-- Needle -->
+                <line x1="60" y1="60" x2="60" y2="18" stroke="var(--sg-black)" stroke-width="2.5" stroke-linecap="round" transform="rotate(-8, 60, 60)" />
+                <circle cx="60" cy="60" r="5" fill="var(--sg-black)" />
+              </svg>
+              <div class="absolute inset-x-0 bottom-0 text-center">
+                <span class="text-3xl font-black" style="color: #F59E0B">51</span>
+              </div>
+            </div>
+            <div class="text-[10px] uppercase tracking-widest font-bold mt-0.5" style="color: #F59E0B">Attention</div>
+            <div class="text-[9px] text-gray-400 uppercase tracking-wide">Score de sante</div>
+          </div>
+
+          <!-- Right KPIs -->
+          <div class="flex items-center gap-5">
+            <!-- SLA -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mb-1" style="background: rgba(233,4,30,0.06)">
+                <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-red)">trending_down</span>
+              </div>
+              <div class="flex items-center gap-0.5">
+                <span class="text-xl font-bold" style="color: var(--sg-red)">67%</span>
+              </div>
+              <span class="text-[9px] uppercase tracking-widest text-gray-500 font-semibold">SLA</span>
+            </div>
+
+            <!-- Served -->
+            <div class="flex flex-col items-center">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center mb-1" style="background: rgba(16,185,129,0.06)">
+                <span class="material-symbols-outlined" style="font-size: 20px; color: var(--sg-green)">check_circle</span>
+              </div>
+              <span class="text-xl font-bold" style="color: var(--sg-black)">8<span class="text-xs font-normal text-gray-400">/100</span></span>
+              <span class="text-[9px] uppercase tracking-widest text-gray-500 font-semibold">Servis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom: Icon-only action bar -->
+        <div class="flex items-center justify-center gap-3 py-3 border-t border-gray-100 bg-gray-50/50">
+          <button class="w-9 h-9 rounded-full flex items-center justify-center text-white" style="background: var(--sg-red)" title="Priorite VIP">
+            <span class="material-symbols-outlined" style="font-size: 18px">priority_high</span>
+          </button>
+          <button class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-600" title="Pauses">
+            <span class="material-symbols-outlined" style="font-size: 18px">coffee</span>
+          </button>
+          <button class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 border border-gray-200 text-gray-600" title="Guichets 2/4">
+            <span class="material-symbols-outlined" style="font-size: 18px">storefront</span>
+          </button>
+          <button class="w-9 h-9 rounded-full flex items-center justify-center border" style="border-color: var(--sg-amber); color: var(--sg-amber); background: rgba(245,158,11,0.04)" title="Pause file">
+            <span class="material-symbols-outlined" style="font-size: 18px">pause</span>
+          </button>
+          <span class="text-[10px] text-gray-400 ml-3">
+            <span class="material-symbols-outlined" style="font-size: 13px">schedule</span> 15:30
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- ALTERNATIVE 5 — TRAFFIC LIGHT DASHBOARD        -->
+    <!-- ============================================== -->
+    <div class="alt-section">
+      <span class="alt-label">ALTERNATIVE 5</span>
+      <h2 class="text-lg font-bold mb-1" style="color: var(--sg-black)">Traffic Light Dashboard</h2>
+      <p class="alt-desc">
+        Inspired by traffic-light signaling: a prominent color-coded status banner on the left communicates overall
+        branch health at a glance (red/amber/green). KPIs are organized into a compact table-like layout with
+        micro-progress indicators inline. The bold left accent strip changes color based on the health score,
+        creating an unmistakable visual signal visible even from across the room.
+      </p>
+
+      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex">
+        <!-- Left: Color accent strip + score -->
+        <div class="w-28 flex flex-col items-center justify-center py-5" style="background: linear-gradient(180deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%); border-right: 3px solid #F59E0B;">
+          <!-- Radial Ring -->
+          <div class="relative w-20 h-20">
+            <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#E5E7EB" stroke-width="7" />
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="134 283" class="ring-arc" />
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-2xl font-black" style="color: #F59E0B">51</span>
+            </div>
+          </div>
+          <div class="text-[9px] uppercase tracking-widest font-bold mt-2" style="color: #F59E0B">Attention</div>
+          <div class="text-[8px] text-gray-400 uppercase tracking-wide">Sante</div>
+        </div>
+
+        <!-- Right: KPI Grid + Actions -->
+        <div class="flex-1 px-5 py-4">
+          <div class="grid grid-cols-5 gap-x-4 gap-y-3">
+            <!-- Row 1: Values -->
+            <!-- Waiting -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-red)">groups</span>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Attente</span>
+              </div>
+              <div class="text-2xl font-bold" style="color: var(--sg-black)">6</div>
+              <!-- Mini bar -->
+              <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 w-full">
+                <div class="h-full rounded-full" style="width: 30%; background: var(--sg-red)"></div>
+              </div>
+            </div>
+
+            <!-- Avg Wait -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-amber)">schedule</span>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Moy.</span>
+              </div>
+              <div class="text-2xl font-bold" style="color: var(--sg-black)">~41<span class="text-xs font-normal text-gray-400">m</span></div>
+              <!-- Mini bar -->
+              <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 w-full">
+                <div class="h-full rounded-full" style="width: 82%; background: var(--sg-amber)"></div>
+              </div>
+            </div>
+
+            <!-- Capacity -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-green)">storefront</span>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Capacite</span>
+              </div>
+              <div class="text-2xl font-bold" style="color: var(--sg-black)">100%</div>
+              <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 w-full">
+                <div class="h-full rounded-full" style="width: 100%; background: var(--sg-green)"></div>
+              </div>
+            </div>
+
+            <!-- SLA -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-red)">verified</span>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">SLA</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="text-2xl font-bold" style="color: var(--sg-red)">67%</span>
+                <span class="material-symbols-outlined pulse-critical" style="font-size: 16px; color: var(--sg-red)">trending_down</span>
+              </div>
+              <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 w-full">
+                <div class="h-full rounded-full" style="width: 67%; background: var(--sg-red)"></div>
+              </div>
+            </div>
+
+            <!-- Served -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--sg-green)">check_circle</span>
+                <span class="text-[10px] uppercase tracking-widest text-gray-500 font-semibold">Servis</span>
+              </div>
+              <div class="text-2xl font-bold" style="color: var(--sg-black)">8<span class="text-sm font-normal text-gray-400">/100</span></div>
+              <div class="h-1.5 bg-gray-100 rounded-full mt-1.5 w-full">
+                <div class="h-full rounded-full" style="width: 8%; background: var(--sg-green)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
+            <div class="flex items-center gap-2">
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold" style="background: var(--sg-red); color: white;">
+                <span class="material-symbols-outlined" style="font-size: 16px">priority_high</span>VIP
+              </button>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                <span class="material-symbols-outlined" style="font-size: 16px">coffee</span>Pauses
+              </button>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">
+                <span class="material-symbols-outlined" style="font-size: 16px">storefront</span>2/4
+              </button>
+              <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border" style="color: var(--sg-amber); border-color: var(--sg-amber); background: rgba(245,158,11,0.04)">
+                <span class="material-symbols-outlined" style="font-size: 16px">pause</span>Pause
+              </button>
+            </div>
+            <span class="text-xs text-gray-400">
+              <span class="material-symbols-outlined" style="font-size: 14px">schedule</span> 15:30
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- COMPARISON SUMMARY                              -->
+    <!-- ============================================== -->
+    <div class="mt-12 mb-8">
+      <h2 class="text-lg font-bold mb-4" style="color: var(--sg-black)">Comparison Summary</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th class="text-left py-3 px-4 font-semibold text-gray-700">Alternative</th>
+              <th class="text-left py-3 px-4 font-semibold text-gray-700">Layout</th>
+              <th class="text-left py-3 px-4 font-semibold text-gray-700">Health Score</th>
+              <th class="text-left py-3 px-4 font-semibold text-gray-700">Best For</th>
+              <th class="text-left py-3 px-4 font-semibold text-gray-700">Trade-off</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-4 font-semibold">1. Dark Command Strip</td>
+              <td class="py-3 px-4">Single row, dark background</td>
+              <td class="py-3 px-4">Circular badge</td>
+              <td class="py-3 px-4">High-contrast scanning, busy environments</td>
+              <td class="py-3 px-4">Darker style may contrast with white page body</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-4 font-semibold">2. Metric Card Grid</td>
+              <td class="py-3 px-4">Even card grid + action row</td>
+              <td class="py-3 px-4">Mini semicircular gauge</td>
+              <td class="py-3 px-4">Equal weight to all KPIs, clean separation</td>
+              <td class="py-3 px-4">Takes more vertical space than a strip</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-4 font-semibold">3. Split-Level + Progress</td>
+              <td class="py-3 px-4">2 rows: KPIs top, progress bars bottom</td>
+              <td class="py-3 px-4">Square badge with label</td>
+              <td class="py-3 px-4">SLA/Capacity tracking at a glance via bars</td>
+              <td class="py-3 px-4">Two-row layout uses slightly more height</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-4 font-semibold">4. Centered Command</td>
+              <td class="py-3 px-4">Symmetrical, gauge center</td>
+              <td class="py-3 px-4">Large centered gauge (focal)</td>
+              <td class="py-3 px-4">Health score as the primary decision signal</td>
+              <td class="py-3 px-4">KPIs slightly further from actions</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-3 px-4 font-semibold">5. Traffic Light</td>
+              <td class="py-3 px-4">Side accent strip + KPI grid</td>
+              <td class="py-3 px-4">Radial ring with color strip</td>
+              <td class="py-3 px-4">Instant status visibility, per-KPI micro-bars</td>
+              <td class="py-3 px-4">Left strip may feel asymmetric</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

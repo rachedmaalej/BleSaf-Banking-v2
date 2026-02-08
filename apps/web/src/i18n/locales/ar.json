@@ -9,6 +9,7 @@
     "delete": "حذف",
     "edit": "تعديل",
     "add": "إضافة",
+    "create": "إنشاء",
     "search": "بحث",
     "filter": "تصفية",
     "close": "إغلاق",
@@ -149,6 +150,8 @@
     "settings": "الإعدادات",
     "createUser": "إنشاء مستخدم",
     "createBranch": "إنشاء فرع",
+    "editBranch": "تعديل الفرع",
+    "deleteBranch": "حذف الفرع",
     "createService": "إنشاء خدمة",
     "branchStatus": "حالة الفروع",
     "healthy": "عادي",
@@ -160,7 +163,33 @@
     "manualAvgTime": "متوسط الوقت يدوي",
     "calculatedTime": "الوقت المحسوب",
     "basedOnLast24h": "آخر 24 ساعة",
-    "priority": "الأولوية"
+    "priority": "الأولوية",
+    "branchesCount": "فرع",
+    "searchBranches": "البحث عن فرع...",
+    "allRegions": "جميع المناطق",
+    "allStatuses": "جميع الحالات",
+    "branchUpdated": "تم تحديث الفرع",
+    "branchCreated": "تم إنشاء الفرع",
+    "branchDeleted": "تم تعطيل الفرع",
+    "deleteBranchConfirm": "هل تريد حقا تعطيل الفرع",
+    "deleteBranchWarning": "سيؤدي هذا إلى جعل الفرع غير نشط.",
+    "noBranches": "لا توجد فروع",
+    "adjustFilters": "قم بتعديل عوامل التصفية",
+    "createFirstBranch": "أنشئ فرعك الأول",
+    "branchName": "اسم الفرع",
+    "branchCode": "رمز الفرع",
+    "address": "العنوان",
+    "region": "المنطقة",
+    "selectRegion": "اختر منطقة",
+    "notifyAtPosition": "إشعار عند الموقف",
+    "notifyAtPositionHint": "سيتم إشعار العميل عند هذا الموقف في الطابور",
+    "codeHint": "أحرف كبيرة وأرقام فقط (مثال: TUN-001)",
+    "errors": {
+      "nameRequired": "الاسم مطلوب (حد أدنى 2 حرف)",
+      "codeRequired": "الرمز مطلوب (حد أدنى 2 حرف)",
+      "codeFormat": "أحرف كبيرة وأرقام وشرطات فقط",
+      "notifyAtPositionRange": "يجب أن يكون بين 1 و 10"
+    }
   },
   "services": {
     "withdrawal": "سحب",
@@ -175,6 +204,45 @@
     "branch_manager": "مدير الفرع",
     "teller": "موظف"
   },
+  "dashboard": {
+    "ai": {
+      "healthScore": "مؤشر الصحة",
+      "health": {
+        "excellent": "ممتاز",
+        "good": "جيد",
+        "attention": "انتبه",
+        "critical": "حرج"
+      },
+      "waiting": "في الانتظار",
+      "avgWait": "دقيقة انتظار",
+      "capacity": "السعة",
+      "served": "تم خدمتهم",
+      "queueTitle": "طابور الانتظار",
+      "actionsRequired": "إجراءات مطلوبة",
+      "forecastTitle": "توقعات الإقبال",
+      "forecastPredicted": "متوقع",
+      "forecastActual": "فعلي",
+      "forecastPeak": "ذروة متوقعة: {{volume}} عميل الساعة {{hour}}",
+      "urgency": {
+        "critical": "حرج",
+        "high": "عاجل",
+        "medium": "متوسط",
+        "low": "معلومة"
+      },
+      "executeNow": "تنفيذ",
+      "executing": "جاري التنفيذ..."
+    },
+    "tooltips": {
+      "healthScore": "مؤشر شامل من 0 إلى 100 يجمع بين وقت الانتظار والتزام SLA والسعة. كلما ارتفع المؤشر كان أداء الطابور أفضل.",
+      "waitingCount": "عدد العملاء الذين ينتظرون حاليا للاستدعاء إلى الشباك.",
+      "avgWait": "متوسط الوقت الذي ينتظره العميل قبل استدعائه إلى الشباك اليوم.",
+      "capacity": "نسبة الشبابيك المفتوحة مقارنة بالحاجة المقدرة. أكثر من 100% يعني نقص في الموظفين.",
+      "slaTrajectory": "توقع التزام SLA بناء على الاتجاه الحالي. سهم أحمر = تدهور، أخضر = مسار جيد.",
+      "ticketsServed": "إجمالي عدد العملاء الذين تم خدمتهم اليوم مقارنة بالهدف اليومي.",
+      "forecast": "عدد العملاء المتوقع في الساعات القادمة، بناء على بيانات نفس اليوم والساعة.",
+      "championScore": "مؤشر أداء مركب: 40% عملاء تم خدمتهم، 30% سرعة الخدمة، 30% إدارة وقت الراحة."
+    }
+  },
   "errors": {
     "networkError": "خطأ في الاتصال",
     "serverError": "خطأ في الخادم",
@@ -183,5 +251,58 @@
     "forbidden": "الوصول مرفوض",
     "validationError": "خطأ في التحقق",
     "tryAgain": "يرجى المحاولة مرة أخرى"
+  },
+  "hq": {
+    "title": "لوحة تحكم الشبكة",
+    "networkHealth": "صحة الشبكة",
+    "lastUpdate": "آخر تحديث",
+    "refresh": "تحديث",
+    "loading": "جار التحميل...",
+    "branchMatrix": "أداء الفروع",
+    "comparative": "تحليل مقارن",
+    "recommendations": "التوصيات",
+    "noResults": "لا توجد نتائج",
+    "health": {
+      "excellent": "ممتاز",
+      "good": "جيد",
+      "attention": "انتباه",
+      "critical": "حرج"
+    },
+    "kpi": {
+      "waiting": "في الانتظار",
+      "sla": "SLA الشبكة",
+      "served": "تم الخدمة",
+      "counters": "الشبابيك",
+      "problems": "تنبيهات",
+      "vsYesterday": "مقارنة بالأمس"
+    },
+    "filter": {
+      "all": "الكل",
+      "critical": "حرجة",
+      "warning": "انتباه",
+      "healthy": "سليمة"
+    },
+    "col": {
+      "branch": "الفرع",
+      "health": "الصحة",
+      "waiting": "انتظار",
+      "served": "خُدموا",
+      "avgWait": "متوسط الانتظار",
+      "counters": "الشبابيك"
+    },
+    "ranking": {
+      "title": "ترتيب الفروع",
+      "top5": "أفضل 5",
+      "bottom5": "أدنى 5"
+    },
+    "trends": {
+      "title": "الاتجاهات (7 أيام)",
+      "served": "خُدموا",
+      "avgWait": "متوسط الانتظار",
+      "sla": "SLA %",
+      "noShows": "غياب"
+    },
+    "noShows": "غياب",
+    "topService": "الخدمة الرئيسية"
   }
 }

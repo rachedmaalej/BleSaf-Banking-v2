@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQueueStore } from '@/stores/queueStore';
 import {
@@ -7,14 +7,39 @@ import {
   joinDisplayRoom,
   SOCKET_EVENTS,
 } from '@/lib/socket';
+import { AnnouncementBanner } from '@/components/display/AnnouncementBanner';
 
-// Service class names and their Material icons
+interface Announcement {
+  id: string;
+  message: string;
+  messageAr?: string;
+  priority: 'normal' | 'urgent';
+  enableTts: boolean;
+  displayDuration: number;
+  createdBy: string;
+  createdAt: string;
+}
+
+// Service class names, icons, and SHORT labels for TV display
+// Labels should be short (max 8 chars) to fit in queue cards
 const SERVICE_CONFIG: Record<string, { className: string; icon: string; label: string }> = {
+  // Core banking services
   "Retrait d'espèces": { className: 'retrait', icon: 'local_atm', label: 'Retrait' },
-  'Relevés de compte': { className: 'releves', icon: 'receipt_long', label: 'Relevés' },
   "Dépôt d'espèces": { className: 'depot', icon: 'payments', label: 'Dépôt' },
-  Autres: { className: 'autres', icon: 'more_horiz', label: 'Autres' },
-  default: { className: 'autres', icon: 'more_horiz', label: 'Autres' },
+  'Relevés de compte': { className: 'releves', icon: 'receipt_long', label: 'Relevés' },
+  'Virement': { className: 'virement', icon: 'swap_horiz', label: 'Virement' },
+  // Card services
+  'Retrait de carte bancaire': { className: 'carte', icon: 'credit_card', label: 'Carte' },
+  // Foreign exchange
+  'Change de devises': { className: 'change', icon: 'currency_exchange', label: 'Change' },
+  // Account services
+  'Ouverture de compte': { className: 'compte', icon: 'person_add', label: 'Compte' },
+  // Credit / Loans
+  'Crédit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
+  'Credit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
+  // Other / Catch-all
+  'Autres': { className: 'autres', icon: 'more_horiz', label: 'Autres' },
+  default: { className: 'autres', icon: 'help_outline', label: 'Service' },
 };
 
 function getServiceConfig(serviceName: string) {
@@ -37,7 +62,20 @@ export default function QueueDisplay() {
 
   const [lastCalledTicket, setLastCalledTicket] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [activeAnnouncement, setActiveAnnouncement] = useState<Announcement | null>(null);
+  const [queueStatus, setQueueStatus] = useState<'open' | 'paused' | 'closed'>('open');
+  const [isAnnouncementVisible, setIsAnnouncementVisible] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Handle announcement visibility change for push effect
+  const handleAnnouncementVisibilityChange = useCallback((visible: boolean) => {
+    setIsAnnouncementVisible(visible);
+  }, []);
+
+  // Handle announcement dismissal
+  const handleAnnouncementDismiss = useCallback(() => {
+    setActiveAnnouncement(null);
+  }, []);
 
   // Update clock every minute
   useEffect(() => {
@@ -86,6 +124,41 @@ export default function QueueDisplay() {
       fetchBranchStatus(branchId);
     });
 
+    // Listen for announcements
+    socket.on(SOCKET_EVENTS.ANNOUNCEMENT_CREATED, (data) => {
+      console.log('📢 ANNOUNCEMENT_CREATED received:', data);
+      setActiveAnnouncement(data.announcement);
+    });
+
+    socket.on(SOCKET_EVENTS.ANNOUNCEMENT_DISMISSED, (data) => {
+      console.log('🚫 ANNOUNCEMENT_DISMISSED received:', data);
+      setActiveAnnouncement((current) =>
+        current?.id === data.announcementId ? null : current
+      );
+    });
+
+    // Queue status events
+    socket.on(SOCKET_EVENTS.QUEUE_PAUSED, () => {
+      console.log('⏸️ QUEUE_PAUSED received');
+      setQueueStatus('paused');
+    });
+
+    socket.on(SOCKET_EVENTS.QUEUE_RESUMED, () => {
+      console.log('▶️ QUEUE_RESUMED received');
+      setQueueStatus('open');
+    });
+
+    socket.on(SOCKET_EVENTS.QUEUE_AUTO_CLOSED, () => {
+      console.log('🔒 QUEUE_AUTO_CLOSED received');
+      setQueueStatus('closed');
+    });
+
+    socket.on(SOCKET_EVENTS.QUEUE_AUTO_OPENED, () => {
+      console.log('🔓 QUEUE_AUTO_OPENED received');
+      setQueueStatus('open');
+      fetchBranchStatus(branchId);
+    });
+
     // Refresh every 30 seconds as backup
     const interval = setInterval(() => {
       fetchBranchStatus(branchId);
@@ -96,6 +169,12 @@ export default function QueueDisplay() {
       socket.off(SOCKET_EVENTS.TICKET_COMPLETED);
       socket.off(SOCKET_EVENTS.QUEUE_UPDATED);
       socket.off(SOCKET_EVENTS.TICKET_CREATED);
+      socket.off(SOCKET_EVENTS.ANNOUNCEMENT_CREATED);
+      socket.off(SOCKET_EVENTS.ANNOUNCEMENT_DISMISSED);
+      socket.off(SOCKET_EVENTS.QUEUE_PAUSED);
+      socket.off(SOCKET_EVENTS.QUEUE_RESUMED);
+      socket.off(SOCKET_EVENTS.QUEUE_AUTO_CLOSED);
+      socket.off(SOCKET_EVENTS.QUEUE_AUTO_OPENED);
       clearInterval(interval);
     };
   }, [branchId, fetchBranchStatus, handleTicketCalled, handleTicketCompleted, handleQueueUpdated]);
@@ -123,11 +202,12 @@ export default function QueueDisplay() {
 
   // Use waitingTickets from branchStatus (already sorted by backend: priority DESC, createdAt ASC)
   // This ensures TV display shows the same FIFO order as teller screens
-  const waitingQueue = (branchStatus.waitingTickets || []).map((ticket, idx) => ({
+  const waitingQueue = (branchStatus.waitingTickets || []).map((ticket: any, idx: number) => ({
     ticketNumber: ticket.ticketNumber,
     serviceName: ticket.serviceName,
     position: idx + 1,
     estimatedWaitMins: ticket.estimatedWaitMins,
+    priority: ticket.priority || 'normal', // Include priority for VIP indication
   }));
 
   // Get first 8 for display
@@ -309,8 +389,9 @@ export default function QueueDisplay() {
         .tv-hero-section {
           flex: 2;
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           background: var(--md3-surface-variant);
+          overflow: hidden;
         }
 
         .tv-hero-counters {
@@ -321,6 +402,12 @@ export default function QueueDisplay() {
           align-items: center;
           gap: 20px;
           background: var(--md3-surface-variant);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* When announcement is visible, counters area shrinks */
+        .tv-hero-counters.with-announcement {
+          padding-right: 16px;
         }
 
         .tv-hero-card {
@@ -395,7 +482,7 @@ export default function QueueDisplay() {
           flex: 1;
           display: flex;
           flex-direction: column;
-          background: var(--md3-surface-variant);
+          background: var(--md3-surface); /* White background to contrast with grey hero */
           border-top: 1px solid var(--md3-outline-variant);
         }
 
@@ -502,6 +589,8 @@ export default function QueueDisplay() {
           letter-spacing: 0.5px;
           margin-bottom: 6px;
           margin-top: 2px;
+          display: flex;
+          align-items: center;
         }
 
         /* Ticket number - hero element */
@@ -534,6 +623,46 @@ export default function QueueDisplay() {
           background: var(--service-bg);
           color: var(--service-text);
           flex-shrink: 0;
+        }
+
+        /* Service name label - more useful than icon */
+        .tv-queue-service-name {
+          font-size: 11px;
+          font-weight: 500;
+          color: var(--md3-on-surface-variant);
+          text-transform: capitalize;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 70px;
+        }
+
+        /* VIP badge in position */
+        .vip-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 6px;
+          padding: 1px 5px;
+          background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+          color: white;
+          font-size: 8px;
+          font-weight: 700;
+          border-radius: 3px;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
+          vertical-align: middle;
+        }
+
+        /* VIP card styling */
+        .tv-queue-card.is-vip {
+          border-color: #F59E0B;
+          box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.3), var(--md3-shadow-2);
+        }
+
+        .tv-queue-card.is-vip::before {
+          background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+          height: 5px;
         }
 
         .tv-queue-service-tag .material-icon {
@@ -596,6 +725,56 @@ export default function QueueDisplay() {
         .tv-queue-empty-text {
           font-size: 14px;
         }
+
+        /* Status Overlay (Closed/Paused) */
+        .tv-status-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(26, 26, 26, 0.95);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          z-index: 100;
+          color: white;
+        }
+
+        .tv-status-icon {
+          font-size: 120px;
+          margin-bottom: 24px;
+          opacity: 0.9;
+        }
+
+        .tv-status-icon.closed {
+          color: #E9041E;
+        }
+
+        .tv-status-icon.paused {
+          color: #F59E0B;
+        }
+
+        .tv-status-title {
+          font-size: 64px;
+          font-weight: 300;
+          margin-bottom: 16px;
+          letter-spacing: -0.02em;
+        }
+
+        .tv-status-subtitle {
+          font-size: 24px;
+          opacity: 0.7;
+          font-weight: 300;
+        }
+
+        .tv-status-time {
+          position: absolute;
+          bottom: 40px;
+          font-size: 20px;
+          opacity: 0.5;
+        }
       `}</style>
 
       <div className="tv-display">
@@ -610,7 +789,7 @@ export default function QueueDisplay() {
 
         {/* Hero Section: 2/3 of vertical space */}
         <div className="tv-hero-section">
-          <div className="tv-hero-counters">
+          <div className={`tv-hero-counters ${isAnnouncementVisible ? 'with-announcement' : ''}`}>
             {activeCounters.length > 0 ? (
               activeCounters.map((counter) => {
                 const serviceConfig = getServiceConfig(counter.currentTicket!.serviceName);
@@ -639,6 +818,17 @@ export default function QueueDisplay() {
               </div>
             )}
           </div>
+
+          {/* Slide-right Announcement Banner - inline in hero section */}
+          {activeAnnouncement && (
+            <AnnouncementBanner
+              announcement={activeAnnouncement}
+              language="fr"
+              onDismiss={handleAnnouncementDismiss}
+              onVisibilityChange={handleAnnouncementVisibilityChange}
+              variant="right"
+            />
+          )}
         </div>
 
         {/* Queue Section: 1/3 of vertical space - Large Hero Cards */}
@@ -665,15 +855,19 @@ export default function QueueDisplay() {
               {visibleQueue.map((item, index) => {
                 const serviceConfig = getServiceConfig(item.serviceName);
                 const waitMins = item.estimatedWaitMins;
+                const isVip = item.priority === 'vip';
+                // Get short service name (first word or abbreviation)
+                const shortServiceName = serviceConfig.label || item.serviceName.split(' ')[0].slice(0, 8);
 
                 return (
-                  <div key={item.ticketNumber} className={`tv-queue-card ${serviceConfig.className}`}>
-                    <div className="tv-queue-position">Position {index + 1}</div>
+                  <div key={item.ticketNumber} className={`tv-queue-card ${serviceConfig.className} ${isVip ? 'is-vip' : ''}`}>
+                    <div className="tv-queue-position">
+                      Position {index + 1}
+                      {isVip && <span className="vip-badge">VIP</span>}
+                    </div>
                     <div className="tv-queue-ticket">{item.ticketNumber}</div>
                     <div className="tv-queue-card-footer">
-                      <span className={`tv-queue-service-tag ${serviceConfig.className}`}>
-                        <span className="material-icon">{serviceConfig.icon}</span>
-                      </span>
+                      <span className="tv-queue-service-name">{shortServiceName}</span>
                       <div className="tv-queue-wait">
                         <span className="material-icon">schedule</span>
                         {waitMins} min
@@ -698,6 +892,24 @@ export default function QueueDisplay() {
           )}
         </div>
       </div>
+
+      {/* Closed/Paused Status Overlay */}
+      {(queueStatus === 'closed' || queueStatus === 'paused') && (
+        <div className="tv-status-overlay">
+          <span className={`tv-status-icon material-icon ${queueStatus}`}>
+            {queueStatus === 'closed' ? 'door_front' : 'pause_circle'}
+          </span>
+          <div className="tv-status-title">
+            {queueStatus === 'closed' ? 'Agence Fermée' : 'File en Pause'}
+          </div>
+          <div className="tv-status-subtitle">
+            {queueStatus === 'closed'
+              ? 'Nous vous remercions de votre visite'
+              : 'La file d\'attente reprendra bientôt'}
+          </div>
+          <div className="tv-status-time">{timeString}</div>
+        </div>
+      )}
     </>
   );
 }

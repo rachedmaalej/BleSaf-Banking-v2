@@ -41,13 +41,11 @@ export default function ManagerLayout() {
       name: t('manager.reports', 'Rapports'),
       href: '/manager/reports',
       icon: 'analytics',
-      disabled: true,
     },
     {
-      name: t('manager.settings', 'Paramètres'),
+      name: t('manager.settings', 'Parametres'),
       href: '/manager/settings',
       icon: 'settings',
-      disabled: true,
     },
   ];
 

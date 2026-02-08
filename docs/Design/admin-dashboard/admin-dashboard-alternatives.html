@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin (HQ) Dashboard - 3 Redesign Alternatives</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #F5F5F5;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    /* SG Brand Colors */
+    :root {
+      --sg-red: #E9041E;
+      --sg-black: #1A1A1A;
+      --sg-rose: #D66874;
+      --sg-gray: #666666;
+      --sg-light-gray: #F5F5F5;
+      --sg-border: #E5E5E5;
+      --status-green: #22C55E;
+      --status-amber: #F59E0B;
+      --status-red: #EF4444;
+    }
+
+    /* Tab Navigation */
+    .tabs-container {
+      max-width: 1400px;
+      margin: 0 auto 40px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: var(--sg-gray);
+      margin-bottom: 32px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: 1px solid var(--sg-border);
+      background: white;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--sg-gray);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--sg-black);
+      color: var(--sg-black);
+    }
+
+    .tab-btn.active {
+      background: var(--sg-black);
+      border-color: var(--sg-black);
+      color: white;
+    }
+
+    .tab-btn.recommended {
+      background: var(--sg-red);
+      border-color: var(--sg-red);
+      color: white;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Alternative Section */
+    .alternative-section {
+      max-width: 1400px;
+      margin: 0 auto 60px;
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid var(--sg-border);
+    }
+
+    .alternative-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .alternative-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 8px;
+    }
+
+    .alternative-concept {
+      font-size: 14px;
+      color: var(--sg-gray);
+      max-width: 600px;
+    }
+
+    .pros-cons {
+      display: flex;
+      gap: 24px;
+    }
+
+    .pros, .cons {
+      font-size: 12px;
+    }
+
+    .pros span, .cons span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .pros span::before {
+      content: "✓ ";
+      color: var(--status-green);
+    }
+
+    .cons span::before {
+      content: "✗ ";
+      color: var(--status-red);
+    }
+
+    /* Dashboard Frame */
+    .dashboard-frame {
+      background: var(--sg-light-gray);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--sg-border);
+    }
+
+    /* ================================ */
+    /* ALTERNATIVE 1: COMMAND CENTER   */
+    /* ================================ */
+
+    .cc-header {
+      background: var(--sg-black);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cc-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cc-logo {
+      width: 40px;
+      height: 40px;
+      background: var(--sg-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .cc-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .cc-header-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .cc-alert-badge {
+      background: var(--sg-red);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cc-time {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    /* Alert Ticker */
+    .cc-ticker {
+      background: var(--status-red);
+      color: white;
+      padding: 12px 24px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      overflow: hidden;
+    }
+
+    .cc-ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .cc-ticker-icon {
+      font-size: 16px;
+    }
+
+    /* Main Content */
+    .cc-main {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 24px;
+      padding: 24px;
+    }
+
+    /* Branch Heat Map */
+    .cc-heatmap {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .cc-heatmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .cc-heatmap-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--sg-black);
+    }
+
+    .cc-heatmap-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .cc-control-btn {
+      padding: 8px 12px;
+      border: 1px solid var(--sg-border);
+      border-radius: 6px;
+      font-size: 12px;
+      background: white;
+      color: var(--sg-gray);
+      cursor: pointer;
+    }
+
+    .cc-heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .cc-branch-card {
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .cc-branch-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .cc-branch-card.critical {
+      background: #FEF2F2;
+      border-left-color: var(--status-red);
+    }
+
+    .cc-branch-card.warning {
+      background: #FFFBEB;
+      border-left-color: var(--status-amber);
+    }
+
+    .cc-branch-card.healthy {
+      background: #F0FDF4;
+      border-left-color: var(--status-green);
+    }
+
+    .cc-branch-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 4px;
+    }
+
+    .cc-branch-code {
+      font-size: 11px;
+      color: var(--sg-gray);
+      margin-bottom: 12px;
+    }
+
+    .cc-branch-metrics {
+      display: flex;
+      gap: 12px;
+    }
+
+    .cc-branch-metric {
+      text-align: center;
+    }
+
+    .cc-branch-metric-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    .cc-branch-metric-label {
+      font-size: 10px;
+      color: var(--sg-gray);
+    }
+
+    /* Right Panel */
+    .cc-right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* KPI Cards */
+    .cc-kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .cc-kpi-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .cc-kpi-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--sg-black);
+      margin-bottom: 4px;
+    }
+
+    .cc-kpi-value.red { color: var(--sg-red); }
+    .cc-kpi-value.green { color: var(--status-green); }
+
+    .cc-kpi-label {
+      font-size: 12px;
+      color: var(--sg-gray);
+      margin-bottom: 8px;
+    }
+
+    .cc-kpi-trend {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    .cc-kpi-trend.up {
+      background: #F0FDF4;
+      color: var(--status-green);
+    }
+
+    .cc-kpi-trend.down {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    /* Ranking */
+    .cc-ranking {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      flex: 1;
+    }
+
+    .cc-ranking-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 16px;
+    }
+
+    .cc-ranking-section {
+      margin-bottom: 16px;
+    }
+
+    .cc-ranking-section-title {
+      font-size: 11px;
+      color: var(--sg-gray);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cc-ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .cc-ranking-item:last-child {
+      border-bottom: none;
+    }
+
+    .cc-ranking-position {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .cc-ranking-position.top {
+      background: #F0FDF4;
+      color: var(--status-green);
+    }
+
+    .cc-ranking-position.bottom {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .cc-ranking-name {
+      flex: 1;
+      font-size: 13px;
+      color: var(--sg-black);
+    }
+
+    .cc-ranking-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sg-gray);
+    }
+
+    /* Alert Footer */
+    .cc-alert-footer {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border-top: 1px solid var(--sg-border);
+    }
+
+    .cc-alert-category {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .cc-alert-category.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .cc-alert-category.warning {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    .cc-alert-count {
+      font-weight: 700;
+    }
+
+    /* ================================ */
+    /* ALTERNATIVE 2: EXECUTIVE SUMMARY */
+    /* ================================ */
+
+    .es-header {
+      background: white;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .es-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--sg-black);
+    }
+
+    .es-period-select {
+      padding: 10px 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--sg-black);
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Alert Banner */
+    .es-alert-banner {
+      background: #FEF2F2;
+      border-left: 4px solid var(--status-red);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .es-alert-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .es-alert-icon {
+      color: var(--status-red);
+      font-size: 24px;
+    }
+
+    .es-alert-text {
+      font-size: 14px;
+      color: var(--sg-black);
+    }
+
+    .es-alert-text strong {
+      font-weight: 600;
+    }
+
+    .es-alert-btn {
+      padding: 10px 20px;
+      background: var(--sg-red);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* KPI Cards */
+    .es-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 24px;
+      background: white;
+    }
+
+    .es-kpi-card {
+      padding: 20px;
+      border: 1px solid var(--sg-border);
+      border-radius: 12px;
+    }
+
+    .es-kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .es-kpi-label {
+      font-size: 12px;
+      color: var(--sg-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .es-kpi-icon {
+      color: var(--sg-gray);
+      font-size: 20px;
+    }
+
+    .es-kpi-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--sg-black);
+      margin-bottom: 8px;
+    }
+
+    .es-kpi-value.red { color: var(--sg-red); }
+    .es-kpi-value.green { color: var(--status-green); }
+
+    .es-kpi-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .es-kpi-trend {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .es-kpi-trend.up { color: var(--status-green); }
+    .es-kpi-trend.down { color: var(--status-red); }
+
+    .es-kpi-target {
+      font-size: 11px;
+      color: var(--sg-gray);
+    }
+
+    /* Sparkline placeholder */
+    .es-sparkline {
+      height: 30px;
+      background: linear-gradient(90deg, rgba(233,4,30,0.1) 0%, rgba(233,4,30,0.3) 100%);
+      border-radius: 4px;
+      margin-top: 12px;
+    }
+
+    /* Collapsible Sections */
+    .es-section {
+      background: white;
+      border-top: 1px solid var(--sg-border);
+    }
+
+    .es-section-header {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .es-section-header:hover {
+      background: var(--sg-light-gray);
+    }
+
+    .es-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-black);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .es-section-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .es-section-badge.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .es-section-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .es-section-content {
+      padding: 0 24px 24px;
+    }
+
+    /* Needs Attention List */
+    .es-attention-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .es-attention-status {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .es-attention-status.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .es-attention-status.warning {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    .es-attention-info {
+      flex: 1;
+    }
+
+    .es-attention-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 4px;
+    }
+
+    .es-attention-detail {
+      font-size: 12px;
+      color: var(--sg-gray);
+    }
+
+    .es-attention-metrics {
+      display: flex;
+      gap: 24px;
+    }
+
+    .es-attention-metric {
+      text-align: center;
+    }
+
+    .es-attention-metric-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    .es-attention-metric-label {
+      font-size: 10px;
+      color: var(--sg-gray);
+    }
+
+    /* Branch Table */
+    .es-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .es-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sg-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .es-table td {
+      padding: 16px;
+      font-size: 14px;
+      color: var(--sg-black);
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .es-table tr:hover {
+      background: var(--sg-light-gray);
+      cursor: pointer;
+    }
+
+    .es-status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .es-status-badge.ok {
+      background: #F0FDF4;
+      color: var(--status-green);
+    }
+
+    .es-status-badge.warning {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    .es-status-badge.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    /* Pagination */
+    .es-pagination {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .es-pagination-info {
+      font-size: 13px;
+      color: var(--sg-gray);
+    }
+
+    .es-pagination-controls {
+      display: flex;
+      gap: 4px;
+    }
+
+    .es-page-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--sg-border);
+      background: white;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .es-page-btn.active {
+      background: var(--sg-black);
+      border-color: var(--sg-black);
+      color: white;
+    }
+
+    /* ================================ */
+    /* ALTERNATIVE 3: ANALYTICS HUB    */
+    /* ================================ */
+
+    .ah-header {
+      background: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .ah-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--sg-black);
+    }
+
+    .ah-header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .ah-date-picker {
+      padding: 10px 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ah-export-btn {
+      padding: 10px 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Toolbar */
+    .ah-toolbar {
+      background: var(--sg-light-gray);
+      padding: 16px 24px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .ah-filter {
+      padding: 10px 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+      font-size: 13px;
+      background: white;
+      cursor: pointer;
+    }
+
+    /* Tabs */
+    .ah-tabs {
+      background: white;
+      padding: 0 24px;
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .ah-tab {
+      padding: 16px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--sg-gray);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .ah-tab:hover {
+      color: var(--sg-black);
+    }
+
+    .ah-tab.active {
+      color: var(--sg-red);
+      border-bottom-color: var(--sg-red);
+    }
+
+    /* Main Content */
+    .ah-main {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 24px;
+      padding: 24px;
+      background: var(--sg-light-gray);
+    }
+
+    /* Left Column */
+    .ah-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .ah-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .ah-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-black);
+      margin-bottom: 16px;
+    }
+
+    /* Mini KPIs */
+    .ah-mini-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .ah-mini-kpi {
+      text-align: center;
+      padding: 12px;
+      background: var(--sg-light-gray);
+      border-radius: 8px;
+    }
+
+    .ah-mini-kpi-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    .ah-mini-kpi-label {
+      font-size: 10px;
+      color: var(--sg-gray);
+    }
+
+    /* Alert Summary */
+    .ah-alert-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .ah-alert-item:last-child {
+      border-bottom: none;
+    }
+
+    .ah-alert-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .ah-alert-icon.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .ah-alert-icon.warning {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    .ah-alert-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--sg-black);
+    }
+
+    .ah-alert-count {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    /* Right Column */
+    .ah-right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Performance Matrix */
+    .ah-matrix {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ah-matrix th {
+      text-align: center;
+      padding: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sg-gray);
+      text-transform: uppercase;
+      background: var(--sg-light-gray);
+    }
+
+    .ah-matrix th:first-child {
+      text-align: left;
+    }
+
+    .ah-matrix td {
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .ah-matrix-branch {
+      font-weight: 500;
+      color: var(--sg-black);
+    }
+
+    .ah-matrix-cell {
+      text-align: center;
+    }
+
+    .ah-matrix-indicator {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      line-height: 28px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .ah-matrix-indicator.ok {
+      background: #F0FDF4;
+      color: var(--status-green);
+    }
+
+    .ah-matrix-indicator.warning {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    .ah-matrix-indicator.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    /* Chart Placeholder */
+    .ah-chart-placeholder {
+      height: 200px;
+      background: linear-gradient(180deg, rgba(233,4,30,0.05) 0%, rgba(233,4,30,0.1) 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sg-gray);
+      font-size: 14px;
+    }
+
+    /* Modal Preview */
+    .modal-preview {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 2px dashed var(--sg-border);
+    }
+
+    .modal-preview-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--sg-gray);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-container {
+      background: rgba(0,0,0,0.5);
+      padding: 40px;
+      border-radius: 12px;
+    }
+
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 800px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--sg-black);
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--sg-border);
+      background: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-status {
+      padding: 8px 24px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .modal-status.critical {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .modal-kpi {
+      text-align: center;
+      padding: 16px;
+      background: var(--sg-light-gray);
+      border-radius: 8px;
+    }
+
+    .modal-kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    .modal-kpi-label {
+      font-size: 11px;
+      color: var(--sg-gray);
+    }
+
+    .modal-sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .modal-section {
+      padding: 16px;
+      border: 1px solid var(--sg-border);
+      border-radius: 8px;
+    }
+
+    .modal-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sg-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .modal-service-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--sg-border);
+    }
+
+    .modal-counter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .modal-counter {
+      padding: 12px;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .modal-counter.closed {
+      background: #FEF2F2;
+      color: var(--status-red);
+    }
+
+    .modal-counter.open {
+      background: #F0FDF4;
+      color: var(--status-green);
+    }
+
+    .modal-counter.break {
+      background: #FFFBEB;
+      color: var(--status-amber);
+    }
+
+    /* Icon helper */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body>
+  <div class="tabs-container">
+    <h1>Admin (HQ) Dashboard Redesign</h1>
+    <p class="subtitle">3 Alternative Layouts for Bank Admin overseeing 20+ branches</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('command-center')">1. Command Center</button>
+      <button class="tab-btn recommended" onclick="showTab('executive-summary')">2. Executive Summary (Recommended)</button>
+      <button class="tab-btn" onclick="showTab('analytics-hub')">3. Analytics Hub</button>
+    </div>
+  </div>
+
+  <!-- ALTERNATIVE 1: COMMAND CENTER -->
+  <div id="command-center" class="tab-content active">
+    <div class="alternative-section">
+      <div class="alternative-header">
+        <div>
+          <h2 class="alternative-title">Alternative 1: Command Center</h2>
+          <p class="alternative-concept">Large-screen monitoring with real-time situational awareness. Optimized for wall-mounted displays or HQ operations room.</p>
+        </div>
+        <div class="pros-cons">
+          <div class="pros">
+            <span>Excellent for wall displays</span>
+            <span>High visual impact</span>
+            <span>Real-time awareness</span>
+          </div>
+          <div class="cons">
+            <span>Requires large screen</span>
+            <span>Less suited for mobile</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-frame">
+        <!-- Header -->
+        <div class="cc-header">
+          <div class="cc-header-left">
+            <div class="cc-logo">SG</div>
+            <div class="cc-title">HQ Command Center</div>
+          </div>
+          <div class="cc-header-right">
+            <div class="cc-alert-badge">
+              <span class="material-symbols-outlined" style="font-size: 16px;">warning</span>
+              6 Alerts
+            </div>
+            <div class="cc-time">14:32:45</div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-symbols-outlined">account_circle</span>
+              Ahmed Ben Ali
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert Ticker -->
+        <div class="cc-ticker">
+          <div class="cc-ticker-item">
+            <span class="cc-ticker-icon">!!</span>
+            <span>La Marsa: 32 customers waiting, 0 counters open</span>
+          </div>
+          <div class="cc-ticker-item">
+            <span class="cc-ticker-icon">!</span>
+            <span>Tunis Centre: Average wait 22 minutes</span>
+          </div>
+          <div class="cc-ticker-item">
+            <span class="cc-ticker-icon">!</span>
+            <span>Bizerte: SLA at 68% (below 80% target)</span>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="cc-main">
+          <!-- Branch Heat Map -->
+          <div class="cc-heatmap">
+            <div class="cc-heatmap-header">
+              <div class="cc-heatmap-title">Branch Status (24 branches)</div>
+              <div class="cc-heatmap-controls">
+                <select class="cc-control-btn">
+                  <option>Sort: Urgency</option>
+                  <option>Sort: Waiting</option>
+                  <option>Sort: Name</option>
+                </select>
+                <select class="cc-control-btn">
+                  <option>All Regions</option>
+                  <option>Tunis</option>
+                  <option>Sousse</option>
+                </select>
+                <input type="text" class="cc-control-btn" placeholder="Search..." style="width: 120px;">
+              </div>
+            </div>
+            <div class="cc-heatmap-grid">
+              <div class="cc-branch-card critical">
+                <div class="cc-branch-name">La Marsa</div>
+                <div class="cc-branch-code">LMR-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">32</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">45%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">0/4</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card warning">
+                <div class="cc-branch-name">Tunis Centre</div>
+                <div class="cc-branch-code">TNC-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">18</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">78%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">3/5</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card warning">
+                <div class="cc-branch-name">Bizerte</div>
+                <div class="cc-branch-code">BIZ-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">15</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">68%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">2/4</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card healthy">
+                <div class="cc-branch-name">Sousse</div>
+                <div class="cc-branch-code">SOU-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">8</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">96%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">4/4</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card healthy">
+                <div class="cc-branch-name">Sfax</div>
+                <div class="cc-branch-code">SFX-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">5</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">94%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">4/4</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card healthy">
+                <div class="cc-branch-name">Monastir</div>
+                <div class="cc-branch-code">MON-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">3</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">98%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">3/3</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card healthy">
+                <div class="cc-branch-name">Nabeul</div>
+                <div class="cc-branch-code">NAB-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">6</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">91%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">3/4</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+              <div class="cc-branch-card healthy">
+                <div class="cc-branch-name">Hammamet</div>
+                <div class="cc-branch-code">HAM-001</div>
+                <div class="cc-branch-metrics">
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">4</div>
+                    <div class="cc-branch-metric-label">Waiting</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">95%</div>
+                    <div class="cc-branch-metric-label">SLA</div>
+                  </div>
+                  <div class="cc-branch-metric">
+                    <div class="cc-branch-metric-value">2/2</div>
+                    <div class="cc-branch-metric-label">Counters</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel -->
+          <div class="cc-right-panel">
+            <div class="cc-kpis">
+              <div class="cc-kpi-card">
+                <div class="cc-kpi-value red">247</div>
+                <div class="cc-kpi-label">Total Waiting</div>
+                <span class="cc-kpi-trend down">↓ 5% vs yesterday</span>
+              </div>
+              <div class="cc-kpi-card">
+                <div class="cc-kpi-value green">1,845</div>
+                <div class="cc-kpi-label">Served Today</div>
+                <span class="cc-kpi-trend up">↑ 12% vs yesterday</span>
+              </div>
+              <div class="cc-kpi-card">
+                <div class="cc-kpi-value">92.3%</div>
+                <div class="cc-kpi-label">Avg SLA</div>
+                <span class="cc-kpi-trend down">↓ 2% vs target</span>
+              </div>
+              <div class="cc-kpi-card">
+                <div class="cc-kpi-value">48/60</div>
+                <div class="cc-kpi-label">Open Counters</div>
+                <span class="cc-kpi-trend down">12 closed</span>
+              </div>
+            </div>
+
+            <div class="cc-ranking">
+              <div class="cc-ranking-title">Branch Ranking (by Served)</div>
+              <div class="cc-ranking-section">
+                <div class="cc-ranking-section-title">Top Performers</div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position top">1</div>
+                  <div class="cc-ranking-name">Sousse</div>
+                  <div class="cc-ranking-value">198 served</div>
+                </div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position top">2</div>
+                  <div class="cc-ranking-name">Sfax</div>
+                  <div class="cc-ranking-value">185 served</div>
+                </div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position top">3</div>
+                  <div class="cc-ranking-name">Monastir</div>
+                  <div class="cc-ranking-value">156 served</div>
+                </div>
+              </div>
+              <div class="cc-ranking-section">
+                <div class="cc-ranking-section-title">Needs Improvement</div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position bottom">22</div>
+                  <div class="cc-ranking-name">Gafsa</div>
+                  <div class="cc-ranking-value">34 served</div>
+                </div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position bottom">23</div>
+                  <div class="cc-ranking-name">Kasserine</div>
+                  <div class="cc-ranking-value">28 served</div>
+                </div>
+                <div class="cc-ranking-item">
+                  <div class="cc-ranking-position bottom">24</div>
+                  <div class="cc-ranking-name">La Marsa</div>
+                  <div class="cc-ranking-value">12 served</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alert Footer -->
+        <div class="cc-alert-footer">
+          <div class="cc-alert-category critical">
+            <span class="cc-alert-count">2</span>
+            <span>Critical - Long Wait</span>
+          </div>
+          <div class="cc-alert-category critical">
+            <span class="cc-alert-count">1</span>
+            <span>Critical - No Counters</span>
+          </div>
+          <div class="cc-alert-category warning">
+            <span class="cc-alert-count">2</span>
+            <span>Warning - Understaffed</span>
+          </div>
+          <div class="cc-alert-category warning">
+            <span class="cc-alert-count">1</span>
+            <span>Warning - SLA Below Target</span>
+          </div>
+          <div style="flex: 1;"></div>
+          <button class="es-alert-btn">View All Alerts</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALTERNATIVE 2: EXECUTIVE SUMMARY -->
+  <div id="executive-summary" class="tab-content">
+    <div class="alternative-section">
+      <div class="alternative-header">
+        <div>
+          <h2 class="alternative-title">Alternative 2: Executive Summary <span style="color: var(--sg-red); font-size: 14px;">(RECOMMENDED)</span></h2>
+          <p class="alternative-concept">Clean, minimal KPI dashboard with progressive disclosure. Optimized for executives who need quick overview with drill-down capability.</p>
+        </div>
+        <div class="pros-cons">
+          <div class="pros">
+            <span>Clean, executive-friendly</span>
+            <span>Mobile-responsive</span>
+            <span>Low cognitive load</span>
+          </div>
+          <div class="cons">
+            <span>Less data-dense</span>
+            <span>Requires expanding sections</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-frame">
+        <!-- Header -->
+        <div class="es-header">
+          <div class="es-title">Tableau de bord Admin</div>
+          <select class="es-period-select">
+            <option>Aujourd'hui</option>
+            <option>Cette semaine</option>
+            <option>Ce mois</option>
+          </select>
+        </div>
+
+        <!-- Alert Banner -->
+        <div class="es-alert-banner">
+          <div class="es-alert-content">
+            <span class="es-alert-icon material-symbols-outlined">error</span>
+            <div class="es-alert-text">
+              <strong>4 agences</strong> nécessitent votre attention — 2 critiques, 2 avertissements
+            </div>
+          </div>
+          <button class="es-alert-btn">Examiner</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="es-kpis">
+          <div class="es-kpi-card">
+            <div class="es-kpi-header">
+              <div class="es-kpi-label">En attente</div>
+              <span class="es-kpi-icon material-symbols-outlined">groups</span>
+            </div>
+            <div class="es-kpi-value red">247</div>
+            <div class="es-kpi-footer">
+              <span class="es-kpi-trend down">
+                <span class="material-symbols-outlined" style="font-size: 14px;">trending_down</span>
+                -5% vs hier
+              </span>
+            </div>
+            <div class="es-sparkline"></div>
+          </div>
+          <div class="es-kpi-card">
+            <div class="es-kpi-header">
+              <div class="es-kpi-label">Servis</div>
+              <span class="es-kpi-icon material-symbols-outlined">check_circle</span>
+            </div>
+            <div class="es-kpi-value green">1,845</div>
+            <div class="es-kpi-footer">
+              <span class="es-kpi-trend up">
+                <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
+                +12% vs hier
+              </span>
+              <span class="es-kpi-target">Objectif: 2,000</span>
+            </div>
+            <div class="es-sparkline" style="background: linear-gradient(90deg, rgba(34,197,94,0.1) 0%, rgba(34,197,94,0.3) 100%);"></div>
+          </div>
+          <div class="es-kpi-card">
+            <div class="es-kpi-header">
+              <div class="es-kpi-label">SLA %</div>
+              <span class="es-kpi-icon material-symbols-outlined">speed</span>
+            </div>
+            <div class="es-kpi-value">92.3%</div>
+            <div class="es-kpi-footer">
+              <span class="es-kpi-trend down">
+                <span class="material-symbols-outlined" style="font-size: 14px;">trending_down</span>
+                -2% vs cible
+              </span>
+              <span class="es-kpi-target">Cible: 95%</span>
+            </div>
+            <div class="es-sparkline"></div>
+          </div>
+          <div class="es-kpi-card">
+            <div class="es-kpi-header">
+              <div class="es-kpi-label">Guichets</div>
+              <span class="es-kpi-icon material-symbols-outlined">point_of_sale</span>
+            </div>
+            <div class="es-kpi-value">48<span style="font-size: 20px; color: var(--sg-gray);">/60</span></div>
+            <div class="es-kpi-footer">
+              <span class="es-kpi-trend down" style="color: var(--status-amber);">
+                12 fermés
+              </span>
+            </div>
+            <div class="es-sparkline" style="background: linear-gradient(90deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.3) 100%);"></div>
+          </div>
+        </div>
+
+        <!-- Needs Attention Section -->
+        <div class="es-section">
+          <div class="es-section-header">
+            <div class="es-section-title">
+              <span class="material-symbols-outlined" style="font-size: 20px;">expand_more</span>
+              Nécessite attention
+              <span class="es-section-badge critical">2 critiques, 2 avertissements</span>
+            </div>
+          </div>
+          <div class="es-section-content">
+            <div class="es-attention-item">
+              <div class="es-attention-status critical">!!</div>
+              <div class="es-attention-info">
+                <div class="es-attention-name">La Marsa</div>
+                <div class="es-attention-detail">Aucun guichet ouvert depuis 45 minutes</div>
+              </div>
+              <div class="es-attention-metrics">
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">32</div>
+                  <div class="es-attention-metric-label">En attente</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">0/4</div>
+                  <div class="es-attention-metric-label">Guichets</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">45%</div>
+                  <div class="es-attention-metric-label">SLA</div>
+                </div>
+              </div>
+            </div>
+            <div class="es-attention-item">
+              <div class="es-attention-status critical">!!</div>
+              <div class="es-attention-info">
+                <div class="es-attention-name">Tunis Centre</div>
+                <div class="es-attention-detail">Temps d'attente moyen 22 min (cible: 15 min)</div>
+              </div>
+              <div class="es-attention-metrics">
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">18</div>
+                  <div class="es-attention-metric-label">En attente</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">3/5</div>
+                  <div class="es-attention-metric-label">Guichets</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">78%</div>
+                  <div class="es-attention-metric-label">SLA</div>
+                </div>
+              </div>
+            </div>
+            <div class="es-attention-item">
+              <div class="es-attention-status warning">!</div>
+              <div class="es-attention-info">
+                <div class="es-attention-name">Bizerte</div>
+                <div class="es-attention-detail">SLA en dessous de la cible (68% vs 80%)</div>
+              </div>
+              <div class="es-attention-metrics">
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">15</div>
+                  <div class="es-attention-metric-label">En attente</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">2/4</div>
+                  <div class="es-attention-metric-label">Guichets</div>
+                </div>
+                <div class="es-attention-metric">
+                  <div class="es-attention-metric-value">68%</div>
+                  <div class="es-attention-metric-label">SLA</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Branches Section -->
+        <div class="es-section">
+          <div class="es-section-header">
+            <div class="es-section-title">
+              <span class="material-symbols-outlined" style="font-size: 20px;">expand_more</span>
+              Toutes les agences
+              <span style="color: var(--sg-gray); font-weight: 400;">(24 agences)</span>
+            </div>
+            <div class="es-section-controls">
+              <select class="cc-control-btn">
+                <option>Toutes les régions</option>
+              </select>
+              <input type="text" class="cc-control-btn" placeholder="Rechercher..." style="width: 150px;">
+            </div>
+          </div>
+          <div class="es-section-content">
+            <table class="es-table">
+              <thead>
+                <tr>
+                  <th>Agence</th>
+                  <th>En attente</th>
+                  <th>Servis</th>
+                  <th>SLA %</th>
+                  <th>Guichets</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>La Marsa</strong></td>
+                  <td>32</td>
+                  <td>12</td>
+                  <td>45%</td>
+                  <td>0/4</td>
+                  <td><span class="es-status-badge critical">!!</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Tunis Centre</strong></td>
+                  <td>18</td>
+                  <td>145</td>
+                  <td>78%</td>
+                  <td>3/5</td>
+                  <td><span class="es-status-badge critical">!!</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Bizerte</strong></td>
+                  <td>15</td>
+                  <td>89</td>
+                  <td>68%</td>
+                  <td>2/4</td>
+                  <td><span class="es-status-badge warning">!</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Sousse</strong></td>
+                  <td>8</td>
+                  <td>198</td>
+                  <td>96%</td>
+                  <td>4/4</td>
+                  <td><span class="es-status-badge ok">&#10003;</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Sfax</strong></td>
+                  <td>5</td>
+                  <td>185</td>
+                  <td>94%</td>
+                  <td>4/4</td>
+                  <td><span class="es-status-badge ok">&#10003;</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Monastir</strong></td>
+                  <td>3</td>
+                  <td>156</td>
+                  <td>98%</td>
+                  <td>3/3</td>
+                  <td><span class="es-status-badge ok">&#10003;</span></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="es-pagination">
+              <div class="es-pagination-info">Affichage 1-6 sur 24 agences</div>
+              <div class="es-pagination-controls">
+                <button class="es-page-btn active">1</button>
+                <button class="es-page-btn">2</button>
+                <button class="es-page-btn">3</button>
+                <button class="es-page-btn">4</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historical Trends Section -->
+        <div class="es-section">
+          <div class="es-section-header">
+            <div class="es-section-title">
+              <span class="material-symbols-outlined" style="font-size: 20px;">chevron_right</span>
+              Tendances historiques
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALTERNATIVE 3: ANALYTICS HUB -->
+  <div id="analytics-hub" class="tab-content">
+    <div class="alternative-section">
+      <div class="alternative-header">
+        <div>
+          <h2 class="alternative-title">Alternative 3: Analytics Hub</h2>
+          <p class="alternative-concept">Data-dense dashboard with comparison tables, charts, and drill-down. Optimized for analysts who need to dig into data and compare performance.</p>
+        </div>
+        <div class="pros-cons">
+          <div class="pros">
+            <span>Most comprehensive</span>
+            <span>Full comparison features</span>
+            <span>Great for reporting</span>
+          </div>
+          <div class="cons">
+            <span>Higher learning curve</span>
+            <span>May overwhelm new users</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-frame">
+        <!-- Header -->
+        <div class="ah-header">
+          <div class="ah-title">Analytics Hub</div>
+          <div class="ah-header-actions">
+            <div class="ah-date-picker">
+              <span class="material-symbols-outlined" style="font-size: 18px;">calendar_today</span>
+              Aujourd'hui
+            </div>
+            <div class="ah-export-btn">
+              <span class="material-symbols-outlined" style="font-size: 18px;">download</span>
+              Export CSV
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="ah-toolbar">
+          <select class="ah-filter">
+            <option>Région: Toutes</option>
+          </select>
+          <select class="ah-filter">
+            <option>Statut: Tous</option>
+          </select>
+          <select class="ah-filter">
+            <option>Comparer agences...</option>
+          </select>
+        </div>
+
+        <!-- Tabs -->
+        <div class="ah-tabs">
+          <div class="ah-tab active">Vue d'ensemble</div>
+          <div class="ah-tab">Comparaison</div>
+          <div class="ah-tab">Services</div>
+          <div class="ah-tab">Alertes</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="ah-main">
+          <!-- Left Column -->
+          <div class="ah-left-col">
+            <div class="ah-card">
+              <div class="ah-card-title">Métriques globales</div>
+              <div class="ah-mini-kpis">
+                <div class="ah-mini-kpi">
+                  <div class="ah-mini-kpi-value">247</div>
+                  <div class="ah-mini-kpi-label">En attente</div>
+                </div>
+                <div class="ah-mini-kpi">
+                  <div class="ah-mini-kpi-value">1,845</div>
+                  <div class="ah-mini-kpi-label">Servis</div>
+                </div>
+                <div class="ah-mini-kpi">
+                  <div class="ah-mini-kpi-value">92%</div>
+                  <div class="ah-mini-kpi-label">SLA</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ah-card">
+              <div class="ah-card-title">Résumé des alertes</div>
+              <div class="ah-alert-item">
+                <div class="ah-alert-icon critical">!!</div>
+                <div class="ah-alert-text">Attente longue</div>
+                <div class="ah-alert-count">2</div>
+              </div>
+              <div class="ah-alert-item">
+                <div class="ah-alert-icon critical">!!</div>
+                <div class="ah-alert-text">Sous-effectif</div>
+                <div class="ah-alert-count">1</div>
+              </div>
+              <div class="ah-alert-item">
+                <div class="ah-alert-icon warning">!</div>
+                <div class="ah-alert-text">SLA &lt; cible</div>
+                <div class="ah-alert-count">3</div>
+              </div>
+            </div>
+
+            <div class="ah-card">
+              <div class="ah-card-title">Top / Bottom 5</div>
+              <div style="font-size: 11px; color: var(--sg-gray); margin-bottom: 8px;">TOP PERFORMERS</div>
+              <div style="font-size: 13px; padding: 4px 0;">1. Sousse - 198</div>
+              <div style="font-size: 13px; padding: 4px 0;">2. Sfax - 185</div>
+              <div style="font-size: 13px; padding: 4px 0;">3. Monastir - 156</div>
+              <div style="font-size: 11px; color: var(--sg-gray); margin: 12px 0 8px;">NEEDS IMPROVEMENT</div>
+              <div style="font-size: 13px; padding: 4px 0; color: var(--status-red);">22. Gafsa - 34</div>
+              <div style="font-size: 13px; padding: 4px 0; color: var(--status-red);">23. Kasserine - 28</div>
+              <div style="font-size: 13px; padding: 4px 0; color: var(--status-red);">24. La Marsa - 12</div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="ah-right-col">
+            <div class="ah-card">
+              <div class="ah-card-title">Matrice de performance</div>
+              <table class="ah-matrix">
+                <thead>
+                  <tr>
+                    <th>Agence</th>
+                    <th>Attente</th>
+                    <th>SLA</th>
+                    <th>Effectif</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="ah-matrix-branch">La Marsa</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator critical">!!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator critical">!!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator critical">!!</span></td>
+                  </tr>
+                  <tr>
+                    <td class="ah-matrix-branch">Tunis Centre</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator warning">!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator warning">!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <td class="ah-matrix-branch">Bizerte</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator warning">!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator warning">!</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator warning">!</span></td>
+                  </tr>
+                  <tr>
+                    <td class="ah-matrix-branch">Sousse</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <td class="ah-matrix-branch">Sfax</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                  </tr>
+                  <tr>
+                    <td class="ah-matrix-branch">Monastir</td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                    <td class="ah-matrix-cell"><span class="ah-matrix-indicator ok">&#10003;</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="ah-card">
+              <div class="ah-card-title">Tendance (7 jours)</div>
+              <div class="ah-chart-placeholder">
+                <span class="material-symbols-outlined" style="font-size: 32px; margin-right: 8px;">show_chart</span>
+                Graphique des tendances
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Drill-down Modal Preview -->
+      <div class="modal-preview">
+        <div class="modal-preview-title">Drill-down Modal (on branch click)</div>
+        <div class="modal-container">
+          <div class="modal">
+            <div class="modal-header">
+              <div class="modal-title">Détail: La Marsa</div>
+              <button class="modal-close">✕</button>
+            </div>
+            <div class="modal-status critical">STATUT: CRITIQUE</div>
+            <div class="modal-body">
+              <div class="modal-kpis">
+                <div class="modal-kpi">
+                  <div class="modal-kpi-value">32</div>
+                  <div class="modal-kpi-label">En attente</div>
+                </div>
+                <div class="modal-kpi">
+                  <div class="modal-kpi-value">12</div>
+                  <div class="modal-kpi-label">Servis</div>
+                </div>
+                <div class="modal-kpi">
+                  <div class="modal-kpi-value">45%</div>
+                  <div class="modal-kpi-label">SLA</div>
+                </div>
+                <div class="modal-kpi">
+                  <div class="modal-kpi-value">0/4</div>
+                  <div class="modal-kpi-label">Guichets</div>
+                </div>
+              </div>
+              <div class="modal-sections">
+                <div class="modal-section">
+                  <div class="modal-section-title">File par service</div>
+                  <div class="modal-service-item">
+                    <span>Retrait</span>
+                    <span>18 (25 min)</span>
+                  </div>
+                  <div class="modal-service-item">
+                    <span>Dépôt</span>
+                    <span>8 (18 min)</span>
+                  </div>
+                  <div class="modal-service-item">
+                    <span>Ouverture compte</span>
+                    <span>6 (35 min)</span>
+                  </div>
+                </div>
+                <div class="modal-section">
+                  <div class="modal-section-title">Statut des guichets</div>
+                  <div class="modal-counter-grid">
+                    <div class="modal-counter closed">G1<br>Fermé</div>
+                    <div class="modal-counter closed">G2<br>Fermé</div>
+                    <div class="modal-counter break">G3<br>Pause</div>
+                    <div class="modal-counter closed">G4<br>Fermé</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function showTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Remove active class from all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        // Keep recommended styling for the recommended tab
+        if (btn.textContent.includes('Recommended')) {
+          btn.classList.add('recommended');
+        }
+      });
+
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+
+      // Mark clicked button as active
+      event.target.classList.add('active');
+      event.target.classList.remove('recommended');
+    }
+  </script>
+</body>
+</html>

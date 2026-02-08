@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BM Dashboard: UX Analysis & 3 Alternative Redesigns</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <style>
+    :root {
+      --sg-red: #E9041E;
+      --sg-black: #1A1A1A;
+      --sg-rose: #D66874;
+      --sg-gray: #666666;
+      --sg-light-gray: #F5F5F5;
+      --sg-green: #10B981;
+      --sg-amber: #F59E0B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #FAFAFA;
+      color: var(--sg-black);
+      line-height: 1.6;
+    }
+
+    .doc-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--sg-black);
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 48px 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--sg-red);
+      color: var(--sg-black);
+    }
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 32px 0 16px;
+      color: var(--sg-black);
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--sg-gray);
+      margin: 24px 0 12px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      color: var(--sg-gray);
+      margin-bottom: 32px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--sg-gray);
+    }
+
+    .section-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .rating-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    .rating-card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .rating-score {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .rating-label {
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--sg-gray);
+    }
+
+    .rating-poor { color: var(--sg-red); }
+    .rating-fair { color: var(--sg-amber); }
+    .rating-good { color: var(--sg-green); }
+
+    .issue-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .issue-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .issue-list li:last-child {
+      border-bottom: none;
+    }
+
+    .issue-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .issue-critical { background: #FEE2E2; color: var(--sg-red); }
+    .issue-warning { background: #FEF3C7; color: var(--sg-amber); }
+    .issue-info { background: #E0E7FF; color: #4F46E5; }
+
+    .recommendation-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: #F0FDF4;
+      border-left: 4px solid var(--sg-green);
+      padding: 16px 20px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+    }
+
+    .alternative-section {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #E5E7EB;
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+
+    .alternative-header {
+      background: linear-gradient(135deg, var(--sg-black) 0%, #333 100%);
+      color: white;
+      padding: 24px 32px;
+    }
+
+    .alternative-header h3 {
+      color: white;
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .alternative-header p {
+      color: rgba(255,255,255,0.8);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .alternative-content {
+      padding: 32px;
+    }
+
+    .mockup-container {
+      background: #F5F5F5;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .mockup-frame {
+      background: white;
+      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    /* Mockup Header */
+    .mock-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .mock-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mock-logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--sg-red);
+      border-radius: 4px;
+    }
+
+    .mock-branch {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .mock-nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mock-nav-item {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sg-gray);
+    }
+
+    .mock-nav-item.active {
+      background: var(--sg-black);
+      color: white;
+    }
+
+    .mock-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .mock-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sg-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Mockup Content */
+    .mock-content {
+      min-height: 500px;
+      background: #FAFAFA;
+    }
+
+    /* Metrics Row */
+    .mock-metrics-row {
+      display: flex;
+      gap: 16px;
+      padding: 16px 20px;
+      background: white;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .mock-metric {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mock-metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--sg-black);
+    }
+
+    .mock-metric-label {
+      font-size: 11px;
+      color: var(--sg-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .mock-metric-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    /* Split View */
+    .mock-split {
+      display: flex;
+      min-height: 420px;
+    }
+
+    .mock-split-left {
+      flex: 1;
+      padding: 20px;
+      border-right: 1px solid #E5E7EB;
+      background: white;
+    }
+
+    .mock-split-right {
+      width: 340px;
+      padding: 20px;
+      background: #FAFAFA;
+    }
+
+    .mock-section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #999;
+      margin-bottom: 12px;
+    }
+
+    /* Queue List Item */
+    .mock-queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #E5E7EB;
+    }
+
+    .mock-queue-item.highlight {
+      border-left: 3px solid var(--sg-red);
+    }
+
+    .mock-ticket-num {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .mock-ticket-service {
+      font-size: 12px;
+      color: var(--sg-gray);
+    }
+
+    .mock-ticket-wait {
+      font-size: 12px;
+      color: var(--sg-gray);
+    }
+
+    .mock-vip-badge {
+      background: var(--sg-red);
+      color: white;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Counter Item */
+    .mock-counter-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      border-left: 3px solid transparent;
+    }
+
+    .mock-counter-item.open {
+      border-left-color: var(--sg-green);
+    }
+
+    .mock-counter-item.closed {
+      border-left-color: #9CA3AF;
+    }
+
+    .mock-counter-item.break {
+      border-left-color: var(--sg-amber);
+    }
+
+    .mock-counter-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .mock-counter-dot.open { background: var(--sg-green); }
+    .mock-counter-dot.closed { background: #9CA3AF; }
+    .mock-counter-dot.break { background: var(--sg-amber); }
+
+    .mock-counter-info {
+      flex: 1;
+    }
+
+    .mock-counter-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .mock-counter-status {
+      font-size: 12px;
+      color: var(--sg-gray);
+    }
+
+    .mock-counter-ticket {
+      font-weight: 600;
+      color: var(--sg-green);
+      font-size: 14px;
+    }
+
+    /* Quick Actions */
+    .mock-action-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid #E5E7EB;
+      background: white;
+      color: var(--sg-black);
+      cursor: pointer;
+    }
+
+    .mock-action-btn.primary {
+      background: var(--sg-black);
+      color: white;
+      border-color: var(--sg-black);
+    }
+
+    .mock-action-btn.danger {
+      border-color: var(--sg-rose);
+      color: var(--sg-rose);
+    }
+
+    /* Alert Banner */
+    .mock-alert-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: #FEF3C7;
+      border-left: 4px solid var(--sg-amber);
+    }
+
+    .mock-alert-banner.critical {
+      background: #FEE2E2;
+      border-color: var(--sg-red);
+    }
+
+    .mock-alert-text {
+      flex: 1;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .mock-alert-action {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--sg-amber);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Feature Tags */
+    .feature-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: #F0F0F0;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--sg-gray);
+    }
+
+    .feature-tag.good {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+
+    /* Pros/Cons */
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 24px 0;
+    }
+
+    .pros, .cons {
+      padding: 16px;
+      border-radius: 8px;
+    }
+
+    .pros {
+      background: #F0FDF4;
+      border-left: 3px solid var(--sg-green);
+    }
+
+    .cons {
+      background: #FEF2F2;
+      border-left: 3px solid var(--sg-red);
+    }
+
+    .pros h5, .cons h5 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .pros h5 { color: var(--sg-green); }
+    .cons h5 { color: var(--sg-red); }
+
+    .pros ul, .cons ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .pros li, .cons li {
+      font-size: 13px;
+      padding: 4px 0;
+      color: var(--sg-black);
+    }
+
+    /* Comparison Table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #E5E7EB;
+    }
+
+    .comparison-table th {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--sg-gray);
+      background: #F8F8F8;
+    }
+
+    .comparison-table td {
+      font-size: 14px;
+    }
+
+    .comparison-table tr:hover td {
+      background: #FAFAFA;
+    }
+
+    /* Emphasis Box */
+    .emphasis-box {
+      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 24px 0;
+      border-left: 4px solid var(--sg-amber);
+    }
+
+    .emphasis-box h4 {
+      color: #B45309;
+      margin-bottom: 8px;
+    }
+
+    .emphasis-box p {
+      color: #92400E;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .rating-grid {
+        grid-template-columns: 1fr;
+      }
+      .pros-cons {
+        grid-template-columns: 1fr;
+      }
+      .mock-split {
+        flex-direction: column;
+      }
+      .mock-split-right {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doc-container">
+    <!-- Header -->
+    <h1>Bank Manager Dashboard: UX Analysis & Redesign</h1>
+    <p class="subtitle">A critical evaluation of the current dashboard from a Bank Manager's perspective, with 3 alternative designs adhering to the SG design system</p>
+
+    <!-- Overall Ratings -->
+    <h2>Overall Assessment</h2>
+
+    <div class="rating-grid">
+      <div class="rating-card">
+        <div class="rating-score rating-fair">5.5/10</div>
+        <div class="rating-label">Usability</div>
+      </div>
+      <div class="rating-card">
+        <div class="rating-score rating-fair">6/10</div>
+        <div class="rating-label">User Friendliness</div>
+      </div>
+      <div class="rating-card">
+        <div class="rating-score rating-poor">4/10</div>
+        <div class="rating-label">Information Priority</div>
+      </div>
+    </div>
+
+    <!-- Critical Analysis -->
+    <h2>Critical Analysis</h2>
+
+    <div class="section-card">
+      <h3>The Bank Manager's Primary Job</h3>
+      <p>Before critiquing, let's understand what a Bank Manager actually needs to do throughout their day:</p>
+
+      <ul class="issue-list">
+        <li>
+          <span class="issue-icon issue-critical">
+            <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span>
+          </span>
+          <div>
+            <strong>Monitor queue health</strong> - Are customers waiting too long? Is anyone stuck?
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-critical">
+            <span class="material-symbols-outlined" style="font-size: 14px;">priority_high</span>
+          </span>
+          <div>
+            <strong>Manage counter operations</strong> - Open/close counters, handle breaks, assign tellers
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>Respond to alerts</strong> - VIP customers, long waits, slow tellers
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-info">
+            <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
+          </span>
+          <div>
+            <strong>Track performance</strong> - Daily targets, team efficiency, SLA compliance (secondary task)
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="section-card">
+      <h3>What's Wrong with the Current Dashboard</h3>
+
+      <h4>1. Inverted Information Hierarchy</h4>
+      <ul class="issue-list">
+        <li>
+          <span class="issue-icon issue-critical">
+            <span class="material-symbols-outlined" style="font-size: 14px;">error</span>
+          </span>
+          <div>
+            <strong>Queue list is at the bottom</strong> - The most actionable information (who's waiting, who needs attention) requires scrolling past historical charts and team stats
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-critical">
+            <span class="material-symbols-outlined" style="font-size: 14px;">error</span>
+          </span>
+          <div>
+            <strong>Historical trends above real-time data</strong> - Week/month charts take prime screen real estate but are reviewed once per day at most
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>Alerts are tiny badges</strong> - Critical warnings (slow teller, long waits) are reduced to a small badge in the corner that's easy to miss
+          </div>
+        </li>
+      </ul>
+
+      <h4>2. Cognitive Overload from Collapsible Sections</h4>
+      <ul class="issue-list">
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>4 collapsible sections</strong> - Manager must click to expand sections to see data. Default collapsed state hides important information.
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>Quick Actions collapsed by default</strong> - The tools to manage the branch (pause queue, open counters) require an extra click to access
+          </div>
+        </li>
+      </ul>
+
+      <h4>3. Scroll Fatigue</h4>
+      <ul class="issue-list">
+        <li>
+          <span class="issue-icon issue-critical">
+            <span class="material-symbols-outlined" style="font-size: 14px;">error</span>
+          </span>
+          <div>
+            <strong>~2000px tall page</strong> - Even with sections collapsed, the page requires significant scrolling to see all relevant information
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>Counters and Queue separated</strong> - These two pieces of information should be viewed together but are in separate columns at the bottom
+          </div>
+        </li>
+      </ul>
+
+      <h4>4. Action Discoverability</h4>
+      <ul class="issue-list">
+        <li>
+          <span class="issue-icon issue-warning">
+            <span class="material-symbols-outlined" style="font-size: 14px;">warning</span>
+          </span>
+          <div>
+            <strong>VIP promotion hidden</strong> - Clicking VIP badge requires knowing it's clickable; no visible "Prioritize" button
+          </div>
+        </li>
+        <li>
+          <span class="issue-icon issue-info">
+            <span class="material-symbols-outlined" style="font-size: 14px;">info</span>
+          </span>
+          <div>
+            <strong>Break management buried</strong> - Managing teller breaks requires knowing about the system; not discoverable from main UI
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="emphasis-box">
+      <h4>Key Insight</h4>
+      <p>The current dashboard is designed like a <strong>reporting tool</strong> (metrics first), but a Bank Manager needs an <strong>operations command center</strong> (actions first, metrics second).</p>
+    </div>
+
+    <!-- Recommendations -->
+    <h2>Recommended Improvements</h2>
+
+    <div class="section-card">
+      <div class="recommendation-card">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 24px;">lightbulb</span>
+        <div>
+          <strong>Move queue list above the fold</strong> - The waiting customers should be the first thing a manager sees, not the last
+        </div>
+      </div>
+
+      <div class="recommendation-card">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 24px;">lightbulb</span>
+        <div>
+          <strong>Make alerts prominent and actionable</strong> - Alerts should be banners with direct action buttons, not badge counts
+        </div>
+      </div>
+
+      <div class="recommendation-card">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 24px;">lightbulb</span>
+        <div>
+          <strong>Keep quick actions always visible</strong> - Use a sticky footer bar or sidebar for common actions
+        </div>
+      </div>
+
+      <div class="recommendation-card">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 24px;">lightbulb</span>
+        <div>
+          <strong>Move historical data to a separate tab</strong> - Charts for week/month trends are useful but not urgent; put them in "Analytics" tab
+        </div>
+      </div>
+
+      <div class="recommendation-card">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 24px;">lightbulb</span>
+        <div>
+          <strong>Reduce cognitive load</strong> - Remove collapsible sections; show all critical info by default with visual hierarchy
+        </div>
+      </div>
+    </div>
+
+    <!-- Alternative 1 -->
+    <h2>Alternative Designs</h2>
+
+    <div class="alternative-section">
+      <div class="alternative-header">
+        <h3>Alternative 1: "Operations Command Center"</h3>
+        <p>Queue and counters front and center, metrics as supporting context</p>
+      </div>
+
+      <div class="alternative-content">
+        <h4>Design Philosophy</h4>
+        <p>This design treats the dashboard as a real-time operations tool. The queue is the primary focus, with counters as the secondary. Metrics provide context but don't dominate the view.</p>
+
+        <div class="feature-tags">
+          <span class="feature-tag good">Queue First</span>
+          <span class="feature-tag good">No Collapsibles</span>
+          <span class="feature-tag good">Sticky Actions</span>
+          <span class="feature-tag">Compact Header</span>
+        </div>
+
+        <div class="mockup-container">
+          <div class="mockup-frame">
+            <!-- Header -->
+            <div class="mock-header">
+              <div class="mock-logo">
+                <div class="mock-logo-icon"></div>
+                <span class="mock-branch">UIB Agence Lac 2</span>
+              </div>
+              <div class="mock-nav">
+                <div class="mock-nav-item active">Tableau de Bord</div>
+                <div class="mock-nav-item">Analytics</div>
+                <div class="mock-nav-item">Equipe</div>
+              </div>
+              <div class="mock-user">
+                <span style="color: var(--sg-gray);">14:57</span>
+                <div class="mock-avatar">F</div>
+              </div>
+            </div>
+
+            <!-- Alert Banner (when active) -->
+            <div class="mock-alert-banner">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: #B45309;">warning</span>
+              <span class="mock-alert-text">2 alertes: Agent lent (Mohamed Sassi, Leila Hamdi)</span>
+              <span class="mock-alert-action">Voir details</span>
+            </div>
+
+            <!-- Compact Metrics Row -->
+            <div class="mock-metrics-row">
+              <div class="mock-metric">
+                <div class="mock-metric-icon" style="background: rgba(233, 4, 30, 0.1); color: var(--sg-red);">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">groups</span>
+                </div>
+                <div>
+                  <div class="mock-metric-value">3</div>
+                  <div class="mock-metric-label">En attente</div>
+                </div>
+              </div>
+              <div class="mock-metric">
+                <div class="mock-metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--sg-green);">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">schedule</span>
+                </div>
+                <div>
+                  <div class="mock-metric-value">~4</div>
+                  <div class="mock-metric-label">Min attente</div>
+                </div>
+              </div>
+              <div class="mock-metric">
+                <div class="mock-metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--sg-green);">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">verified</span>
+                </div>
+                <div>
+                  <div class="mock-metric-value">100%</div>
+                  <div class="mock-metric-label">SLA</div>
+                </div>
+              </div>
+              <div class="mock-metric">
+                <div class="mock-metric-icon" style="background: rgba(26, 26, 26, 0.05); color: var(--sg-black);">
+                  <span class="material-symbols-outlined" style="font-size: 18px;">storefront</span>
+                </div>
+                <div>
+                  <div class="mock-metric-value">3/3</div>
+                  <div class="mock-metric-label">Guichets</div>
+                </div>
+              </div>
+              <div style="flex: 1;"></div>
+              <div class="mock-metric">
+                <div>
+                  <div class="mock-metric-value" style="font-size: 18px;">8/100</div>
+                  <div class="mock-metric-label">Objectif</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Split Content -->
+            <div class="mock-split">
+              <!-- Queue (Primary) -->
+              <div class="mock-split-left" style="flex: 2;">
+                <div class="mock-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                  <span>File d'attente - 3 clients</span>
+                  <span style="font-size: 11px; color: #999; font-weight: 400;">Mis a jour 14:57</span>
+                </div>
+
+                <div class="mock-queue-item highlight">
+                  <div>
+                    <div class="mock-ticket-num">B-002</div>
+                    <div class="mock-ticket-service">Releves de compte</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="mock-ticket-wait">5 min</span>
+                    <span class="mock-vip-badge">VIP</span>
+                    <button class="mock-action-btn" style="padding: 4px 8px; font-size: 11px;">Prioriser</button>
+                  </div>
+                </div>
+
+                <div class="mock-queue-item highlight">
+                  <div>
+                    <div class="mock-ticket-num">C-001</div>
+                    <div class="mock-ticket-service">Depot d'especes</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="mock-ticket-wait">5 min</span>
+                    <span class="mock-vip-badge">VIP</span>
+                  </div>
+                </div>
+
+                <div class="mock-queue-item highlight">
+                  <div>
+                    <div class="mock-ticket-num">D-001</div>
+                    <div class="mock-ticket-service">Prets</div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="mock-ticket-wait">5 min</span>
+                    <span class="mock-vip-badge">VIP</span>
+                  </div>
+                </div>
+
+                <div style="text-align: center; padding: 32px; color: #999; font-size: 13px;">
+                  <span class="material-symbols-outlined" style="font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.5;">check_circle</span>
+                  File courte - temps d'attente optimal
+                </div>
+              </div>
+
+              <!-- Counters (Secondary) -->
+              <div class="mock-split-right">
+                <div class="mock-section-title">Guichets</div>
+
+                <div class="mock-counter-item open">
+                  <span class="mock-counter-dot open"></span>
+                  <div class="mock-counter-info">
+                    <div class="mock-counter-name">G1 Mohamed Sassi</div>
+                    <div class="mock-counter-status">En service</div>
+                  </div>
+                  <span class="mock-counter-ticket">B-001</span>
+                </div>
+
+                <div class="mock-counter-item open">
+                  <span class="mock-counter-dot open"></span>
+                  <div class="mock-counter-info">
+                    <div class="mock-counter-name">G2 Leila Hamdi</div>
+                    <div class="mock-counter-status">En service</div>
+                  </div>
+                  <span class="mock-counter-ticket">A-003</span>
+                </div>
+
+                <div class="mock-counter-item open">
+                  <span class="mock-counter-dot open"></span>
+                  <div class="mock-counter-info">
+                    <div class="mock-counter-name">G3</div>
+                    <div class="mock-counter-status">En attente</div>
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid #E5E7EB; margin-top: 16px; padding-top: 16px;">
+                  <div class="mock-section-title">Actions Rapides</div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="mock-action-btn" style="justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">pause</span>
+                      Pause file
+                    </button>
+                    <button class="mock-action-btn" style="justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">campaign</span>
+                      Annonce
+                    </button>
+                    <button class="mock-action-btn" style="justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">door_open</span>
+                      Ouvrir tous
+                    </button>
+                    <button class="mock-action-btn danger" style="justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">restart_alt</span>
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>Pros</h5>
+            <ul>
+              <li>Queue visible immediately - no scrolling</li>
+              <li>Alerts are prominent banners with actions</li>
+              <li>Quick actions always visible in sidebar</li>
+              <li>Compact metrics don't steal focus</li>
+              <li>Clean visual hierarchy</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>Cons</h5>
+            <ul>
+              <li>Historical charts moved to separate tab</li>
+              <li>Team performance not on main view</li>
+              <li>Requires tab switching for analytics</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alternative 2 -->
+    <div class="alternative-section">
+      <div class="alternative-header" style="background: linear-gradient(135deg, #1A1A1A 0%, #444 100%);">
+        <h3>Alternative 2: "At-a-Glance Grid"</h3>
+        <p>Card-based layout with everything visible, organized by urgency</p>
+      </div>
+
+      <div class="alternative-content">
+        <h4>Design Philosophy</h4>
+        <p>This design uses a card grid where the most urgent items are larger and positioned top-left. It follows the F-pattern reading behavior, putting critical info where eyes naturally go first.</p>
+
+        <div class="feature-tags">
+          <span class="feature-tag good">Everything Visible</span>
+          <span class="feature-tag good">Visual Hierarchy</span>
+          <span class="feature-tag">Card Grid</span>
+          <span class="feature-tag">No Tabs</span>
+        </div>
+
+        <div class="mockup-container">
+          <div class="mockup-frame">
+            <!-- Header -->
+            <div class="mock-header">
+              <div class="mock-logo">
+                <div class="mock-logo-icon"></div>
+                <span class="mock-branch">UIB Agence Lac 2</span>
+              </div>
+              <div class="mock-nav">
+                <div class="mock-nav-item active">Tableau de Bord</div>
+              </div>
+              <div class="mock-user">
+                <span style="color: var(--sg-gray);">14:57</span>
+                <div style="width: 1px; height: 20px; background: #E5E7EB; margin: 0 8px;"></div>
+                <div class="mock-avatar">F</div>
+                <span>Fatma Trabelsi</span>
+              </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="mock-content" style="padding: 20px;">
+              <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 16px;">
+
+                <!-- Queue Card (Large, spans 2 rows) -->
+                <div style="grid-row: span 2; background: white; border-radius: 12px; border: 1px solid #E5E7EB; overflow: hidden;">
+                  <div style="padding: 16px 20px; border-bottom: 1px solid #E5E7EB; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="material-symbols-outlined" style="color: var(--sg-red);">groups</span>
+                      <span style="font-weight: 600;">File d'attente</span>
+                      <span style="background: var(--sg-red); color: white; font-size: 12px; padding: 2px 8px; border-radius: 10px;">3</span>
+                    </div>
+                    <span style="font-size: 12px; color: #999;">~4 min moy.</span>
+                  </div>
+                  <div style="padding: 12px;">
+                    <div class="mock-queue-item highlight" style="margin-bottom: 8px;">
+                      <div>
+                        <div class="mock-ticket-num">B-002</div>
+                        <div class="mock-ticket-service">Releves de compte</div>
+                      </div>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="mock-ticket-wait">5 min</span>
+                        <span class="mock-vip-badge">VIP</span>
+                      </div>
+                    </div>
+                    <div class="mock-queue-item" style="margin-bottom: 8px;">
+                      <div>
+                        <div class="mock-ticket-num">C-001</div>
+                        <div class="mock-ticket-service">Depot d'especes</div>
+                      </div>
+                      <span class="mock-ticket-wait">5 min</span>
+                    </div>
+                    <div class="mock-queue-item">
+                      <div>
+                        <div class="mock-ticket-num">D-001</div>
+                        <div class="mock-ticket-service">Prets</div>
+                      </div>
+                      <span class="mock-ticket-wait">5 min</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Counters Card -->
+                <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 18px;">storefront</span>
+                    <span style="font-weight: 600; font-size: 14px;">Guichets</span>
+                    <span style="font-size: 12px; color: var(--sg-green);">3/3</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--sg-green);"></span>
+                      <span>G1 Mohamed</span>
+                      <span style="color: var(--sg-green); margin-left: auto; font-weight: 600;">B-001</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--sg-green);"></span>
+                      <span>G2 Leila</span>
+                      <span style="color: var(--sg-green); margin-left: auto; font-weight: 600;">A-003</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                      <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--sg-green);"></span>
+                      <span>G3</span>
+                      <span style="color: #999; margin-left: auto; font-size: 11px;">Libre</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Alerts Card -->
+                <div style="background: #FEF3C7; border-radius: 12px; border: 1px solid #FCD34D; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="material-symbols-outlined" style="color: #B45309; font-size: 18px;">warning</span>
+                    <span style="font-weight: 600; font-size: 14px; color: #B45309;">Alertes</span>
+                    <span style="background: #F59E0B; color: white; font-size: 11px; padding: 2px 6px; border-radius: 10px;">2</span>
+                  </div>
+                  <div style="font-size: 12px; color: #92400E;">
+                    <div style="margin-bottom: 6px;">Mohamed - service lent</div>
+                    <div>Leila - service lent</div>
+                  </div>
+                  <button class="mock-action-btn" style="width: 100%; margin-top: 12px; justify-content: center; background: white; border-color: #FCD34D; color: #B45309;">
+                    Voir details
+                  </button>
+                </div>
+
+                <!-- SLA Card -->
+                <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 18px;">verified</span>
+                    <span style="font-weight: 600; font-size: 14px;">SLA</span>
+                  </div>
+                  <div style="font-size: 32px; font-weight: 700; color: var(--sg-green);">100%</div>
+                  <div style="font-size: 11px; color: #999;">servis en &lt; 15 min</div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div style="grid-column: span 2; background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="material-symbols-outlined" style="color: var(--sg-gray); font-size: 18px;">bolt</span>
+                    <span style="font-weight: 600; font-size: 14px;">Actions Rapides</span>
+                  </div>
+                  <div style="display: flex; gap: 12px;">
+                    <button class="mock-action-btn primary" style="flex: 1; justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">pause_circle</span>
+                      Pause File
+                    </button>
+                    <button class="mock-action-btn" style="flex: 1; justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">door_open</span>
+                      Ouvrir Tous
+                    </button>
+                    <button class="mock-action-btn" style="flex: 1; justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">campaign</span>
+                      Annonce
+                    </button>
+                    <button class="mock-action-btn danger" style="flex: 1; justify-content: center;">
+                      <span class="material-symbols-outlined" style="font-size: 16px;">restart_alt</span>
+                      Reset
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Objective Card -->
+                <div style="background: white; border-radius: 12px; border: 1px solid #E5E7EB; padding: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="material-symbols-outlined" style="color: var(--sg-black); font-size: 18px;">check_circle</span>
+                    <span style="font-weight: 600; font-size: 14px;">Objectif</span>
+                  </div>
+                  <div style="font-size: 28px; font-weight: 700;">8<span style="font-size: 16px; color: #999; font-weight: 400;">/100</span></div>
+                  <div style="height: 6px; background: #E5E7EB; border-radius: 3px; margin-top: 8px; overflow: hidden;">
+                    <div style="height: 100%; width: 8%; background: var(--sg-black); border-radius: 3px;"></div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>Pros</h5>
+            <ul>
+              <li>Everything visible without scrolling</li>
+              <li>Visual size indicates priority</li>
+              <li>Alerts get prominent placement</li>
+              <li>Quick actions always visible</li>
+              <li>Clean card-based organization</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>Cons</h5>
+            <ul>
+              <li>Less space for queue items if list grows</li>
+              <li>No historical charts (requires separate view)</li>
+              <li>Requires careful responsive design</li>
+              <li>May feel dense on smaller screens</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alternative 3 -->
+    <div class="alternative-section">
+      <div class="alternative-header" style="background: linear-gradient(135deg, #E9041E 0%, #FF4D4D 100%);">
+        <h3>Alternative 3: "Focus Mode"</h3>
+        <p>Minimal distractions, maximum focus on what matters right now</p>
+      </div>
+
+      <div class="alternative-content">
+        <h4>Design Philosophy</h4>
+        <p>This design takes an aggressive approach to reducing cognitive load. It shows only what's actionable right now, with a "More" menu for everything else. Think of it as "Zen mode" for branch management - ideal for tablets and quick decisions.</p>
+
+        <div class="feature-tags">
+          <span class="feature-tag good">Minimal Distractions</span>
+          <span class="feature-tag good">Large Touch Targets</span>
+          <span class="feature-tag">Progressive Disclosure</span>
+          <span class="feature-tag">Focus on Action</span>
+        </div>
+
+        <div class="mockup-container">
+          <div class="mockup-frame">
+            <!-- Minimal Header -->
+            <div class="mock-header" style="padding: 8px 20px; border-bottom: none;">
+              <div class="mock-logo">
+                <div class="mock-logo-icon"></div>
+                <span class="mock-branch">Lac 2</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: #D1FAE5; border-radius: 20px;">
+                  <span style="width: 8px; height: 8px; background: var(--sg-green); border-radius: 50%;"></span>
+                  <span style="font-size: 12px; font-weight: 500; color: #065F46;">3/3 guichets</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; padding: 6px 12px; background: var(--sg-green); color: white; border-radius: 20px;">
+                  <span style="font-size: 12px; font-weight: 600;">100% SLA</span>
+                </div>
+                <div class="mock-avatar">F</div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="mock-content" style="display: flex; flex-direction: column; background: white;">
+
+              <!-- Big Number Hero -->
+              <div style="text-align: center; padding: 40px 20px 20px;">
+                <div style="font-size: 96px; font-weight: 300; color: var(--sg-black); line-height: 1;">3</div>
+                <div style="font-size: 14px; color: var(--sg-gray); text-transform: uppercase; letter-spacing: 0.1em;">clients en attente</div>
+                <div style="font-size: 13px; color: var(--sg-green); margin-top: 4px;">~4 min d'attente moyenne</div>
+              </div>
+
+              <!-- Alert Strip (if any) -->
+              <div style="margin: 0 20px; padding: 12px 16px; background: #FEF3C7; border-radius: 8px; display: flex; align-items: center; gap: 12px;">
+                <span class="material-symbols-outlined" style="color: #B45309;">warning</span>
+                <span style="flex: 1; font-size: 13px; color: #92400E;">2 guichetiers avec temps de service eleve</span>
+                <button class="mock-action-btn" style="padding: 6px 12px; background: white; border-color: #FCD34D; color: #B45309;">
+                  Details
+                </button>
+              </div>
+
+              <!-- Next Up Cards -->
+              <div style="padding: 24px 20px;">
+                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #999; margin-bottom: 12px;">
+                  Prochains clients
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                  <div style="flex: 1; background: #FAFAFA; border-radius: 12px; padding: 20px; border-left: 4px solid var(--sg-red);">
+                    <div style="font-size: 24px; font-weight: 600; margin-bottom: 4px;">B-002</div>
+                    <div style="font-size: 13px; color: var(--sg-gray);">Releves de compte</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 12px;">
+                      <span style="font-size: 12px; color: var(--sg-gray);">5 min</span>
+                      <span class="mock-vip-badge">VIP</span>
+                    </div>
+                  </div>
+
+                  <div style="flex: 1; background: #FAFAFA; border-radius: 12px; padding: 20px;">
+                    <div style="font-size: 24px; font-weight: 600; margin-bottom: 4px;">C-001</div>
+                    <div style="font-size: 13px; color: var(--sg-gray);">Depot d'especes</div>
+                    <div style="font-size: 12px; color: var(--sg-gray); margin-top: 12px;">5 min</div>
+                  </div>
+
+                  <div style="flex: 1; background: #FAFAFA; border-radius: 12px; padding: 20px;">
+                    <div style="font-size: 24px; font-weight: 600; margin-bottom: 4px;">D-001</div>
+                    <div style="font-size: 13px; color: var(--sg-gray);">Prets</div>
+                    <div style="font-size: 12px; color: var(--sg-gray); margin-top: 12px;">5 min</div>
+                  </div>
+                </div>
+
+                <button class="mock-action-btn" style="width: 100%; margin-top: 12px; justify-content: center; border-style: dashed;">
+                  Voir toute la file
+                </button>
+              </div>
+
+              <!-- Counter Status Strip -->
+              <div style="padding: 0 20px 24px;">
+                <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #999; margin-bottom: 12px;">
+                  Guichets actifs
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <div style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #F0FDF4; border-radius: 8px; border: 1px solid #BBF7D0;">
+                    <span style="font-weight: 600;">G1</span>
+                    <span style="font-size: 13px; color: var(--sg-gray);">Mohamed</span>
+                    <span style="margin-left: auto; font-weight: 600; color: var(--sg-green);">B-001</span>
+                  </div>
+                  <div style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #F0FDF4; border-radius: 8px; border: 1px solid #BBF7D0;">
+                    <span style="font-weight: 600;">G2</span>
+                    <span style="font-size: 13px; color: var(--sg-gray);">Leila</span>
+                    <span style="margin-left: auto; font-weight: 600; color: var(--sg-green);">A-003</span>
+                  </div>
+                  <div style="flex: 1; display: flex; align-items: center; gap: 8px; padding: 12px 16px; background: #F0FDF4; border-radius: 8px; border: 1px solid #BBF7D0;">
+                    <span style="font-weight: 600;">G3</span>
+                    <span style="font-size: 13px; color: var(--sg-gray);">Libre</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sticky Bottom Actions -->
+            <div style="padding: 16px 20px; background: #FAFAFA; border-top: 1px solid #E5E7EB; display: flex; gap: 12px;">
+              <button style="flex: 1; padding: 14px; background: var(--sg-black); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                <span class="material-symbols-outlined" style="font-size: 20px;">pause_circle</span>
+                Pause File
+              </button>
+              <button style="flex: 1; padding: 14px; background: white; color: var(--sg-black); border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;">
+                <span class="material-symbols-outlined" style="font-size: 20px;">campaign</span>
+                Annonce
+              </button>
+              <button style="padding: 14px 20px; background: white; color: var(--sg-gray); border: 1px solid #E5E7EB; border-radius: 8px; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                <span class="material-symbols-outlined" style="font-size: 20px;">more_horiz</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pros-cons">
+          <div class="pros">
+            <h5>Pros</h5>
+            <ul>
+              <li>Extreme clarity - impossible to miss the key number</li>
+              <li>Large touch targets for quick actions</li>
+              <li>No cognitive overload</li>
+              <li>Works great on tablets/touchscreens</li>
+              <li>Alerts are impossible to miss</li>
+            </ul>
+          </div>
+          <div class="cons">
+            <h5>Cons</h5>
+            <ul>
+              <li>Less information density</li>
+              <li>Analytics/team data hidden behind "More"</li>
+              <li>May feel too simple for power users</li>
+              <li>Requires "More" menu for full functionality</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <h2>Design Comparison</h2>
+
+    <div class="section-card">
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Aspect</th>
+            <th>Current</th>
+            <th>Alt 1: Command Center</th>
+            <th>Alt 2: Grid</th>
+            <th>Alt 3: Focus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Queue visibility</strong></td>
+            <td style="color: var(--sg-red);">Below fold</td>
+            <td style="color: var(--sg-green);">Primary position</td>
+            <td style="color: var(--sg-green);">Top-left (largest)</td>
+            <td style="color: var(--sg-green);">Hero + cards</td>
+          </tr>
+          <tr>
+            <td><strong>Quick actions</strong></td>
+            <td style="color: var(--sg-amber);">Collapsed</td>
+            <td style="color: var(--sg-green);">Always visible (sidebar)</td>
+            <td style="color: var(--sg-green);">Always visible (row)</td>
+            <td style="color: var(--sg-green);">Sticky footer</td>
+          </tr>
+          <tr>
+            <td><strong>Alerts</strong></td>
+            <td style="color: var(--sg-red);">Small badge</td>
+            <td style="color: var(--sg-green);">Banner with actions</td>
+            <td style="color: var(--sg-green);">Prominent card</td>
+            <td style="color: var(--sg-green);">Inline strip</td>
+          </tr>
+          <tr>
+            <td><strong>Historical data</strong></td>
+            <td>Above fold (overweighted)</td>
+            <td>Separate tab</td>
+            <td>Not shown (separate)</td>
+            <td>Hidden in "More"</td>
+          </tr>
+          <tr>
+            <td><strong>Scrolling required</strong></td>
+            <td style="color: var(--sg-red);">Significant</td>
+            <td style="color: var(--sg-amber);">Minimal</td>
+            <td style="color: var(--sg-green);">None</td>
+            <td style="color: var(--sg-green);">None</td>
+          </tr>
+          <tr>
+            <td><strong>Information density</strong></td>
+            <td>High (overwhelming)</td>
+            <td>Medium</td>
+            <td>High (organized)</td>
+            <td>Low (focused)</td>
+          </tr>
+          <tr>
+            <td><strong>Best for</strong></td>
+            <td>Reporting</td>
+            <td>Operations</td>
+            <td>Monitoring</td>
+            <td>Mobile/Tablet</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recommendation -->
+    <h2>Final Recommendation</h2>
+
+    <div class="section-card">
+      <div class="recommendation-card" style="background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%); margin: 0;">
+        <span class="material-symbols-outlined" style="color: var(--sg-green); font-size: 32px;">recommend</span>
+        <div>
+          <h3 style="margin: 0 0 8px; color: #065F46;">Recommended: Alternative 1 with elements from Alternative 2</h3>
+          <p style="margin: 0; color: #047857;">
+            The "Operations Command Center" layout puts queue and actions where they belong, while borrowing the card-based alert system from Alternative 2. This gives the best balance of usability, information access, and professional appearance for a bank environment.
+          </p>
+        </div>
+      </div>
+
+      <h4>Implementation Priority</h4>
+      <ol style="padding-left: 20px; color: var(--sg-gray);">
+        <li><strong>Move queue list above fold</strong> - Highest impact, easiest change</li>
+        <li><strong>Make quick actions sticky/always visible</strong> - Essential for operations</li>
+        <li><strong>Convert alerts from badge to banner</strong> - Critical for visibility</li>
+        <li><strong>Move historical charts to Analytics tab</strong> - Clean up main view</li>
+        <li><strong>Remove collapsible sections</strong> - Reduce clicks, improve scanability</li>
+      </ol>
+    </div>
+
+    <footer style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #E5E7EB; text-align: center; color: #999; font-size: 12px;">
+      BléSaf Design Analysis | Generated February 2026 | Adheres to SG Design System
+    </footer>
+  </div>
+</body>
+</html>

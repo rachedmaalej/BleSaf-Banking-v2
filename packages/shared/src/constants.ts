@@ -28,6 +28,15 @@ export const COUNTER_STATUS = {
 
 export type CounterStatus = (typeof COUNTER_STATUS)[keyof typeof COUNTER_STATUS];
 
+// Branch queue statuses
+export const QUEUE_STATUS = {
+  OPEN: 'open',
+  PAUSED: 'paused',
+  CLOSED: 'closed', // End-of-day closure (distinct from manual pause)
+} as const;
+
+export type QueueStatus = (typeof QUEUE_STATUS)[keyof typeof QUEUE_STATUS];
+
 // User roles
 export const USER_ROLE = {
   SUPER_ADMIN: 'super_admin',
@@ -85,9 +94,14 @@ export const TICKET_ACTION = {
   CANCELLED: 'cancelled',
   TRANSFERRED: 'transferred',
   PRIORITY_BUMPED: 'priority_bumped',
+  AUTO_COMPLETED: 'auto_completed', // System auto-completed at closing time
+  AUTO_CANCELLED: 'auto_cancelled', // System auto-cancelled at closing time
 } as const;
 
 export type TicketAction = (typeof TICKET_ACTION)[keyof typeof TICKET_ACTION];
+
+// System actor ID for automated actions
+export const SYSTEM_ACTOR_ID = 'SYSTEM';
 
 // Check-in methods
 export const CHECKIN_METHOD = {
@@ -121,8 +135,16 @@ export const SOCKET_EVENTS = {
   TICKET_COMPLETED: 'ticket:completed',
   TICKET_NO_SHOW: 'ticket:no_show',
   TICKET_TRANSFERRED: 'ticket:transferred',
+  TICKET_PRIORITIZED: 'ticket:prioritized',
   QUEUE_UPDATED: 'queue:updated',
+  QUEUE_PAUSED: 'queue:paused',
+  QUEUE_RESUMED: 'queue:resumed',
+  QUEUE_RESET: 'queue:reset',
+  QUEUE_AUTO_CLOSED: 'queue:auto_closed', // Auto-closed at closing time
+  QUEUE_AUTO_OPENED: 'queue:auto_opened', // Auto-opened at opening time
   COUNTER_UPDATED: 'counter:updated',
+  ANNOUNCEMENT_CREATED: 'announcement:created',
+  ANNOUNCEMENT_DISMISSED: 'announcement:dismissed',
   ERROR: 'error',
 } as const;
 
@@ -142,3 +164,31 @@ export const RATE_LIMITS = {
   CHECKIN_ATTEMPTS_PER_MINUTE: 10,
   API_REQUESTS_PER_MINUTE: 100,
 } as const;
+
+// Tunisia regions (all 24 governorates)
+export const TUNISIA_REGIONS = [
+  { value: 'Tunis', label: 'Tunis' },
+  { value: 'Ariana', label: 'Ariana' },
+  { value: 'Ben Arous', label: 'Ben Arous' },
+  { value: 'Manouba', label: 'Manouba' },
+  { value: 'Nabeul', label: 'Nabeul' },
+  { value: 'Zaghouan', label: 'Zaghouan' },
+  { value: 'Bizerte', label: 'Bizerte' },
+  { value: 'Béja', label: 'Béja' },
+  { value: 'Jendouba', label: 'Jendouba' },
+  { value: 'Kef', label: 'Kef' },
+  { value: 'Siliana', label: 'Siliana' },
+  { value: 'Sousse', label: 'Sousse' },
+  { value: 'Monastir', label: 'Monastir' },
+  { value: 'Mahdia', label: 'Mahdia' },
+  { value: 'Sfax', label: 'Sfax' },
+  { value: 'Kairouan', label: 'Kairouan' },
+  { value: 'Kasserine', label: 'Kasserine' },
+  { value: 'Sidi Bouzid', label: 'Sidi Bouzid' },
+  { value: 'Gabès', label: 'Gabès' },
+  { value: 'Médenine', label: 'Médenine' },
+  { value: 'Tataouine', label: 'Tataouine' },
+  { value: 'Gafsa', label: 'Gafsa' },
+  { value: 'Tozeur', label: 'Tozeur' },
+  { value: 'Kébili', label: 'Kébili' },
+] as const;

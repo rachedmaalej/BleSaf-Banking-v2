@@ -2,6 +2,7 @@ import type {
   TicketStatus,
   TicketPriority,
   CounterStatus,
+  QueueStatus as QueueStatusType,
   UserRole,
   EntityStatus,
   NotificationChannel,
@@ -27,6 +28,9 @@ export interface Tenant extends BaseEntity {
   primaryColor: string | null;
   languageConfig: LanguageConfig;
   status: EntityStatus;
+  // Default operating hours (branches can override)
+  defaultOpeningTime: string | null;
+  defaultClosingTime: string | null;
   branches?: Branch[];
   users?: User[];
 }
@@ -47,6 +51,14 @@ export interface Branch extends BaseEntity {
   timezone: string;
   status: EntityStatus;
   notifyAtPosition: number;
+  queueStatus: QueueStatusType;
+  queuePausedAt: Date | null;
+  queuePausedBy: string | null;
+  // Operating hours (auto queue management)
+  autoQueueEnabled: boolean;
+  openingTime: string | null;
+  closingTime: string | null;
+  closedOnWeekends: boolean;
   counters?: Counter[];
   services?: ServiceCategory[];
   tickets?: Ticket[];
@@ -79,6 +91,19 @@ export interface ServiceCategory extends BaseEntity {
   isActive: boolean;
   counters?: CounterService[];
   tickets?: Ticket[];
+}
+
+// Service Template (Bank-level reusable service definitions)
+export interface ServiceTemplate extends BaseEntity {
+  tenantId: string;
+  tenant?: Tenant;
+  nameAr: string;
+  nameFr: string;
+  prefix: string;
+  icon: string | null;
+  priorityWeight: number;
+  avgServiceTime: number;
+  isActive: boolean;
 }
 
 // Counter-Service join table
@@ -363,4 +388,106 @@ export interface QueueUpdatedEvent {
   tickets: TicketDisplay[];
   stats: QueueStats;
   counters: CounterDisplay[];
+}
+
+// --- AI / Composite Metrics Types ---
+
+export type SlaTrajectory = 'on_track' | 'at_risk' | 'failing';
+export type RecommendationUrgency = 'critical' | 'high' | 'medium' | 'low';
+export type RecommendationActionType =
+  | 'open_counter'
+  | 'close_counter'
+  | 'bump_priority'
+  | 'end_break'
+  | 'pre_open_counter'
+  | 'review_tellers'
+  | 'request_staff'
+  | 'general';
+
+export interface CompositeMetrics {
+  healthScore: number; // 0-100
+  healthLabel: 'excellent' | 'good' | 'attention' | 'critical';
+  capacityUtilization: number; // percentage
+  capacityLabel: 'overstaffed' | 'adequate' | 'understaffed' | 'critical';
+  slaTrajectory: SlaTrajectory;
+  slaCurrent: number; // current SLA %
+  slaProjected: number; // projected SLA %
+  nextAction: RecommendationSummary | null;
+  generatedAt: string;
+}
+
+export interface RecommendationSummary {
+  id: string;
+  action: string;
+  urgency: RecommendationUrgency;
+}
+
+export interface ForecastPoint {
+  hour: number; // 0-23
+  predictedVolume: number;
+  confidence: number; // 0-1
+  actualVolume?: number; // filled in for past hours
+}
+
+export interface BranchForecast {
+  branchId: string;
+  date: string; // YYYY-MM-DD
+  hourlyForecast: ForecastPoint[];
+  peakHour: number;
+  peakVolume: number;
+  generatedAt: string;
+}
+
+export interface Recommendation {
+  id: string;
+  action: string;
+  actionType: RecommendationActionType;
+  urgency: RecommendationUrgency;
+  rationale: string;
+  targetId?: string; // counterId, ticketId, breakId, etc.
+  targetLabel?: string; // human-readable target name
+  executable: boolean;
+  impact?: string; // e.g. "Reduce wait by ~3 min"
+}
+
+// --- HQ Dashboard V2 Types ---
+
+export type TrendDirection = 'up' | 'down' | 'flat';
+
+export interface TenantCompositeMetrics {
+  networkHealthScore: number; // 0-100 weighted average across branches
+  networkHealthLabel: 'excellent' | 'good' | 'attention' | 'critical';
+  totalWaiting: number;
+  totalServed: number;
+  totalNoShows: number;
+  weightedSlaPercent: number;
+  capacityUtilization: number; // open / total counters %
+  totalCounters: number;
+  openCounters: number;
+  problemBranchCount: number;
+  totalBranches: number;
+  trends: {
+    waiting: TrendDirection;
+    served: TrendDirection;
+    sla: TrendDirection;
+  };
+  generatedAt: string;
+}
+
+export interface BranchHealthRow {
+  branchId: string;
+  branchName: string;
+  branchCode: string;
+  healthScore: number; // 0-100
+  healthLabel: 'excellent' | 'good' | 'attention' | 'critical';
+  statusColor: 'green' | 'yellow' | 'red';
+  waiting: number;
+  served: number;
+  slaPercent: number;
+  avgWaitMins: number;
+  openCounters: number;
+  totalCounters: number;
+  noShows: number;
+  topService?: string;
+  alerts: string[];
 }

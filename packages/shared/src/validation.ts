@@ -3,6 +3,7 @@ import {
   TICKET_STATUS,
   TICKET_PRIORITY,
   COUNTER_STATUS,
+  QUEUE_STATUS,
   USER_ROLE,
   ENTITY_STATUS,
   NOTIFICATION_CHANNEL,
@@ -48,6 +49,18 @@ export const counterStatusSchema = z.enum([
   COUNTER_STATUS.CLOSED,
   COUNTER_STATUS.PAUSED,
 ]);
+
+export const queueStatusSchema = z.enum([
+  QUEUE_STATUS.OPEN,
+  QUEUE_STATUS.PAUSED,
+  QUEUE_STATUS.CLOSED,
+]);
+
+// Time format validation (HH:mm in 24h format)
+export const timeFormatSchema = z
+  .string()
+  .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, 'Invalid time format. Use HH:mm (24h format)')
+  .nullable();
 
 export const userRoleSchema = z.enum([
   USER_ROLE.SUPER_ADMIN,
@@ -112,6 +125,8 @@ export const createTenantSchema = z.object({
 export const updateTenantSchema = createTenantSchema.partial();
 
 // Branch schemas
+export const branchStatusSchema = z.enum(['active', 'inactive']);
+
 export const createBranchSchema = z.object({
   name: z.string().min(2).max(100),
   code: z
@@ -123,9 +138,23 @@ export const createBranchSchema = z.object({
   region: z.string().max(100).optional().nullable(),
   timezone: z.string().default('Africa/Tunis'),
   notifyAtPosition: z.number().int().min(1).max(10).default(2),
+  status: branchStatusSchema.default('inactive'),
 });
 
 export const updateBranchSchema = createBranchSchema.partial();
+
+// Operating Hours schemas (for auto queue management)
+export const operatingHoursSchema = z.object({
+  autoQueueEnabled: z.boolean(),
+  openingTime: timeFormatSchema.optional(), // "08:30" or null for tenant default
+  closingTime: timeFormatSchema.optional(), // "16:30" or null for tenant default
+  closedOnWeekends: z.boolean().optional().default(true),
+});
+
+export const tenantDefaultHoursSchema = z.object({
+  defaultOpeningTime: timeFormatSchema.optional(),
+  defaultClosingTime: timeFormatSchema.optional(),
+});
 
 // Counter schemas
 export const createCounterSchema = z.object({
@@ -140,6 +169,10 @@ export const updateCounterSchema = z.object({
   status: counterStatusSchema.optional(),
   serviceIds: z.array(uuidSchema).optional(),
   assignedUserId: uuidSchema.optional().nullable(),
+});
+
+export const counterConfigSchema = z.object({
+  targetCount: z.number().int().min(1).max(50),
 });
 
 // Service Category schemas
@@ -157,7 +190,53 @@ export const createServiceCategorySchema = z.object({
   useAutomaticServiceTime: z.boolean().default(false), // auto-calculate from last 24h data
 });
 
-export const updateServiceCategorySchema = createServiceCategorySchema.omit({ branchId: true }).partial();
+export const updateServiceCategorySchema = createServiceCategorySchema
+  .omit({ branchId: true })
+  .extend({
+    isActive: z.boolean().optional(), // Allow toggling active status
+  })
+  .partial();
+
+// Service Template schemas (Bank-level reusable service definitions)
+export const createServiceTemplateSchema = z.object({
+  nameAr: z.string().min(2).max(100),
+  nameFr: z.string().min(2).max(100),
+  prefix: z
+    .string()
+    .length(1)
+    .regex(/^[A-Z]$/, 'Prefix must be a single uppercase letter'),
+  icon: z.string().max(50).optional().nullable(),
+  priorityWeight: z.number().int().min(1).max(10).default(1),
+  avgServiceTime: z.number().int().min(1).max(120).default(10),
+});
+
+export const updateServiceTemplateSchema = createServiceTemplateSchema.partial();
+
+export const copyTemplatesToBranchSchema = z.object({
+  branchId: uuidSchema,
+  templateIds: z.array(uuidSchema).min(1, 'Select at least one template'),
+});
+
+// Complete Branch Creation Schema (Wizard)
+export const createBranchCompleteSchema = z.object({
+  // Branch details
+  name: z.string().min(2).max(100),
+  code: z
+    .string()
+    .min(2)
+    .max(20)
+    .regex(/^[A-Z0-9-]+$/, 'Code must be uppercase alphanumeric with hyphens'),
+  address: z.string().max(500).optional().nullable(),
+  region: z.string().max(100).optional().nullable(),
+  timezone: z.string().default('Africa/Tunis'),
+  notifyAtPosition: z.number().int().min(1).max(10).default(2),
+
+  // Services (template IDs to copy)
+  templateIds: z.array(uuidSchema).min(1, 'At least one service is required'),
+
+  // Counters
+  counterCount: z.number().int().min(1).max(50),
+});
 
 // User schemas
 export const createUserSchema = z.object({
@@ -236,8 +315,13 @@ export type CreateBranchInput = z.infer<typeof createBranchSchema>;
 export type UpdateBranchInput = z.infer<typeof updateBranchSchema>;
 export type CreateCounterInput = z.infer<typeof createCounterSchema>;
 export type UpdateCounterInput = z.infer<typeof updateCounterSchema>;
+export type CounterConfigInput = z.infer<typeof counterConfigSchema>;
 export type CreateServiceCategoryInput = z.infer<typeof createServiceCategorySchema>;
 export type UpdateServiceCategoryInput = z.infer<typeof updateServiceCategorySchema>;
+export type CreateServiceTemplateInput = z.infer<typeof createServiceTemplateSchema>;
+export type UpdateServiceTemplateInput = z.infer<typeof updateServiceTemplateSchema>;
+export type CopyTemplatesToBranchInput = z.infer<typeof copyTemplatesToBranchSchema>;
+export type CreateBranchCompleteInput = z.infer<typeof createBranchCompleteSchema>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type CheckinInput = z.infer<typeof checkinSchema>;
@@ -246,3 +330,5 @@ export type TransferTicketInput = z.infer<typeof transferTicketSchema>;
 export type CompleteTicketInput = z.infer<typeof completeTicketSchema>;
 export type AnalyticsQueryInput = z.infer<typeof analyticsQuerySchema>;
 export type PaginationInput = z.infer<typeof paginationSchema>;
+export type OperatingHoursInput = z.infer<typeof operatingHoursSchema>;
+export type TenantDefaultHoursInput = z.infer<typeof tenantDefaultHoursSchema>;
