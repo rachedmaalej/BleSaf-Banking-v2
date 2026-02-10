@@ -136,6 +136,7 @@ export const SOCKET_EVENTS = {
   TICKET_NO_SHOW: 'ticket:no_show',
   TICKET_TRANSFERRED: 'ticket:transferred',
   TICKET_PRIORITIZED: 'ticket:prioritized',
+  TICKET_POSITION_UPDATED: 'ticket:position_updated',
   QUEUE_UPDATED: 'queue:updated',
   QUEUE_PAUSED: 'queue:paused',
   QUEUE_RESUMED: 'queue:resumed',

@@ -23,6 +23,7 @@ import {
 import { canManageUser } from '../middleware/rbac';
 import { emitQueueUpdated, emitCounterUpdated } from '../socket';
 import { queueService } from './queueService';
+import { auditService } from './auditService';
 
 /**
  * Generate a unique branch code from a name.
@@ -905,9 +906,10 @@ export const adminService = {
       where,
       include: {
         branch: { select: { id: true, name: true, code: true } },
+        sourceTemplate: { select: { id: true, nameFr: true, version: true } },
         _count: { select: { counters: true, tickets: true } },
       },
-      orderBy: [{ branchId: 'asc' }, { prefix: 'asc' }],
+      orderBy: [{ branchId: 'asc' }, { displayOrder: 'asc' }, { prefix: 'asc' }],
     });
   },
 
@@ -947,7 +949,7 @@ export const adminService = {
     return service;
   },
 
-  async updateServiceCategory(serviceId: string, tenantId: string, data: UpdateServiceCategoryInput) {
+  async updateServiceCategory(serviceId: string, tenantId: string, data: UpdateServiceCategoryInput, userId?: string) {
     const service = await prisma.serviceCategory.findUnique({
       where: { id: serviceId },
       include: { branch: true },
@@ -967,10 +969,34 @@ export const adminService = {
       }
     }
 
+    // Track identity field overrides if service is linked to a template
+    const IDENTITY_FIELD_NAMES = ['nameFr', 'nameAr', 'icon', 'descriptionFr', 'descriptionAr', 'serviceGroup'];
+    let overriddenFields = (service.overriddenFields as string[]) || [];
+    const updateData: Record<string, unknown> = { ...data };
+
+    if (service.sourceTemplateId) {
+      for (const field of IDENTITY_FIELD_NAMES) {
+        if (data[field as keyof typeof data] !== undefined && !overriddenFields.includes(field)) {
+          // Check if the value actually differs from what's currently stored (i.e., the template value)
+          const currentValue = (service as Record<string, unknown>)[field];
+          const newValue = data[field as keyof typeof data];
+          if (newValue !== currentValue) {
+            overriddenFields = [...overriddenFields, field];
+          }
+        }
+      }
+      updateData.overriddenFields = overriddenFields;
+    }
+
     const updated = await prisma.serviceCategory.update({
       where: { id: serviceId },
-      data,
+      data: updateData,
     });
+
+    // Log field changes
+    if (userId) {
+      await auditService.logFieldChanges('service', serviceId, service, data as Record<string, unknown>, userId);
+    }
 
     logger.info({ serviceId }, 'Service category updated');
 

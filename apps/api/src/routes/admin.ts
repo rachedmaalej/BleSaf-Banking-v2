@@ -10,6 +10,7 @@ import {
   counterConfigSchema,
   createServiceCategorySchema,
   updateServiceCategorySchema,
+  resetServiceFieldSchema,
   createUserSchema,
   updateUserSchema,
   paginationSchema,
@@ -18,6 +19,8 @@ import {
   USER_ROLE,
 } from '@blesaf/shared';
 import { adminService } from '../services/adminService';
+import { templateService } from '../services/templateService';
+import { auditService } from '../services/auditService';
 import { analyticsService } from '../services/analyticsService';
 import { scheduleService } from '../services/scheduleService';
 import { batchImportService, type BatchBranchRow } from '../services/batchImportService';
@@ -730,7 +733,7 @@ router.post('/services', requireRole('bank_admin'), async (req, res, next) => {
 router.patch('/services/:serviceId', requireRole('bank_admin'), async (req, res, next) => {
   try {
     const data = updateServiceCategorySchema.parse(req.body);
-    const result = await adminService.updateServiceCategory(req.params.serviceId, req.tenantId!, data);
+    const result = await adminService.updateServiceCategory(req.params.serviceId, req.tenantId!, data, req.user?.userId);
 
     res.json({
       success: true,
@@ -755,6 +758,49 @@ router.delete('/services/:serviceId', requireRole('bank_admin'), async (req, res
       message: result.softDeleted
         ? 'Service deactivated (has ticket history)'
         : 'Service deleted',
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /api/admin/services/:serviceId/history
+ * Get change history for a service
+ */
+router.get('/services/:serviceId/history', requireRole('bank_admin'), async (req, res, next) => {
+  try {
+    const pagination = paginationSchema.parse(req.query);
+    const result = await auditService.getHistory('service', req.params.serviceId, pagination.page, pagination.pageSize);
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/admin/services/:serviceId/reset-field
+ * Reset an overridden field to template value
+ */
+router.post('/services/:serviceId/reset-field', requireRole('bank_admin'), async (req, res, next) => {
+  try {
+    const data = resetServiceFieldSchema.parse(req.body);
+    const result = await templateService.resetServiceField(
+      req.params.serviceId,
+      data.field,
+      req.tenantId!,
+      req.user!.userId
+    );
+
+    res.json({
+      success: true,
+      data: result,
+      message: `Champ "${data.field}" reinitialise depuis le template`,
     });
   } catch (error) {
     next(error);

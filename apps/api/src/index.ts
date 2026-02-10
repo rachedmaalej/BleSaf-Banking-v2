@@ -20,6 +20,7 @@ import breaksRoutes from './routes/breaks';
 import announcementRoutes from './routes/announcements';
 import webhookRoutes from './routes/webhooks';
 import templateRoutes from './routes/templates';
+import branchGroupRoutes from './routes/branchGroups';
 import aiRoutes from './routes/ai';
 import hqRoutes from './routes/hq';
 import { scheduleService } from './services/scheduleService';
@@ -105,6 +106,7 @@ app.use('/api/breaks', breaksRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/branch-groups', branchGroupRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/hq', hqRoutes);
 

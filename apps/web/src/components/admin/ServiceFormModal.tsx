@@ -12,6 +12,11 @@ export interface ServiceFormData {
   avgServiceTime: number;
   useAutomaticServiceTime: boolean;
   isActive?: boolean;
+  displayOrder?: number;
+  showOnKiosk?: boolean;
+  descriptionFr?: string | null;
+  descriptionAr?: string | null;
+  serviceGroup?: string | null;
 }
 
 interface Branch {
@@ -22,7 +27,13 @@ interface Branch {
 
 export interface ServiceFormModalProps {
   isOpen: boolean;
-  service?: (Partial<ServiceFormData> & { id: string }) | null;
+  service?: (Partial<ServiceFormData> & {
+    id: string;
+    sourceTemplateId?: string | null;
+    overriddenFields?: string[];
+    sourceTemplate?: { nameFr: string; version: number } | null;
+    templateVersion?: number | null;
+  }) | null;
   branches: Branch[];
   defaultBranchId?: string;
   isLoading?: boolean;
@@ -58,9 +69,18 @@ export function ServiceFormModal({
     avgServiceTime: 10,
     useAutomaticServiceTime: false,
     isActive: true,
+    displayOrder: 0,
+    showOnKiosk: true,
+    descriptionFr: null,
+    descriptionAr: null,
+    serviceGroup: null,
   });
 
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof ServiceFormData, string>>>({});
+
+  const isLinked = !!service?.sourceTemplateId;
+  const overriddenFields = service?.overriddenFields || [];
 
   // Reset form when modal opens/closes or service changes
   useEffect(() => {
@@ -75,8 +95,14 @@ export function ServiceFormModal({
         avgServiceTime: service.avgServiceTime || 10,
         useAutomaticServiceTime: service.useAutomaticServiceTime || false,
         isActive: service.isActive ?? true,
+        displayOrder: service.displayOrder ?? 0,
+        showOnKiosk: service.showOnKiosk ?? true,
+        descriptionFr: service.descriptionFr ?? null,
+        descriptionAr: service.descriptionAr ?? null,
+        serviceGroup: service.serviceGroup ?? null,
       });
       setErrors({});
+      setShowAdvanced(false);
     }
   }, [isOpen, service]);
 
@@ -135,10 +161,32 @@ export function ServiceFormModal({
             <p className="text-sm text-gray-500">{formData.nameAr}</p>
           </div>
         </div>
-        <p className="text-xs text-gray-500 flex items-center gap-1">
-          <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>info</span>
-          Le nom, le prefixe et l'icone sont definis par le template et ne peuvent pas etre modifies
-        </p>
+
+        {/* Template link info */}
+        {isLinked ? (
+          <div className="flex items-center gap-2 text-xs">
+            <span className="flex items-center gap-1 text-emerald-700">
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>link</span>
+              Lie au template: {service.sourceTemplate?.nameFr}
+            </span>
+            {service.templateVersion !== null && (
+              <span className="text-gray-400">(v{service.templateVersion})</span>
+            )}
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500 flex items-center gap-1">
+            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>link_off</span>
+            Service non lie a un template
+          </p>
+        )}
+
+        {/* Override info */}
+        {isLinked && overriddenFields.length > 0 && (
+          <div className="mt-2 flex items-center gap-1 text-xs text-amber-600">
+            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>tune</span>
+            Champs modifies localement: {overriddenFields.join(', ')}
+          </div>
+        )}
       </div>
 
       {/* Priority and Service Time */}
@@ -227,6 +275,92 @@ export function ServiceFormModal({
           </button>
         </div>
       </div>
+
+      {/* Advanced Settings Toggle */}
+      <button
+        type="button"
+        onClick={() => setShowAdvanced(!showAdvanced)}
+        className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4"
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+          {showAdvanced ? 'expand_less' : 'expand_more'}
+        </span>
+        Parametres kiosk avances
+      </button>
+
+      {showAdvanced && (
+        <div className="space-y-4 border-t border-gray-100 pt-4">
+          {/* Show on Kiosk */}
+          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div className="flex-1 pr-4">
+              <span className="text-sm font-medium text-gray-700">
+                Visible sur la borne
+              </span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Masquer ce service de la borne kiosk
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFormData({ ...formData, showOnKiosk: !formData.showOnKiosk })}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                formData.showOnKiosk ? 'bg-green-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  formData.showOnKiosk ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* Display Order */}
+          <FormField label="Ordre d'affichage" htmlFor="service-display-order">
+            <FormInput
+              id="service-display-order"
+              type="number"
+              value={formData.displayOrder ?? 0}
+              onChange={(value) => setFormData({ ...formData, displayOrder: parseInt(value) || 0 })}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Les valeurs basses s'affichent en premier sur la borne
+            </p>
+          </FormField>
+
+          {/* Service Group */}
+          <FormField label="Groupe de services" htmlFor="service-group">
+            <FormInput
+              id="service-group"
+              value={formData.serviceGroup || ''}
+              placeholder="Ex: Operations courantes"
+              onChange={(value) => setFormData({ ...formData, serviceGroup: value || null })}
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Regrouper les services par categorie sur la borne
+            </p>
+          </FormField>
+
+          {/* Descriptions */}
+          <FormField label="Description FR (borne)" htmlFor="service-desc-fr">
+            <FormInput
+              id="service-desc-fr"
+              value={formData.descriptionFr || ''}
+              placeholder="Texte d'aide affiche sur la borne"
+              onChange={(value) => setFormData({ ...formData, descriptionFr: value || null })}
+            />
+          </FormField>
+
+          <FormField label="Description AR (borne)" htmlFor="service-desc-ar">
+            <FormInput
+              id="service-desc-ar"
+              value={formData.descriptionAr || ''}
+              placeholder="نص المساعدة المعروض على الكشك"
+              onChange={(value) => setFormData({ ...formData, descriptionAr: value || null })}
+            />
+          </FormField>
+        </div>
+      )}
     </FormModal>
   );
 }

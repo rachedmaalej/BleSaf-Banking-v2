@@ -9,6 +9,13 @@ export interface TemplateFormData {
   icon: string | null;
   priorityWeight: number;
   avgServiceTime: number;
+  descriptionFr: string | null;
+  descriptionAr: string | null;
+  serviceGroup: string | null;
+  subServicesFr: string[];
+  subServicesAr: string[];
+  displayOrder: number;
+  showOnKiosk: boolean;
 }
 
 export interface TemplateFormModalProps {
@@ -89,15 +96,24 @@ export function TemplateFormModal({
     icon: 'category',
     priorityWeight: 1,
     avgServiceTime: 10,
+    descriptionFr: null,
+    descriptionAr: null,
+    serviceGroup: null,
+    subServicesFr: [],
+    subServicesAr: [],
+    displayOrder: 0,
+    showOnKiosk: true,
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof TemplateFormData, string>>>({});
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Reset form when modal opens/closes or template changes
   useEffect(() => {
     if (isOpen) {
       if (template) {
+        const tpl = template as Record<string, unknown>;
         setFormData({
           nameFr: template.nameFr || '',
           nameAr: template.nameAr || '',
@@ -105,7 +121,19 @@ export function TemplateFormModal({
           icon: template.icon || 'category',
           priorityWeight: template.priorityWeight || 1,
           avgServiceTime: template.avgServiceTime || 10,
+          descriptionFr: (tpl.descriptionFr as string) || null,
+          descriptionAr: (tpl.descriptionAr as string) || null,
+          serviceGroup: (tpl.serviceGroup as string) || null,
+          subServicesFr: (tpl.subServicesFr as string[]) || [],
+          subServicesAr: (tpl.subServicesAr as string[]) || [],
+          displayOrder: (tpl.displayOrder as number) || 0,
+          showOnKiosk: tpl.showOnKiosk !== false,
         });
+        // Show advanced section if any advanced fields are set
+        const hasSubServices = ((tpl.subServicesFr as string[]) || []).length > 0 || ((tpl.subServicesAr as string[]) || []).length > 0;
+        if (tpl.descriptionFr || tpl.descriptionAr || tpl.serviceGroup || hasSubServices || (tpl.displayOrder as number) > 0 || tpl.showOnKiosk === false) {
+          setShowAdvanced(true);
+        }
       } else {
         setFormData({
           nameFr: '',
@@ -114,7 +142,15 @@ export function TemplateFormModal({
           icon: 'category',
           priorityWeight: 1,
           avgServiceTime: 10,
+          descriptionFr: null,
+          descriptionAr: null,
+          serviceGroup: null,
+          subServicesFr: [],
+          subServicesAr: [],
+          displayOrder: 0,
+          showOnKiosk: true,
         });
+        setShowAdvanced(false);
       }
       setErrors({});
       setShowIconPicker(false);
@@ -305,6 +341,115 @@ export function TemplateFormModal({
           />
         </FormField>
       </div>
+
+      {/* Advanced Settings Toggle */}
+      <button
+        type="button"
+        onClick={() => setShowAdvanced(!showAdvanced)}
+        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+          {showAdvanced ? 'expand_less' : 'expand_more'}
+        </span>
+        Parametres kiosk avances
+      </button>
+
+      {showAdvanced && (
+        <>
+          {/* Descriptions */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="Description kiosk (FR)" htmlFor="template-desc-fr">
+              <FormInput
+                id="template-desc-fr"
+                value={formData.descriptionFr || ''}
+                placeholder="Retrait d'especes au guichet"
+                onChange={(value) => setFormData({ ...formData, descriptionFr: value || null })}
+              />
+            </FormField>
+
+            <FormField label="Description kiosk (AR)" htmlFor="template-desc-ar">
+              <FormInput
+                id="template-desc-ar"
+                value={formData.descriptionAr || ''}
+                placeholder="سحب الأموال من الشباك"
+                onChange={(value) => setFormData({ ...formData, descriptionAr: value || null })}
+              />
+            </FormField>
+          </div>
+
+          {/* Sub-services (comma-separated) */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="Sous-services (FR)" htmlFor="template-sub-fr">
+              <FormInput
+                id="template-sub-fr"
+                value={formData.subServicesFr.join(', ')}
+                placeholder="Retrait d'especes, Depot d'especes"
+                onChange={(value) => setFormData({
+                  ...formData,
+                  subServicesFr: value ? value.split(',').map(s => s.trim()).filter(Boolean) : [],
+                })}
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Separes par des virgules (affiches sur la borne)
+              </p>
+            </FormField>
+
+            <FormField label="Sous-services (AR)" htmlFor="template-sub-ar">
+              <FormInput
+                id="template-sub-ar"
+                value={formData.subServicesAr.join(', ')}
+                placeholder="سحب نقدي, إيداع نقدي"
+                onChange={(value) => setFormData({
+                  ...formData,
+                  subServicesAr: value ? value.split(',').map(s => s.trim()).filter(Boolean) : [],
+                })}
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                مفصولة بفواصل (تُعرض على الكشك)
+              </p>
+            </FormField>
+          </div>
+
+          {/* Service Group, Display Order, ShowOnKiosk */}
+          <div className="grid grid-cols-3 gap-4">
+            <FormField label="Groupe service" htmlFor="template-group">
+              <FormInput
+                id="template-group"
+                value={formData.serviceGroup || ''}
+                placeholder="Transactions courantes"
+                onChange={(value) => setFormData({ ...formData, serviceGroup: value || null })}
+              />
+            </FormField>
+
+            <FormField label="Ordre affichage" htmlFor="template-order">
+              <FormInput
+                id="template-order"
+                type="number"
+                value={formData.displayOrder}
+                onChange={(value) => setFormData({ ...formData, displayOrder: parseInt(value) || 0 })}
+              />
+            </FormField>
+
+            <FormField label="Visible sur kiosk" htmlFor="template-kiosk">
+              <button
+                type="button"
+                id="template-kiosk"
+                onClick={() => setFormData({ ...formData, showOnKiosk: !formData.showOnKiosk })}
+                className={`w-full px-3 py-2 border rounded-lg text-sm flex items-center gap-2 transition-colors ${
+                  formData.showOnKiosk
+                    ? 'border-green-300 bg-green-50 text-green-700'
+                    : 'border-gray-200 bg-gray-50 text-gray-500'
+                }`}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
+                  {formData.showOnKiosk ? 'visibility' : 'visibility_off'}
+                </span>
+                {formData.showOnKiosk ? 'Visible' : 'Masque'}
+              </button>
+            </FormField>
+          </div>
+        </>
+      )}
     </FormModal>
   );
 }

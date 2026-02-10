@@ -247,6 +247,13 @@ export function emitQueueAutoOpened(branchId: string, data: unknown) {
 }
 
 /**
+ * Emit ticket position updated event to individual ticket room
+ */
+export function emitTicketPositionUpdated(ticketId: string, data: { position: number; estimatedWaitMins: number; urgency: 'normal' | 'approaching' | 'imminent' }) {
+  io.to(`ticket:${ticketId}`).emit(SOCKET_EVENTS.TICKET_POSITION_UPDATED, data);
+}
+
+/**
  * Emit ticket prioritized event
  */
 export function emitTicketPrioritized(branchId: string, ticketId: string, data: unknown) {

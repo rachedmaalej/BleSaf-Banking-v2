@@ -196,7 +196,12 @@ export const createServiceCategorySchema = z.object({
 export const updateServiceCategorySchema = createServiceCategorySchema
   .omit({ branchId: true })
   .extend({
-    isActive: z.boolean().optional(), // Allow toggling active status
+    isActive: z.boolean().optional(),
+    displayOrder: z.number().int().min(0).max(100).optional(),
+    showOnKiosk: z.boolean().optional(),
+    descriptionFr: z.string().max(200).optional().nullable(),
+    descriptionAr: z.string().max(200).optional().nullable(),
+    serviceGroup: z.string().max(100).optional().nullable(),
   })
   .partial();
 
@@ -211,6 +216,13 @@ export const createServiceTemplateSchema = z.object({
   icon: z.string().max(50).optional().nullable(),
   priorityWeight: z.number().int().min(1).max(10).default(1),
   avgServiceTime: z.number().int().min(1).max(120).default(10),
+  descriptionFr: z.string().max(200).optional().nullable(),
+  descriptionAr: z.string().max(200).optional().nullable(),
+  serviceGroup: z.string().max(100).optional().nullable(),
+  subServicesFr: z.array(z.string().max(100)).max(10).default([]),
+  subServicesAr: z.array(z.string().max(100)).max(10).default([]),
+  displayOrder: z.number().int().min(0).max(100).default(0),
+  showOnKiosk: z.boolean().default(true),
 });
 
 export const updateServiceTemplateSchema = createServiceTemplateSchema.partial();
@@ -218,6 +230,38 @@ export const updateServiceTemplateSchema = createServiceTemplateSchema.partial()
 export const copyTemplatesToBranchSchema = z.object({
   branchId: uuidSchema,
   templateIds: z.array(uuidSchema).min(1, 'Select at least one template'),
+});
+
+// Bulk deploy to multiple branches/groups
+export const bulkDeploySchema = z.object({
+  templateIds: z.array(uuidSchema).min(1, 'Select at least one template'),
+  branchIds: z.array(uuidSchema).optional(),
+  groupIds: z.array(uuidSchema).optional(),
+}).refine(
+  (d) => (d.branchIds && d.branchIds.length > 0) || (d.groupIds && d.groupIds.length > 0),
+  { message: 'Must specify at least one branch or group' }
+);
+
+// Branch Group schemas
+export const createBranchGroupSchema = z.object({
+  name: z.string().min(2).max(100),
+  description: z.string().max(500).optional().nullable(),
+});
+
+export const updateBranchGroupSchema = createBranchGroupSchema.partial();
+
+export const branchGroupMembershipSchema = z.object({
+  branchIds: z.array(uuidSchema).min(1, 'Select at least one branch'),
+});
+
+// Service field reset (reset overridden field to template value)
+export const resetServiceFieldSchema = z.object({
+  field: z.enum(['nameFr', 'nameAr', 'icon', 'descriptionFr', 'descriptionAr', 'serviceGroup', 'subServicesFr', 'subServicesAr']),
+});
+
+// Template sync schema
+export const syncTemplateSchema = z.object({
+  force: z.boolean().default(false), // Force sync even overridden fields
 });
 
 // Complete Branch Creation Schema (Wizard)
@@ -324,6 +368,12 @@ export type UpdateServiceCategoryInput = z.infer<typeof updateServiceCategorySch
 export type CreateServiceTemplateInput = z.infer<typeof createServiceTemplateSchema>;
 export type UpdateServiceTemplateInput = z.infer<typeof updateServiceTemplateSchema>;
 export type CopyTemplatesToBranchInput = z.infer<typeof copyTemplatesToBranchSchema>;
+export type BulkDeployInput = z.infer<typeof bulkDeploySchema>;
+export type CreateBranchGroupInput = z.infer<typeof createBranchGroupSchema>;
+export type UpdateBranchGroupInput = z.infer<typeof updateBranchGroupSchema>;
+export type BranchGroupMembershipInput = z.infer<typeof branchGroupMembershipSchema>;
+export type ResetServiceFieldInput = z.infer<typeof resetServiceFieldSchema>;
+export type SyncTemplateInput = z.infer<typeof syncTemplateSchema>;
 export type CreateBranchCompleteInput = z.infer<typeof createBranchCompleteSchema>;
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;

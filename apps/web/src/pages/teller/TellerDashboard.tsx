@@ -27,9 +27,6 @@ const SERVICE_COLORS: Record<string, { bg: string; accent: string; text: string 
   'Autres': { bg: '#FFFFFF', accent: '#666666', text: '#1A1A1A' },              // Gray
 };
 
-// SG Red for primary CTA (Call Next button)
-const SG_RED = '#E9041E';
-
 const getServiceColors = (serviceName: string) => {
   return SERVICE_COLORS[serviceName] || SERVICE_COLORS['Autres'];
 };
@@ -232,8 +229,23 @@ export default function TellerDashboard() {
   const totalWaiting = tellerQueue.totalWaitingInBranch ?? tellerQueue.nextTickets.length;
 
   const currentColors = currentTicket ? getServiceColors(currentTicket.serviceName) : null;
-  // nextColors not used in Refined Simplicity style (service shown as text only)
-  void nextTicket;
+
+  // Wait-time helpers for the "Prochain" panel
+  const getWaitMinutes = (createdAt: Date | string) => {
+    return Math.floor((Date.now() - new Date(createdAt).getTime()) / 60000);
+  };
+
+  const getWaitColor = (mins: number) => {
+    if (mins >= 15) return '#E9041E';
+    if (mins >= 10) return '#F59E0B';
+    return '#999';
+  };
+
+  const SLA_THRESHOLD_MINS = 15;
+  const avgWaitMins = queueTickets.length > 0
+    ? Math.round(queueTickets.reduce((sum, t) => sum + getWaitMinutes(t.createdAt), 0) / queueTickets.length)
+    : 0;
+  const slaBreaches = queueTickets.filter(t => getWaitMinutes(t.createdAt) >= SLA_THRESHOLD_MINS).length;
 
   return (
     <>
@@ -253,6 +265,11 @@ export default function TellerDashboard() {
         .shadow-md3-2 {
           box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
         }
+
+        /* Queue list scrollbar */
+        .queue-scroll::-webkit-scrollbar { width: 4px; }
+        .queue-scroll::-webkit-scrollbar-track { background: transparent; }
+        .queue-scroll::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 999px; }
       `}</style>
 
       <div className="teller-container h-screen flex flex-col overflow-hidden bg-white">
@@ -388,64 +405,152 @@ export default function TellerDashboard() {
             )}
           </div>
 
-          {/* Right Panel: Next Ticket (narrower - Refined Simplicity) */}
+          {/* Right Panel: Next + Queue (Layered Cards) */}
           <div
-            className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8"
-            style={{ background: '#F8F8F8', borderLeft: '1px solid #E5E5E5' }}
+            className="flex-1 flex flex-col p-4 sm:p-5 lg:p-6 min-h-0"
+            style={{ background: '#F8F8F8', borderLeft: '1px solid #E5E5E5', minWidth: '300px' }}
           >
+            {/* Section: PROCHAIN */}
             <div
-              className="text-sm font-medium mb-3 sm:mb-4"
-              style={{ color: '#1A1A1A' }}
+              className="text-xs font-semibold uppercase tracking-wider mb-2.5 sm:mb-3"
+              style={{ color: '#999' }}
             >
               Prochain
             </div>
 
             {nextTicket ? (
-              <div
-                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
-                style={{ border: '1px solid #E5E5E5' }}
-              >
-                {/* Ticket number - lighter weight */}
+              <>
+                {/* Next Ticket Card */}
                 <div
-                  className="text-4xl sm:text-5xl lg:text-6xl mb-2 sm:mb-3"
-                  style={{ color: '#1A1A1A', lineHeight: 1, fontWeight: 300, letterSpacing: '-0.02em' }}
+                  className="bg-white rounded-xl p-3.5 sm:p-4 mb-3"
+                  style={{ border: '1px solid #E5E5E5' }}
                 >
-                  {nextTicket.ticketNumber}
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="text-xl sm:text-2xl font-semibold" style={{ color: '#1A1A1A' }}>
+                      {nextTicket.ticketNumber}
+                    </span>
+                    <span
+                      className="text-xs font-medium px-2 py-0.5 rounded-full"
+                      style={{
+                        background: getWaitMinutes(nextTicket.createdAt) >= 10 ? '#FEF3C7' : '#ECFDF5',
+                        color: getWaitMinutes(nextTicket.createdAt) >= 10 ? '#92400E' : '#065F46',
+                      }}
+                    >
+                      {getWaitMinutes(nextTicket.createdAt)} min
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ background: getServiceColors(nextTicket.serviceName).accent }}
+                    />
+                    <span className="text-sm text-gray-500">{nextTicket.serviceName}</span>
+                    {nextTicket.priority === 'vip' && (
+                      <span className="text-xs font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">VIP</span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Service name - simple text */}
-                <div className="text-sm sm:text-base text-gray-400 mb-6 sm:mb-8">
-                  {nextTicket.serviceName}
-                </div>
-
-                {/* Call button - SG Red (Refined Simplicity) */}
+                {/* Call Next Button */}
                 <button
                   onClick={handleCallNext}
                   disabled={isCallingNext || !!currentTicket}
-                  className="w-full sm:w-auto max-w-xs inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-white text-sm sm:text-base font-semibold transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ background: SG_RED }}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 rounded-lg text-white font-semibold mb-4 sm:mb-5 transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: currentTicket ? '#1A1A1A' : '#E9041E' }}
                 >
                   <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>campaign</span>
-                  {isCallingNext ? t('common.loading') : 'Appeler'}
+                  {isCallingNext ? t('common.loading') : 'Appeler suivant'}
                 </button>
-              </div>
+              </>
             ) : (
-              /* Empty state - Refined */
+              /* Empty next-ticket state */
               <div
-                className="flex-1 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex flex-col items-center justify-center text-center bg-white"
+                className="bg-white rounded-xl p-6 mb-4 sm:mb-5 flex flex-col items-center justify-center text-center"
                 style={{ border: '1px solid #E5E5E5' }}
               >
                 <span
-                  className="material-symbols-outlined mb-3 sm:mb-4"
-                  style={{ fontSize: '48px', color: '#DDD' }}
+                  className="material-symbols-outlined mb-2"
+                  style={{ fontSize: '36px', color: '#DDD' }}
                 >
                   groups
                 </span>
-                <p className="text-sm sm:text-base lg:text-lg" style={{ color: '#999' }}>
+                <p className="text-sm" style={{ color: '#999' }}>
                   {t('teller.noTicketsWaiting')}
                 </p>
               </div>
             )}
+
+            {/* Section: FILE D'ATTENTE */}
+            <div className="flex items-center justify-between mb-2.5 sm:mb-3">
+              <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#999' }}>
+                File d'attente
+              </span>
+              {totalWaiting > 0 && (
+                <span
+                  className="inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold text-white"
+                  style={{ background: '#E9041E' }}
+                >
+                  {totalWaiting}
+                </span>
+              )}
+            </div>
+
+            {/* Stats Strip */}
+            <div className="grid grid-cols-3 gap-1.5 mb-3">
+              <div className="bg-white rounded p-1.5 text-center" style={{ border: '1px solid #E5E5E5' }}>
+                <div className="text-sm font-bold" style={{ color: '#1A1A1A' }}>{totalWaiting}</div>
+                <div className="text-[9px] uppercase tracking-wide" style={{ color: '#999' }}>En attente</div>
+              </div>
+              <div className="bg-white rounded p-1.5 text-center" style={{ border: '1px solid #E5E5E5' }}>
+                <div className="text-sm font-bold" style={{ color: avgWaitMins >= 10 ? '#F59E0B' : '#1A1A1A' }}>
+                  {avgWaitMins} min
+                </div>
+                <div className="text-[9px] uppercase tracking-wide" style={{ color: '#999' }}>Temps moyen</div>
+              </div>
+              <div className="bg-white rounded p-1.5 text-center" style={{ border: '1px solid #E5E5E5' }}>
+                <div className="text-sm font-bold" style={{ color: slaBreaches > 0 ? '#E9041E' : '#10B981' }}>
+                  {slaBreaches}
+                </div>
+                <div className="text-[9px] uppercase tracking-wide" style={{ color: '#999' }}>Dépassements</div>
+              </div>
+            </div>
+
+            {/* Queue List (scrollable) */}
+            <div className="flex-1 overflow-y-auto queue-scroll space-y-1" style={{ minHeight: 0 }}>
+              {queueTickets.map((ticket) => {
+                const waitMins = getWaitMinutes(ticket.createdAt);
+                const colors = getServiceColors(ticket.serviceName);
+                return (
+                  <div
+                    key={ticket.id}
+                    className="flex items-center justify-between bg-white rounded px-2.5 py-1.5 transition-colors hover:bg-gray-50"
+                    style={{ border: '1px solid #E5E5E5' }}
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs font-semibold flex-shrink-0" style={{ color: '#1A1A1A' }}>
+                        {ticket.ticketNumber}
+                      </span>
+                      <span
+                        className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                        style={{ background: colors.accent }}
+                      />
+                      <span className="text-xs text-gray-500 truncate">{ticket.serviceName}</span>
+                      {ticket.priority === 'vip' && (
+                        <span className="text-[9px] font-medium px-1 py-px rounded bg-amber-100 text-amber-800 flex-shrink-0">VIP</span>
+                      )}
+                    </div>
+                    <span className="text-[11px] flex-shrink-0 ml-2" style={{ color: getWaitColor(waitMins) }}>
+                      {waitMins} min
+                    </span>
+                  </div>
+                );
+              })}
+              {queueTickets.length === 0 && (
+                <div className="text-center py-4">
+                  <span className="text-xs" style={{ color: '#999' }}>Aucun ticket en attente</span>
+                </div>
+              )}
+            </div>
           </div>
         </main>
 

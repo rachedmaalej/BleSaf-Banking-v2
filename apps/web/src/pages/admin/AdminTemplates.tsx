@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { templateApi } from '@/lib/api';
 import {
@@ -7,6 +7,9 @@ import {
   ConfirmDialog,
 } from '@/components/admin';
 import { TemplateFormModal, type TemplateFormData } from '@/components/admin/TemplateFormModal';
+import { BulkDeployModal } from '@/components/admin/BulkDeployModal';
+import { ChangeHistoryPanel } from '@/components/admin/ChangeHistoryPanel';
+import type { TemplateDeploymentStatus } from '@blesaf/shared';
 
 // SG Brand Colors
 const SG_COLORS = {
@@ -25,6 +28,14 @@ interface ServiceTemplate {
   priorityWeight: number;
   avgServiceTime: number;
   isActive: boolean;
+  version: number;
+  descriptionFr: string | null;
+  descriptionAr: string | null;
+  serviceGroup: string | null;
+  subServicesFr: string[];
+  subServicesAr: string[];
+  displayOrder: number;
+  showOnKiosk: boolean;
   createdAt: string;
 }
 
@@ -55,6 +66,18 @@ export default function AdminTemplates() {
   const [selectedTemplate, setSelectedTemplate] = useState<ServiceTemplate | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Deploy modal state
+  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
+  const [deployTemplateIds, setDeployTemplateIds] = useState<string[]>([]);
+
+  // History panel state
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [historyTemplateId, setHistoryTemplateId] = useState<string | null>(null);
+  const [historyTemplateName, setHistoryTemplateName] = useState('');
+
+  // Deployment status cache
+  const [deploymentStatuses, setDeploymentStatuses] = useState<Record<string, TemplateDeploymentStatus>>({});
+
   // Toast notification state
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
@@ -63,7 +86,6 @@ export default function AdminTemplates() {
     try {
       setIsLoading(true);
       setError(null);
-      // Fetch all templates (active and inactive) for management
       const response = await templateApi.list(1, 100, false);
       setTemplates(response.data.data);
     } catch (err: any) {
@@ -74,14 +96,39 @@ export default function AdminTemplates() {
     }
   };
 
+  // Fetch deployment statuses for all active templates
+  const fetchDeploymentStatuses = useCallback(async (templateList: ServiceTemplate[]) => {
+    const activeTemplates = templateList.filter((t) => t.isActive);
+    const statuses: Record<string, TemplateDeploymentStatus> = {};
+
+    await Promise.allSettled(
+      activeTemplates.map(async (tmpl) => {
+        try {
+          const res = await templateApi.getDeploymentStatus(tmpl.id);
+          statuses[tmpl.id] = res.data.data;
+        } catch {
+          // Silently ignore individual failures
+        }
+      })
+    );
+
+    setDeploymentStatuses(statuses);
+  }, []);
+
   useEffect(() => {
     fetchTemplates();
   }, []);
 
+  // Fetch deployment statuses after templates load
+  useEffect(() => {
+    if (templates.length > 0) {
+      fetchDeploymentStatuses(templates);
+    }
+  }, [templates, fetchDeploymentStatuses]);
+
   // Filter templates by search and status (client-side)
   const filteredTemplates = useMemo(() => {
     return templates.filter((template) => {
-      // Search filter
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch =
@@ -91,7 +138,6 @@ export default function AdminTemplates() {
         if (!matchesSearch) return false;
       }
 
-      // Status filter
       if (statusFilter === 'active' && !template.isActive) return false;
       if (statusFilter === 'inactive' && template.isActive) return false;
 
@@ -133,15 +179,24 @@ export default function AdminTemplates() {
     setIsDeleteDialogOpen(true);
   };
 
+  const handleDeployClick = (template: ServiceTemplate) => {
+    setDeployTemplateIds([template.id]);
+    setIsDeployModalOpen(true);
+  };
+
+  const handleHistoryClick = (template: ServiceTemplate) => {
+    setHistoryTemplateId(template.id);
+    setHistoryTemplateName(template.nameFr);
+    setIsHistoryOpen(true);
+  };
+
   const handleFormSubmit = async (data: TemplateFormData) => {
     setIsSubmitting(true);
     try {
       if (selectedTemplate) {
-        // Update existing template
         await templateApi.update(selectedTemplate.id, data);
         showToast('success', 'Template modifie avec succes');
       } else {
-        // Create new template
         await templateApi.create(data);
         showToast('success', 'Template cree avec succes');
       }
@@ -166,6 +221,22 @@ export default function AdminTemplates() {
       showToast('error', err.response?.data?.error || 'Erreur lors de la suppression');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeploySuccess = () => {
+    setIsDeployModalOpen(false);
+    showToast('success', 'Deploiement termine avec succes');
+    fetchTemplates();
+  };
+
+  const handleSyncTemplate = async (template: ServiceTemplate) => {
+    try {
+      await templateApi.syncTemplate(template.id);
+      showToast('success', `Template "${template.nameFr}" synchronise`);
+      fetchDeploymentStatuses(templates);
+    } catch (err: any) {
+      showToast('error', err.response?.data?.error || 'Erreur de synchronisation');
     }
   };
 
@@ -195,6 +266,13 @@ export default function AdminTemplates() {
         Normal ({priority})
       </span>
     );
+  };
+
+  // Get deployment info for a template
+  const getDeploymentInfo = (templateId: string) => {
+    const status = deploymentStatuses[templateId];
+    if (!status) return null;
+    return status;
   };
 
   return (
@@ -242,8 +320,9 @@ export default function AdminTemplates() {
         </span>
         <div>
           <p className="text-sm text-blue-800">
-            Les templates definissent les services types de votre banque. Lors de la creation d'une nouvelle agence,
-            vous pourrez selectionner les templates a copier pour creer automatiquement les services.
+            Les templates definissent les services types de votre banque. Modifiez un template pour
+            propager automatiquement les changements aux agences liees. Utilisez le deploiement
+            en masse pour distribuer vos templates a plusieurs agences simultanement.
           </p>
         </div>
       </div>
@@ -286,80 +365,172 @@ export default function AdminTemplates() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {paginatedTemplates.map((template) => (
-            <div
-              key={template.id}
-              className={`bg-white rounded-lg border overflow-hidden hover:shadow-md transition-shadow ${
-                template.isActive ? 'border-gray-200' : 'border-gray-300 bg-gray-50'
-              }`}
-            >
-              {/* Card Header */}
-              <div className="p-4 border-b border-gray-100">
-                <div className="flex items-start gap-3">
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: 'rgba(26, 26, 26, 0.08)' }}
-                  >
-                    <span className="material-symbols-outlined text-gray-700" style={{ fontSize: '28px' }}>
-                      {template.icon || 'category'}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900 truncate">
-                        {getDisplayName(template)}
-                      </h3>
-                      {!template.isActive && (
-                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-600">
-                          Inactif
-                        </span>
-                      )}
+          {paginatedTemplates.map((template) => {
+            const deployment = getDeploymentInfo(template.id);
+            const hasPendingSync = deployment && deployment.pendingSyncCount > 0;
+
+            return (
+              <div
+                key={template.id}
+                className={`bg-white rounded-lg border overflow-hidden hover:shadow-md transition-shadow ${
+                  template.isActive ? 'border-gray-200' : 'border-gray-300 bg-gray-50'
+                }`}
+              >
+                {/* Card Header */}
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-start gap-3">
+                    <div
+                      className="w-12 h-12 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(26, 26, 26, 0.08)' }}
+                    >
+                      <span className="material-symbols-outlined text-gray-700" style={{ fontSize: '28px' }}>
+                        {template.icon || 'category'}
+                      </span>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      Prefixe: <span className="font-mono font-semibold">{template.prefix}</span>
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-gray-900 truncate">
+                          {getDisplayName(template)}
+                        </h3>
+                        {/* Version Badge */}
+                        <span className="px-1.5 py-0.5 text-xs font-mono font-medium rounded bg-blue-100 text-blue-700">
+                          v{template.version || 1}
+                        </span>
+                        {!template.isActive && (
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-600">
+                            Inactif
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        Prefixe: <span className="font-mono font-semibold">{template.prefix}</span>
+                        {template.serviceGroup && (
+                          <span className="ml-2 text-xs text-gray-400">| {template.serviceGroup}</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Body */}
+                <div className="p-4 space-y-3">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Priorite</span>
+                    {getPriorityBadge(template.priorityWeight)}
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-500">Temps moyen</span>
+                    <span className="font-medium">{template.avgServiceTime} min</span>
+                  </div>
+
+                  {/* Sub-services chips */}
+                  {template.subServicesFr && template.subServicesFr.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {(i18n.language === 'ar' ? (template.subServicesAr || template.subServicesFr) : template.subServicesFr).map((sub, idx) => (
+                        <span key={idx} className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">
+                          {sub}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Deployment Status */}
+                  {deployment && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-500">Deploye</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-gray-400" style={{ fontSize: '16px' }}>
+                          account_tree
+                        </span>
+                        <span className="font-medium">
+                          {deployment.deployedCount}/{deployment.totalBranches} agences
+                        </span>
+                        {deployment.divergedCount > 0 && (
+                          <span className="w-2 h-2 rounded-full bg-amber-400" title={`${deployment.divergedCount} avec overrides`} />
+                        )}
+                        {hasPendingSync && (
+                          <span className="w-2 h-2 rounded-full bg-blue-400" title={`${deployment.pendingSyncCount} en attente de sync`} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Kiosk display info */}
+                  {!template.showOnKiosk && (
+                    <div className="flex items-center gap-1 text-xs text-amber-600">
+                      <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>visibility_off</span>
+                      Masque sur la borne
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Actions */}
+                <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+                  {/* Left: Deploy + Sync */}
+                  <div className="flex gap-1">
+                    {template.isActive && (
+                      <button
+                        onClick={() => handleDeployClick(template)}
+                        className="flex items-center gap-1 px-2 py-1.5 text-xs text-blue-700 hover:bg-blue-50 rounded transition-colors"
+                        title="Deployer vers des agences"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          rocket_launch
+                        </span>
+                        Deployer
+                      </button>
+                    )}
+                    {hasPendingSync && (
+                      <button
+                        onClick={() => handleSyncTemplate(template)}
+                        className="flex items-center gap-1 px-2 py-1.5 text-xs text-emerald-700 hover:bg-emerald-50 rounded transition-colors"
+                        title="Synchroniser les agences"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          sync
+                        </span>
+                        Sync
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Right: Edit, History, Delete */}
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => handleHistoryClick(template)}
+                      className="flex items-center gap-1 px-2 py-1.5 text-xs text-gray-500 hover:bg-gray-200 rounded transition-colors"
+                      title="Historique des modifications"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                        history
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(template)}
+                      className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded transition-colors"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                        edit
+                      </span>
+                      {t('common.edit')}
+                    </button>
+                    {template.isActive && (
+                      <button
+                        onClick={() => handleDeleteClick(template)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm rounded transition-colors"
+                        style={{ color: SG_COLORS.rose }}
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          delete
+                        </span>
+                        Desactiver
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
-
-              {/* Card Body */}
-              <div className="p-4 space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500">Priorite</span>
-                  {getPriorityBadge(template.priorityWeight)}
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-gray-500">Temps moyen</span>
-                  <span className="font-medium">{template.avgServiceTime} min</span>
-                </div>
-              </div>
-
-              {/* Card Actions */}
-              <div className="px-4 py-3 bg-gray-50 border-t border-gray-100 flex justify-end gap-2">
-                <button
-                  onClick={() => handleEditClick(template)}
-                  className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-200 rounded transition-colors"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                    edit
-                  </span>
-                  {t('common.edit')}
-                </button>
-                {template.isActive && (
-                  <button
-                    onClick={() => handleDeleteClick(template)}
-                    className="flex items-center gap-1 px-3 py-1.5 text-sm rounded transition-colors"
-                    style={{ color: SG_COLORS.rose }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                      delete
-                    </span>
-                    Desactiver
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* Empty State */}
           {filteredTemplates.length === 0 && !isLoading && (
@@ -411,6 +582,28 @@ export default function AdminTemplates() {
         onSubmit={handleFormSubmit}
         onClose={() => setIsFormModalOpen(false)}
       />
+
+      {/* Bulk Deploy Modal */}
+      <BulkDeployModal
+        isOpen={isDeployModalOpen}
+        templateIds={deployTemplateIds}
+        onClose={() => setIsDeployModalOpen(false)}
+        onSuccess={handleDeploySuccess}
+      />
+
+      {/* Change History Panel */}
+      {historyTemplateId && (
+        <ChangeHistoryPanel
+          isOpen={isHistoryOpen}
+          entityType="template"
+          entityId={historyTemplateId}
+          entityName={historyTemplateName}
+          onClose={() => {
+            setIsHistoryOpen(false);
+            setHistoryTemplateId(null);
+          }}
+        />
+      )}
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog

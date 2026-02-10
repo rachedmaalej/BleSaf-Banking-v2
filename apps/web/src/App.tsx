@@ -9,6 +9,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Public pages
 import KioskServiceSelect from './pages/kiosk/KioskServiceSelect';
+import KioskWaitingChoice from './pages/kiosk/KioskWaitingChoice';
 import KioskTicketConfirm from './pages/kiosk/KioskTicketConfirm';
 import MobileServiceSelect from './pages/mobile/MobileServiceSelect';
 import MobileTicketView from './pages/mobile/MobileTicketView';
@@ -17,7 +18,6 @@ import QueueDisplay from './pages/display/QueueDisplay';
 
 // Protected pages
 import TellerDashboard from './pages/teller/TellerDashboard';
-import BranchDashboard from './pages/manager/BranchDashboard';
 import BranchDashboardV2 from './pages/manager/BranchDashboardV2';
 import ManagerReports from './pages/manager/ManagerReports';
 import ManagerSettings from './pages/manager/ManagerSettings';
@@ -27,6 +27,7 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminBranches from './pages/admin/AdminBranches';
 import AdminServices from './pages/admin/AdminServices';
 import AdminTemplates from './pages/admin/AdminTemplates';
+import AdminBranchGroups from './pages/admin/AdminBranchGroups';
 
 // Layout
 import AppLayout from './components/layout/AppLayout';
@@ -50,6 +51,7 @@ function App() {
 
         {/* Public - Kiosk */}
         <Route path="/kiosk/:branchId" element={<KioskServiceSelect />} />
+        <Route path="/kiosk/:branchId/choose" element={<KioskWaitingChoice />} />
         <Route path="/kiosk/:branchId/confirm" element={<KioskTicketConfirm />} />
 
         {/* Public - Mobile */}
@@ -80,8 +82,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/manager" element={<BranchDashboard />} />
-          <Route path="/manager/v2" element={<BranchDashboardV2 />} />
+          <Route path="/manager" element={<BranchDashboardV2 />} />
           <Route path="/manager/reports" element={<ManagerReports />} />
           <Route path="/manager/settings" element={<ManagerSettings />} />
         </Route>
@@ -143,6 +144,16 @@ function App() {
             <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
               <AppLayout>
                 <AdminTemplates />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/branch-groups"
+          element={
+            <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
+              <AppLayout>
+                <AdminBranchGroups />
               </AppLayout>
             </ProtectedRoute>
           }

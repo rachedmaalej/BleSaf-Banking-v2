@@ -8,7 +8,18 @@ export default function MobileServiceSelect() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
-  const [services, setServices] = useState<any[]>([]);
+  const [services, setServices] = useState<Array<{
+    id: string;
+    nameFr: string;
+    nameAr: string;
+    prefix: string;
+    icon: string | null;
+    showOnKiosk?: boolean;
+    displayOrder?: number;
+    descriptionFr?: string | null;
+    descriptionAr?: string | null;
+    serviceGroup?: string | null;
+  }>>([]);
   const [branchName, setBranchName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [phone, setPhone] = useState('+216 ');
@@ -121,42 +132,51 @@ export default function MobileServiceSelect() {
 
         {/* Service list */}
         <div className="space-y-3 mb-6">
-          {services.map((service) => (
-            <button
-              key={service.id}
-              onClick={() => setSelectedService(service.id)}
-              className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
-                selectedService === service.id
-                  ? 'border-primary-600 bg-primary-50'
-                  : 'border-gray-200 bg-white'
-              }`}
-            >
-              <span className="text-3xl">{service.icon || '📋'}</span>
-              <div className="flex-1 text-start">
-                <div className="font-medium text-gray-900">
-                  {i18n.language === 'ar' ? service.nameAr : service.nameFr}
-                </div>
-                <div className="text-sm text-gray-500">{service.prefix}</div>
-              </div>
-              {selectedService === service.id && (
-                <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </div>
-              )}
-            </button>
-          ))}
+          {services
+            .filter((s) => s.showOnKiosk !== false)
+            .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0))
+            .map((service) => {
+              const description = i18n.language === 'ar' ? service.descriptionAr : service.descriptionFr;
+              return (
+                <button
+                  key={service.id}
+                  onClick={() => setSelectedService(service.id)}
+                  className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
+                    selectedService === service.id
+                      ? 'border-primary-600 bg-primary-50'
+                      : 'border-gray-200 bg-white'
+                  }`}
+                >
+                  <span className="text-3xl">{service.icon || '📋'}</span>
+                  <div className="flex-1 text-start">
+                    <div className="font-medium text-gray-900">
+                      {i18n.language === 'ar' ? service.nameAr : service.nameFr}
+                    </div>
+                    {description && (
+                      <div className="text-xs text-gray-400 mt-0.5">{description}</div>
+                    )}
+                    <div className="text-sm text-gray-500">{service.prefix}</div>
+                  </div>
+                  {selectedService === service.id && (
+                    <div className="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
         </div>
 
         {/* Phone input */}

@@ -29,6 +29,7 @@ import {
   emitQueueResumed,
   emitQueueReset,
   emitTicketPrioritized,
+  emitTicketPositionUpdated,
 } from '../socket';
 import { notificationQueue } from './notificationQueue';
 
@@ -142,6 +143,11 @@ export const queueService = {
     const activeCounters = await this.getActiveCountersForService(branchId, serviceCategoryId);
     const estimatedWaitMins = this.calculateEstimatedWait(position, service.avgServiceTime, activeCounters);
 
+    // Auto-detect notification channel: if phone provided, default to SMS
+    const resolvedChannel = customerPhone
+      ? (notificationChannel && notificationChannel !== 'none' ? notificationChannel : 'sms')
+      : 'none';
+
     // Create ticket
     const ticket = await prisma.ticket.create({
       data: {
@@ -151,7 +157,7 @@ export const queueService = {
         status: TICKET_STATUS.WAITING,
         priority: priority || 'normal',
         customerPhone: customerPhone || null,
-        notificationChannel: notificationChannel || 'none',
+        notificationChannel: resolvedChannel,
         checkinMethod: checkinMethod || 'kiosk',
       },
       include: {
@@ -189,11 +195,11 @@ export const queueService = {
     });
 
     // Queue notification if phone provided
-    if (customerPhone && notificationChannel && notificationChannel !== 'none') {
+    if (customerPhone && resolvedChannel !== 'none') {
       await notificationQueue.queueNotification({
         ticketId: ticket.id,
         messageType: 'confirmation',
-        channel: notificationChannel,
+        channel: resolvedChannel,
         recipient: customerPhone,
         templateData: {
           ticketNumber,
@@ -201,6 +207,7 @@ export const queueService = {
           estimatedWait: estimatedWaitMins,
           branchName: branch.name,
           serviceName: service.nameFr,
+          trackingUrl: `/status/${ticket.id}`,
         },
       });
     }
@@ -354,6 +361,9 @@ export const queueService = {
         counter.branch.timezone,
         counter.branch.notifyAtPosition
       );
+
+      // Broadcast position updates to all remaining waiting tickets
+      await this.broadcastPositionUpdates(counter.branch.id, counter.branch.timezone);
 
       logger.info(
         { ticketId, branchId: counter.branch.id, counterId, tellerId },
@@ -1011,8 +1021,15 @@ export const queueService = {
         icon: true,
         avgServiceTime: true,
         useAutomaticServiceTime: true,
+        displayOrder: true,
+        showOnKiosk: true,
+        descriptionFr: true,
+        descriptionAr: true,
+        serviceGroup: true,
+        subServicesFr: true,
+        subServicesAr: true,
       },
-      orderBy: { prefix: 'asc' },
+      orderBy: { displayOrder: 'asc' },
     });
 
     // Get counters with current tickets
@@ -1542,13 +1559,31 @@ export const queueService = {
     const dateKey = getTodayDateString(timezone);
     const counterKey = REDIS_KEYS.dailyTicketCounter(branchId, prefix, dateKey);
 
-    // Atomic increment in Redis
-    const count = await redis.incr(counterKey);
+    // If Redis key doesn't exist (first call of the day, after seed, or Redis restart),
+    // initialize from the database to avoid duplicate ticket numbers.
+    const exists = await redis.exists(counterKey);
+    if (!exists) {
+      const { start, end } = getTodayRangeUTC(timezone);
+      const lastTicket = await prisma.ticket.findFirst({
+        where: {
+          branchId,
+          ticketNumber: { startsWith: `${prefix}-` },
+          createdAt: { gte: start, lte: end },
+        },
+        orderBy: { ticketNumber: 'desc' },
+        select: { ticketNumber: true },
+      });
 
-    // Set expiry to end of day (24h is safe)
-    if (count === 1) {
+      if (lastTicket) {
+        const lastNum = parseInt(lastTicket.ticketNumber.split('-')[1]!, 10) || 0;
+        // SETNX: only set if key still doesn't exist (avoids race with concurrent requests)
+        await redis.setnx(counterKey, lastNum);
+      }
       await redis.expire(counterKey, 86400);
     }
+
+    // Atomic increment in Redis
+    const count = await redis.incr(counterKey);
 
     return `${prefix}-${count.toString().padStart(3, '0')}`;
   },
@@ -1643,6 +1678,44 @@ export const queueService = {
           });
         }
       }
+    }
+  },
+
+  /**
+   * Broadcast position updates to all waiting tickets in a branch.
+   * Sends ticket:position_updated with urgency metadata to each ticket room.
+   */
+  async broadcastPositionUpdates(branchId: string, timezone: string) {
+    const { start, end } = getTodayRangeUTC(timezone);
+
+    const waitingTickets = await prisma.ticket.findMany({
+      where: {
+        branchId,
+        status: TICKET_STATUS.WAITING,
+        createdAt: { gte: start, lte: end },
+      },
+      include: {
+        serviceCategory: { select: { avgServiceTime: true } },
+      },
+      orderBy: [{ priority: 'desc' }, { createdAt: 'asc' }],
+    });
+
+    const activeCounters = await prisma.counter.count({
+      where: { branchId, status: 'open' },
+    });
+
+    for (let i = 0; i < waitingTickets.length; i++) {
+      const ticket = waitingTickets[i];
+      const position = i + 1;
+      const estimatedWaitMins = this.calculateEstimatedWait(
+        position,
+        ticket.serviceCategory.avgServiceTime,
+        activeCounters
+      );
+      const urgency: 'normal' | 'approaching' | 'imminent' =
+        position <= 2 ? 'imminent' : position <= 5 ? 'approaching' : 'normal';
+
+      emitTicketPositionUpdated(ticket.id, { position, estimatedWaitMins, urgency });
     }
   },
 

@@ -11,6 +11,7 @@ import {
   LanguageIcon,
   QueueListIcon,
   DocumentDuplicateIcon,
+  RectangleGroupIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -72,6 +73,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
             name: 'Templates',
             href: '/admin/templates',
             icon: DocumentDuplicateIcon,
+          },
+          {
+            name: t('branchGroups.title'),
+            href: '/admin/branch-groups',
+            icon: RectangleGroupIcon,
           },
         ]
       : []),

@@ -29,6 +29,7 @@ model Tenant {
   branches         Branch[]
   users            User[]
   serviceTemplates ServiceTemplate[]
+  branchGroups     BranchGroup[]
 
   @@index([subdomain])
 }
@@ -60,14 +61,15 @@ model Branch {
   closingTime      String?   // "16:30" format (24h, branch timezone) - overrides tenant default
   closedOnWeekends Boolean   @default(true)  // Skip auto-open on Sat/Sun
 
-  counters      Counter[]
-  services      ServiceCategory[]
-  tickets       Ticket[]
-  users         User[]
-  dailyStats    DailyBranchStats[]
-  hourlyStats   HourlySnapshot[]
-  targets       BranchTarget[]
-  announcements Announcement[]
+  counters         Counter[]
+  services         ServiceCategory[]
+  tickets          Ticket[]
+  users            User[]
+  dailyStats       DailyBranchStats[]
+  hourlyStats      HourlySnapshot[]
+  targets          BranchTarget[]
+  announcements    Announcement[]
+  groupMemberships BranchGroupMembership[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -107,25 +109,37 @@ model Counter {
 // ============================================================
 
 model ServiceCategory {
-  id                      String   @id @default(uuid())
+  id                      String           @id @default(uuid())
   branchId                String
-  branch                  Branch   @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branch                  Branch           @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  sourceTemplateId        String?          // Link to parent template (null = manually created)
+  sourceTemplate          ServiceTemplate? @relation(fields: [sourceTemplateId], references: [id])
+  templateVersion         Int?             // Last synced template version
+  overriddenFields        Json             @default("[]") // Identity fields locally overridden, e.g. ["nameFr","icon"]
   nameAr                  String
   nameFr                  String
-  prefix                  String   // A, B, C... for ticket numbering
+  prefix                  String           // A, B, C... for ticket numbering
   icon                    String?
-  priorityWeight          Int      @default(1)
-  avgServiceTime          Int      @default(10) // minutes (manual setting)
-  useAutomaticServiceTime Boolean  @default(false) // auto-calculate from last 24h
-  isActive                Boolean  @default(true)
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  priorityWeight          Int              @default(1)
+  avgServiceTime          Int              @default(10) // minutes (manual setting)
+  useAutomaticServiceTime Boolean          @default(false) // auto-calculate from last 24h
+  isActive                Boolean          @default(true)
+  displayOrder            Int              @default(0)    // Kiosk button display order
+  showOnKiosk             Boolean          @default(true) // Hide from kiosk if false
+  descriptionFr           String?          // Kiosk helper text (French)
+  descriptionAr           String?          // Kiosk helper text (Arabic)
+  serviceGroup            String?          // Kiosk grouping label
+  subServicesFr           String[]         @default([]) // Sub-service labels shown on kiosk (French)
+  subServicesAr           String[]         @default([]) // Sub-service labels shown on kiosk (Arabic)
+  createdAt               DateTime         @default(now())
+  updatedAt               DateTime         @updatedAt
 
   counters CounterService[]
   tickets  Ticket[]
 
   @@unique([branchId, prefix])
   @@index([branchId])
+  @@index([sourceTemplateId])
 }
 
 // ============================================================
@@ -143,8 +157,18 @@ model ServiceTemplate {
   priorityWeight Int      @default(1)
   avgServiceTime Int      @default(10) // minutes
   isActive       Boolean  @default(true)
+  version        Int      @default(1) // Increments on identity field changes
+  descriptionFr  String?  // Kiosk helper text (French)
+  descriptionAr  String?  // Kiosk helper text (Arabic)
+  serviceGroup   String?  // Kiosk grouping label
+  subServicesFr  String[] @default([]) // Sub-service labels shown on kiosk (French)
+  subServicesAr  String[] @default([]) // Sub-service labels shown on kiosk (Arabic)
+  displayOrder   Int      @default(0) // Suggested kiosk display order
+  showOnKiosk    Boolean  @default(true) // Suggested kiosk visibility
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  linkedServices ServiceCategory[] // Branch services linked to this template
 
   @@unique([tenantId, nameFr]) // Prevent duplicate template names per tenant
   @@index([tenantId])
@@ -424,4 +448,58 @@ model Announcement {
   createdAt       DateTime  @default(now())
 
   @@index([branchId, createdAt])
+}
+
+// ============================================================
+// BRANCH GROUP (Logical grouping for bulk operations)
+// ============================================================
+
+model BranchGroup {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships BranchGroupMembership[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+// ============================================================
+// BRANCH GROUP MEMBERSHIP (Join table)
+// ============================================================
+
+model BranchGroupMembership {
+  branchGroupId String
+  branchGroup   BranchGroup @relation(fields: [branchGroupId], references: [id], onDelete: Cascade)
+  branchId      String
+  branch        Branch      @relation(fields: [branchId], references: [id], onDelete: Cascade)
+
+  @@id([branchGroupId, branchId])
+  @@index([branchId])
+}
+
+// ============================================================
+// SERVICE CHANGE LOG (Audit trail for templates & services)
+// ============================================================
+
+model ServiceChangeLog {
+  id         String   @id @default(uuid())
+  entityType String   // 'template' | 'service'
+  entityId   String
+  action     String   // 'create' | 'update' | 'delete' | 'sync' | 'deploy'
+  field      String?  // Specific field changed (null for create/delete/deploy)
+  oldValue   String?
+  newValue   String?
+  changedBy  String   // userId
+  metadata   Json?    // Extra context (e.g., branchId for deploy, sync details)
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([changedBy])
+  @@index([createdAt])
 }

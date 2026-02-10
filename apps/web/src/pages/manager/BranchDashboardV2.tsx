@@ -35,6 +35,22 @@ const SG_COLORS = {
   greenBg: '#D1FAE5',
 };
 
+// Service identity palette — 4 muted accent colors (matches kiosk/TV display)
+const SERVICE_PALETTE = [
+  { accent: '#8DC7DE', bg: '#DBECF4' }, // Blue
+  { accent: '#9FD775', bg: '#DEF5B7' }, // Green
+  { accent: '#FBAC54', bg: '#FFE9B7' }, // Orange
+  { accent: '#BABABA', bg: '#E8E8E8' }, // Gray
+];
+
+/** Build a stable mapping from service name to palette color, matching kiosk order */
+function buildServiceColorMap(services: { nameFr: string; displayOrder: number }[]) {
+  const sorted = [...services].sort((a, b) => a.displayOrder - b.displayOrder);
+  const map = new Map<string, typeof SERVICE_PALETTE[0]>();
+  sorted.forEach((svc, i) => map.set(svc.nameFr, SERVICE_PALETTE[i % SERVICE_PALETTE.length]));
+  return map;
+}
+
 const ALERT_THRESHOLDS = {
   QUEUE_WARNING: 10,
   QUEUE_CRITICAL: 20,
@@ -405,6 +421,13 @@ export default function BranchDashboardV2() {
   const totalCounters = branchStatus?.counters?.length || 0;
   const waitingCount = stats?.tickets.waiting || 0;
 
+  // Stable service → color mapping (matches kiosk/TV display order)
+  const serviceColorMap = buildServiceColorMap(
+    (branchStatus?.services || []).map((s: any) => ({ nameFr: s.nameFr, displayOrder: s.displayOrder ?? 0 }))
+  );
+  const getServiceColor = (name: string) =>
+    serviceColorMap.get(name)?.accent || SERVICE_PALETTE[3].accent;
+
   // SLA trajectory arrow
   const slaTrajectoryIcon = compositeMetrics?.slaTrajectory === 'failing' ? 'trending_down'
     : compositeMetrics?.slaTrajectory === 'at_risk' ? 'trending_flat'
@@ -606,7 +629,6 @@ export default function BranchDashboardV2() {
         });
         const serviceList = Object.values(serviceGroups).sort((a, b) => b.count - a.count);
         const totalWaiting = serviceList.reduce((s, v) => s + v.count, 0) || 1;
-        const serviceColors = [SG_COLORS.red, SG_COLORS.amber, '#9CA3AF', '#6B7280'];
 
         // SLA values
         const slaVal = compositeMetrics?.slaCurrent ?? slaData?.sla.percentage ?? 100;
@@ -625,15 +647,15 @@ export default function BranchDashboardV2() {
                 {serviceList.length > 0 ? (
                   <>
                     <div className="h-5 rounded-full overflow-hidden flex mb-3">
-                      {serviceList.map((svc, i) => (
-                        <div key={svc.name} style={{ width: `${(svc.count / totalWaiting) * 100}%`, background: serviceColors[i] || '#D1D5DB' }} title={`${svc.name}: ${svc.count}`} />
+                      {serviceList.map((svc) => (
+                        <div key={svc.name} style={{ width: `${(svc.count / totalWaiting) * 100}%`, background: getServiceColor(svc.name) }} title={`${svc.name}: ${svc.count}`} />
                       ))}
                     </div>
                     <div className="space-y-1 text-xs">
-                      {serviceList.map((svc, i) => (
+                      {serviceList.map((svc) => (
                         <div key={svc.name} className="flex items-center justify-between">
                           <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full" style={{ background: serviceColors[i] || '#D1D5DB' }} />
+                            <span className="w-2 h-2 rounded-full" style={{ background: getServiceColor(svc.name) }} />
                             <span className="truncate max-w-[100px]">{svc.name}</span>
                           </span>
                           <span className="font-bold">{svc.count}</span>
@@ -847,7 +869,12 @@ export default function BranchDashboardV2() {
                           <span className="ml-1.5 material-symbols-outlined" style={{ fontSize: 14, color: SG_COLORS.amber }}>star</span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-gray-600">{ticket.serviceName}</td>
+                      <td className="py-3 px-4">
+                        <span className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: getServiceColor(ticket.serviceName) }} />
+                          <span className="text-gray-600">{ticket.serviceName}</span>
+                        </span>
+                      </td>
                       <td className="py-3 px-4">
                         <span className="font-bold" style={{ color: isSlaRisk ? SG_COLORS.red : isAtRisk ? SG_COLORS.amber : '#6B7280' }}>
                           {waitMins} min

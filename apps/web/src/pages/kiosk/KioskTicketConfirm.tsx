@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
 
 const SERVICE_ICONS: Record<string, string> = {
   "Retrait d'espèces": 'local_atm',
@@ -122,10 +123,10 @@ export default function KioskTicketConfirm() {
         }
       `}</style>
 
-      <div className="kiosk-confirm h-screen flex flex-col overflow-hidden" style={{ backgroundColor: '#FAFAFA' }}>
+      <div className="kiosk-confirm flex flex-col overflow-hidden" style={{ height: '100dvh', backgroundColor: '#FAFAFA' }}>
         {/* Header */}
         <header
-          className="flex justify-between items-center px-4 sm:px-6 py-2 sm:py-3 bg-white flex-shrink-0"
+          className="flex justify-between items-center px-3 sm:px-6 py-1.5 sm:py-3 bg-white flex-shrink-0"
           style={{ borderBottom: '1px solid #CAC4D0' }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
@@ -160,111 +161,112 @@ export default function KioskTicketConfirm() {
         </div>
 
         {/* Main Content */}
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6" dir={isAr ? 'rtl' : 'ltr'}>
+        <main className="flex-1 flex items-start sm:items-center justify-center px-3 py-2 sm:p-6 min-h-0 overflow-y-auto" dir={isAr ? 'rtl' : 'ltr'}>
           <div className="w-full max-w-md anim-in">
-            {/* Green confirmation banner */}
-            <div className="flex items-center justify-center gap-2 mb-5">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: '36px', color: '#10B981' }}
-              >
-                check_circle
-              </span>
-              <h2 className="text-xl sm:text-2xl font-semibold" style={{ color: '#10B981' }}>
-                {isAr ? 'أنت في الطابور!' : 'Vous êtes dans la file\u00A0!'}
-              </h2>
-            </div>
-
-            {/* Service badge */}
-            <div className="flex justify-center mb-4">
+            {/* Green confirmation banner + service badge — single row on mobile */}
+            <div className="flex flex-col items-center gap-1 sm:gap-0 mb-1.5 sm:mb-4">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: '24px', color: '#10B981' }}
+                >
+                  check_circle
+                </span>
+                <h2 className="text-base sm:text-2xl font-semibold" style={{ color: '#10B981' }}>
+                  {isAr ? 'أنت في الطابور!' : 'Vous êtes dans la file\u00A0!'}
+                </h2>
+              </div>
               <div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full"
                 style={{ backgroundColor: serviceColors.bg }}
               >
                 <span
                   className="material-symbols-outlined"
-                  style={{ fontSize: '20px', color: serviceColors.accent }}
+                  style={{ fontSize: '16px', color: serviceColors.accent }}
                 >
                   {serviceIcon}
                 </span>
-                <span className="text-sm font-medium" style={{ color: serviceColors.accent }}>
+                <span className="text-xs sm:text-sm font-medium" style={{ color: serviceColors.accent }}>
                   {displayServiceName}
                 </span>
               </div>
             </div>
 
-            {/* Large ticket number */}
-            <div className="text-center mb-4">
-              <div
-                style={{
-                  fontSize: 'clamp(56px, 12vh, 100px)',
-                  fontWeight: 300,
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: serviceColors.accent,
-                }}
-              >
-                {ticketData.ticket.ticketNumber}
+            {/* Ticket number + position — compact layout on mobile */}
+            <div className="flex items-center gap-3 sm:gap-0 sm:flex-col mb-2 sm:mb-4">
+              {/* Ticket number */}
+              <div className="text-center sm:mb-3">
+                <div
+                  style={{
+                    fontSize: 'clamp(36px, 7vh, 88px)',
+                    fontWeight: 300,
+                    lineHeight: 1,
+                    letterSpacing: '-0.03em',
+                    color: serviceColors.accent,
+                  }}
+                >
+                  {ticketData.ticket.ticketNumber}
+                </div>
+                <p className="text-xs text-gray-400 mt-0.5 sm:mt-1">
+                  {isAr ? 'رقم تذكرتك' : 'Votre numéro'}
+                </p>
               </div>
-              <p className="text-sm text-gray-400 mt-2">
-                {isAr ? 'رقم تذكرتك' : 'Votre numéro'}
-              </p>
-            </div>
 
-            {/* Position + Wait time */}
-            {ticketData.position > 0 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-5">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-3xl sm:text-4xl font-light text-gray-900">
-                      #{ticketData.position}
+              {/* Position + Wait time — inline on mobile, full-width card on sm+ */}
+              {ticketData.position > 0 && (
+                <div className="flex-1 sm:flex-none sm:w-full bg-white rounded-xl border border-gray-200 p-2.5 sm:p-4">
+                  <div className="grid grid-cols-2 gap-2 sm:gap-4 text-center">
+                    <div>
+                      <div className="text-xl sm:text-3xl font-light text-gray-900">
+                        #{ticketData.position}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {isAr ? 'موقعك في الطابور' : 'Position dans la file'}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {isAr ? 'موقعك في الطابور' : 'Position dans la file'}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-3xl sm:text-4xl font-light text-gray-900">
-                      ~{ticketData.estimatedWaitMins}
-                      <span className="text-base font-normal text-gray-400">min</span>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {isAr ? 'وقت الانتظار المقدر' : "Temps d'attente estimé"}
+                    <div>
+                      <div className="text-xl sm:text-3xl font-light text-gray-900">
+                        ~{ticketData.estimatedWaitMins}
+                        <span className="text-xs sm:text-sm font-normal text-gray-400">min</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {isAr ? 'وقت الانتظار المقدر' : "Temps d'attente estimé"}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* ══ Mode-specific section ══ */}
             {mode === 'phone' ? (
               /* ── Phone mode: SMS confirmation ── */
               <div className="anim-in-delay">
                 <div
-                  className="rounded-xl p-4 mb-4"
+                  className="rounded-xl p-2.5 sm:p-4 mb-2 sm:mb-3"
                   style={{ backgroundColor: '#EFF6FF', border: '1px solid #DBEAFE' }}
                 >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#2563EB' }}>
+                  <div className="flex items-center gap-2 mb-0.5 sm:mb-1.5">
+                    <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#2563EB' }}>
                       sms
                     </span>
-                    <p className="text-sm font-semibold" style={{ color: '#1E40AF' }}>
+                    <p className="text-xs sm:text-sm font-semibold" style={{ color: '#1E40AF' }}>
                       {isAr ? 'تم إرسال رسالة إلى' : 'Un message a été envoyé au'}
                     </p>
                   </div>
-                  <p className="text-base font-medium" style={{ color: '#1E3A5F', direction: 'ltr' }}>
+                  <p className="text-sm sm:text-base font-medium" style={{ color: '#1E3A5F', direction: 'ltr' }}>
                     {phoneNumber}
                   </p>
                 </div>
 
                 <div
-                  className="rounded-xl p-4 mb-5 text-center"
+                  className="rounded-xl p-2.5 sm:p-3.5 mb-2 sm:mb-4 text-center"
                   style={{ backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0' }}
                 >
-                  <span className="material-symbols-outlined mb-1" style={{ fontSize: '24px', color: '#16A34A' }}>
+                  <span className="material-symbols-outlined mb-0.5" style={{ fontSize: '20px', color: '#16A34A' }}>
                     directions_walk
                   </span>
-                  <p className="text-sm font-medium" style={{ color: '#166534' }}>
+                  <p className="text-xs sm:text-sm font-medium" style={{ color: '#166534' }}>
                     {isAr
                       ? 'يمكنك مغادرة الطابور بكل راحة.'
                       : 'Vous pouvez quitter la file en toute tranquillité.'}
@@ -285,50 +287,50 @@ export default function KioskTicketConfirm() {
                 </div>
               </div>
             ) : (
-              /* ── Classic mode: Print + nudge ── */
+              /* ── Classic mode: Print + QR + nudge ── */
               <div className="anim-in-delay">
                 {/* Print option */}
-                <div className="bg-white rounded-xl border border-gray-200 mb-4 overflow-hidden">
+                <div className="bg-white rounded-xl border border-gray-200 mb-2 sm:mb-3 overflow-hidden">
                   {isPrinting ? (
-                    <div className="p-5 text-center">
+                    <div className="p-3 sm:p-4 text-center">
                       <span
-                        className="material-symbols-outlined print-pulse mb-2 block"
-                        style={{ fontSize: '48px', color: '#E9041E' }}
+                        className="material-symbols-outlined print-pulse mb-1 block"
+                        style={{ fontSize: '32px', color: '#E9041E' }}
                       >
                         print
                       </span>
-                      <p className="text-base font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900">
                         {isAr ? 'جاري الطباعة...' : 'Impression en cours...'}
                       </p>
                     </div>
                   ) : printDone ? (
-                    <div className="p-5 text-center">
+                    <div className="p-3 sm:p-4 text-center">
                       <span
-                        className="material-symbols-outlined mb-2 block"
-                        style={{ fontSize: '48px', color: '#10B981' }}
+                        className="material-symbols-outlined mb-1 block"
+                        style={{ fontSize: '32px', color: '#10B981' }}
                       >
                         task_alt
                       </span>
-                      <p className="text-base font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-gray-900">
                         {isAr ? 'تم طباعة التذكرة!' : 'Ticket imprimé\u00A0!'}
                       </p>
                     </div>
                   ) : (
                     <button
                       onClick={handlePrint}
-                      className="w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                      className="w-full p-2.5 sm:p-3.5 flex items-center gap-2.5 hover:bg-gray-50 transition-colors"
                       style={{ textAlign: isAr ? 'right' : 'left' }}
                     >
                       <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                        className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
                         style={{ backgroundColor: '#FEF2F2' }}
                       >
-                        <span className="material-symbols-outlined" style={{ fontSize: '22px', color: '#E9041E' }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#E9041E' }}>
                           print
                         </span>
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm">
+                        <p className="font-semibold text-gray-900 text-xs sm:text-sm">
                           {isAr ? 'طباعة التذكرة' : 'Imprimer mon ticket'}
                         </p>
                         <p className="text-xs text-gray-500 mt-0.5">
@@ -339,13 +341,55 @@ export default function KioskTicketConfirm() {
                   )}
                 </div>
 
+                {/* QR code + instructions — merged into one card */}
+                <div
+                  className="rounded-xl p-2.5 sm:p-3.5 mb-2 sm:mb-3 flex items-center gap-3 sm:gap-4"
+                  style={{ backgroundColor: '#F9FAFB', border: '1px solid #E5E7EB' }}
+                >
+                  <QRCodeSVG
+                    value={statusUrl}
+                    size={72}
+                    level="M"
+                    className="flex-shrink-0 sm:hidden"
+                  />
+                  <QRCodeSVG
+                    value={statusUrl}
+                    size={96}
+                    level="M"
+                    className="flex-shrink-0 hidden sm:block"
+                  />
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-gray-600">
+                      {isAr
+                        ? 'امسح الرمز لمتابعة تذكرتك على هاتفك'
+                        : 'Scannez pour suivre sur votre téléphone'}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: '14px', color: '#9CA3AF' }}>
+                        tv
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {isAr ? 'راقب رقمك على شاشة العرض' : "Surveillez l'écran d'affichage"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: '14px', color: '#9CA3AF' }}>
+                        directions_walk
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {isAr ? 'توجه إلى الشباك المُشار إليه' : 'Présentez-vous au guichet indiqué'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Nudge for next time */}
                 <div
-                  className="rounded-xl p-3 text-center"
+                  className="rounded-xl p-2 sm:p-2.5 text-center"
                   style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A' }}
                 >
                   <p className="text-xs" style={{ color: '#92400E' }}>
-                    <span className="material-symbols-outlined align-middle" style={{ fontSize: '14px' }}>
+                    <span className="material-symbols-outlined align-middle" style={{ fontSize: '13px' }}>
                       lightbulb
                     </span>
                     {' '}
@@ -358,10 +402,10 @@ export default function KioskTicketConfirm() {
             )}
 
             {/* Finish button */}
-            <div className="text-center mt-5">
+            <div className="text-center mt-2 sm:mt-4">
               <button
                 onClick={goHome}
-                className="px-8 py-3 rounded-full text-sm font-medium transition-colors hover:bg-gray-100"
+                className="px-6 sm:px-8 py-2 sm:py-3 rounded-full text-xs sm:text-sm font-medium transition-colors hover:bg-gray-100"
                 style={{ color: '#6B7280', border: '1px solid #D1D5DB' }}
               >
                 {isAr ? 'إنهاء' : 'Terminer'}

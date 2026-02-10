@@ -292,6 +292,14 @@ export const adminApi = {
   deleteService: (serviceId: string) =>
     api.delete(`/admin/services/${serviceId}`),
 
+  /** Get change history for a service */
+  getServiceHistory: (serviceId: string, page = 1, pageSize = 20) =>
+    api.get(`/admin/services/${serviceId}/history`, { params: { page, pageSize } }),
+
+  /** Reset an overridden field to template value */
+  resetServiceField: (serviceId: string, field: string) =>
+    api.post(`/admin/services/${serviceId}/reset-field`, { field }),
+
   // Users
   listUsers: (page = 1, pageSize = 20, branchId?: string, role?: string) =>
     api.get('/admin/users', { params: { page, pageSize, branchId, role } }),
@@ -531,6 +539,11 @@ export const templateApi = {
     icon?: string | null;
     priorityWeight?: number;
     avgServiceTime?: number;
+    descriptionFr?: string | null;
+    descriptionAr?: string | null;
+    serviceGroup?: string | null;
+    displayOrder?: number;
+    showOnKiosk?: boolean;
   }) => api.post('/templates', data),
 
   /** Get template by ID */
@@ -545,6 +558,11 @@ export const templateApi = {
     icon?: string | null;
     priorityWeight?: number;
     avgServiceTime?: number;
+    descriptionFr?: string | null;
+    descriptionAr?: string | null;
+    serviceGroup?: string | null;
+    displayOrder?: number;
+    showOnKiosk?: boolean;
   }) => api.patch(`/templates/${templateId}`, data),
 
   /** Delete (deactivate) a service template */
@@ -554,6 +572,59 @@ export const templateApi = {
   /** Copy selected templates to a branch as actual services */
   copyToBranch: (branchId: string, templateIds: string[]) =>
     api.post('/templates/copy-to-branch', { branchId, templateIds }),
+
+  /** Bulk deploy templates to multiple branches/groups */
+  bulkDeploy: (templateIds: string[], branchIds?: string[], groupIds?: string[]) =>
+    api.post('/templates/bulk-deploy', { templateIds, branchIds, groupIds }),
+
+  /** Get deployment status for a template across branches */
+  getDeploymentStatus: (templateId: string) =>
+    api.get(`/templates/${templateId}/deployment-status`),
+
+  /** Get drift report for a template */
+  getDriftReport: (templateId: string) =>
+    api.get(`/templates/${templateId}/drift-report`),
+
+  /** Get tenant-wide drift report */
+  getDriftReportAll: () =>
+    api.get('/templates/drift-report/all'),
+
+  /** Push template changes to all linked services */
+  syncTemplate: (templateId: string, force = false) =>
+    api.post(`/templates/${templateId}/sync`, { force }),
+
+  /** Get change history for a template */
+  getHistory: (templateId: string, page = 1, pageSize = 20) =>
+    api.get(`/templates/${templateId}/history`, { params: { page, pageSize } }),
+};
+
+// ============================================================
+// BRANCH GROUP API
+// ============================================================
+
+export const branchGroupApi = {
+  /** List all branch groups */
+  list: () => api.get('/branch-groups'),
+
+  /** Create a new branch group */
+  create: (name: string, description?: string | null) =>
+    api.post('/branch-groups', { name, description }),
+
+  /** Update a branch group */
+  update: (groupId: string, data: { name?: string; description?: string | null }) =>
+    api.patch(`/branch-groups/${groupId}`, data),
+
+  /** Delete a branch group */
+  delete: (groupId: string) =>
+    api.delete(`/branch-groups/${groupId}`),
+
+  /** Add branches to a group */
+  addBranches: (groupId: string, branchIds: string[]) =>
+    api.post(`/branch-groups/${groupId}/branches`, { branchIds }),
+
+  /** Remove a branch from a group */
+  removeBranch: (groupId: string, branchId: string) =>
+    api.delete(`/branch-groups/${groupId}/branches/${branchId}`),
 };
 
 export default api;

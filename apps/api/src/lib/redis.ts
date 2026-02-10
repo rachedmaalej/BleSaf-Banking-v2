@@ -87,4 +87,7 @@ export const REDIS_KEYS = {
   hqMetrics: (tenantId: string) => `hq:metrics:${tenantId}`,
   hqBranches: (tenantId: string) => `hq:branches:${tenantId}`,
   hqRecommendations: (tenantId: string) => `hq:recommendations:${tenantId}`,
+  // Service management cache keys
+  deploymentStatus: (templateId: string) => `svc:deploy:${templateId}`,
+  driftReport: (tenantId: string) => `svc:drift:${tenantId}`,
 } as const;

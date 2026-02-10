@@ -82,13 +82,25 @@ export interface Counter extends BaseEntity {
 export interface ServiceCategory extends BaseEntity {
   branchId: string;
   branch?: Branch;
+  sourceTemplateId: string | null;
+  sourceTemplate?: ServiceTemplate;
+  templateVersion: number | null;
+  overriddenFields: string[];
   nameAr: string;
   nameFr: string;
   prefix: string;
   icon: string | null;
   priorityWeight: number;
   avgServiceTime: number;
+  useAutomaticServiceTime: boolean;
   isActive: boolean;
+  displayOrder: number;
+  showOnKiosk: boolean;
+  descriptionFr: string | null;
+  descriptionAr: string | null;
+  serviceGroup: string | null;
+  subServicesFr: string[];
+  subServicesAr: string[];
   counters?: CounterService[];
   tickets?: Ticket[];
 }
@@ -104,6 +116,15 @@ export interface ServiceTemplate extends BaseEntity {
   priorityWeight: number;
   avgServiceTime: number;
   isActive: boolean;
+  version: number;
+  descriptionFr: string | null;
+  descriptionAr: string | null;
+  serviceGroup: string | null;
+  subServicesFr: string[];
+  subServicesAr: string[];
+  displayOrder: number;
+  showOnKiosk: boolean;
+  linkedServices?: ServiceCategory[];
 }
 
 // Counter-Service join table
@@ -255,6 +276,11 @@ export interface ServiceDisplay {
   prefix: string;
   icon: string | null;
   avgServiceTime: number;
+  displayOrder: number;
+  showOnKiosk: boolean;
+  descriptionFr: string | null;
+  descriptionAr: string | null;
+  serviceGroup: string | null;
 }
 
 // Per-service queue statistics for TV display
@@ -491,3 +517,91 @@ export interface BranchHealthRow {
   topService?: string;
   alerts: string[];
 }
+
+// --- Service Management V2 Types ---
+
+// Branch Group (logical grouping for bulk operations)
+export interface BranchGroup extends BaseEntity {
+  tenantId: string;
+  name: string;
+  description: string | null;
+  memberships?: BranchGroupMembership[];
+  memberCount?: number;
+}
+
+export interface BranchGroupMembership {
+  branchGroupId: string;
+  branchId: string;
+  branch?: Branch;
+}
+
+// Service Change Log (audit trail)
+export interface ServiceChangeLogEntry {
+  id: string;
+  entityType: 'template' | 'service';
+  entityId: string;
+  action: string;
+  field: string | null;
+  oldValue: string | null;
+  newValue: string | null;
+  changedBy: string;
+  changedByName?: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+}
+
+// Template deployment tracking
+export type DeploymentSyncStatus = 'synced' | 'pending_sync' | 'diverged';
+
+export interface TemplateDeploymentStatus {
+  templateId: string;
+  templateName: string;
+  templateVersion: number;
+  totalBranches: number;
+  deployedCount: number;
+  syncedCount: number;
+  divergedCount: number;
+  pendingSyncCount: number;
+  branches: TemplateDeploymentBranch[];
+}
+
+export interface TemplateDeploymentBranch {
+  branchId: string;
+  branchName: string;
+  branchCode: string;
+  serviceId: string;
+  templateVersion: number;
+  currentVersion: number;
+  overriddenFields: string[];
+  status: DeploymentSyncStatus;
+}
+
+// Bulk deploy results
+export interface BulkDeployResult {
+  results: BulkDeployBranchResult[];
+  totals: { created: number; reactivated: number; skipped: number };
+}
+
+export interface BulkDeployBranchResult {
+  branchId: string;
+  branchName: string;
+  created: number;
+  reactivated: number;
+  skipped: number;
+  skipReasons?: { prefix: string; existingServiceName: string }[];
+}
+
+// Drift report
+export interface DriftReportEntry {
+  serviceId: string;
+  branchId: string;
+  branchName: string;
+  branchCode: string;
+  templateName: string;
+  overriddenFields: string[];
+  fieldDiffs: { field: string; templateValue: string; branchValue: string }[];
+}
+
+// Identity fields that can be inherited from template
+export const IDENTITY_FIELDS = ['nameFr', 'nameAr', 'icon', 'descriptionFr', 'descriptionAr', 'serviceGroup', 'subServicesFr', 'subServicesAr'] as const;
+export type IdentityField = typeof IDENTITY_FIELDS[number];

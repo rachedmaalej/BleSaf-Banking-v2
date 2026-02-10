@@ -159,14 +159,14 @@ export default function KioskWaitingChoice() {
       `}</style>
 
       <div
-        className="kiosk-choose h-screen flex flex-col overflow-hidden"
-        style={{ backgroundColor: '#FAFAFA' }}
+        className="kiosk-choose flex flex-col overflow-hidden"
+        style={{ height: '100dvh', backgroundColor: '#FAFAFA' }}
         onClick={handleInteraction}
         onTouchStart={handleInteraction}
       >
         {/* Header */}
         <header
-          className="flex justify-between items-center px-4 sm:px-6 py-2 sm:py-3 bg-white flex-shrink-0"
+          className="flex justify-between items-center px-3 sm:px-6 py-1.5 sm:py-3 bg-white flex-shrink-0"
           style={{ borderBottom: '1px solid #CAC4D0' }}
         >
           <div className="flex items-center gap-2 sm:gap-3">
@@ -198,8 +198,8 @@ export default function KioskWaitingChoice() {
         </header>
 
         {/* Title */}
-        <div className="text-center py-3 sm:py-4 flex-shrink-0">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+        <div className="text-center py-2 sm:py-3 flex-shrink-0">
+          <h2 className="text-base sm:text-xl font-semibold text-gray-900">
             {isAr ? 'كيف تفضل الانتظار؟' : 'Comment souhaitez-vous attendre\u00A0?'}
           </h2>
         </div>
@@ -214,135 +214,149 @@ export default function KioskWaitingChoice() {
 
         {/* Dual Panel */}
         <main
-          className="flex-1 flex flex-col sm:flex-row min-h-0 px-4 sm:px-6 lg:px-8 pb-4 sm:pb-6 gap-4 sm:gap-6"
+          className="flex-1 flex flex-col sm:flex-row min-h-0 px-3 sm:px-5 lg:px-8 pb-3 sm:pb-5 gap-3 sm:gap-5"
           dir={isAr ? 'rtl' : 'ltr'}
         >
-          {/* ═══ LEFT PANEL — Phone Tracking (dominant) ═══ */}
+          {/* ═══ LEFT PANEL — Phone Tracking (Option D: Bottom-Anchored) ═══ */}
           <div
-            className="flex-[3] flex flex-col rounded-2xl p-5 sm:p-6 fade-in overflow-y-auto"
+            className="flex-[4] sm:flex-[3] flex flex-col rounded-2xl fade-in overflow-hidden relative min-h-0"
             style={{
-              backgroundColor: '#EFF6FF',
-              border: '2px solid #BFDBFE',
+              backgroundColor: 'white',
+              border: `2px solid ${serviceColor}40`,
             }}
           >
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-4">
-              <div
-                className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ backgroundColor: '#DBEAFE' }}
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#2563EB' }}>
-                  smartphone
-                </span>
-              </div>
-              <div>
-                <h3 className="text-base sm:text-lg font-bold" style={{ color: '#1E3A5F' }}>
-                  {isAr ? 'تابع من هاتفك' : 'Suivez depuis votre téléphone'}
-                </h3>
-                <p className="text-xs sm:text-sm" style={{ color: '#3B82F6' }}>
-                  {isAr ? 'أدخل رقمك واحصل على:' : 'Entrez votre numéro et recevez\u00A0:'}
-                </p>
-              </div>
-            </div>
-
-            {/* Benefits */}
-            <div className="space-y-2 mb-4">
-              {[
-                { icon: 'my_location', fr: 'Votre position en temps réel', ar: 'موقعك في الطابور مباشرة' },
-                { icon: 'schedule', fr: "Le temps d'attente estimé", ar: 'وقت الانتظار المقدر' },
-                { icon: 'notifications_active', fr: 'Une alerte quand c\'est votre tour', ar: 'تنبيه عند حلول دورك' },
-              ].map((item) => (
-                <div key={item.icon} className="flex items-center gap-2.5">
-                  <span
-                    className="material-symbols-outlined flex-shrink-0"
-                    style={{ fontSize: '18px', color: '#10B981' }}
-                  >
-                    check_circle
-                  </span>
-                  <span className="text-sm" style={{ color: '#1E3A5F' }}>
-                    {isAr ? item.ar : item.fr}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Freedom message */}
-            <p className="text-xs sm:text-sm mb-4 px-3 py-2 rounded-lg" style={{ backgroundColor: '#DBEAFE', color: '#1E40AF' }}>
-              {isAr
-                ? 'يمكنك مغادرة الطابور بكل راحة — سنُعلمك.'
-                : 'Vous êtes libre de quitter la file — on vous prévient.'}
-            </p>
-
-            {/* Phone input display */}
+            {/* Recommandé badge */}
             <div
-              className="flex items-center gap-2 w-full mb-3"
+              className="absolute top-0 text-white text-xs font-semibold uppercase tracking-wide px-3 py-1 z-10"
               style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '12px',
-                padding: '12px 16px',
-                border: '1px solid #BFDBFE',
+                backgroundColor: '#E9041E',
+                borderRadius: '0 0 8px 8px',
+                ...(isAr ? { left: 20 } : { right: 20 }),
               }}
             >
-              <span className="text-base font-semibold text-gray-500 flex-shrink-0">+216</span>
-              <span
-                className="text-lg font-medium"
-                style={{
-                  color: phoneDigits.length > 0 ? '#1A1A1A' : '#9CA3AF',
-                  direction: 'ltr',
-                  letterSpacing: '1.5px',
-                }}
-              >
-                {phoneDigits.length > 0 ? formatDisplayDigits(phoneDigits) : '__ ___ ___'}
-              </span>
+              {isAr ? 'موصى به' : 'Recommandé'}
             </div>
 
-            {/* Numeric Keypad */}
-            <NumericKeypad
-              value={phoneDigits}
-              onChange={(v) => { setPhoneDigits(v); handleInteraction(); }}
-            />
-
-            {/* Submit button */}
-            <button
-              onClick={handlePhoneSubmit}
-              disabled={phoneDigits.length !== 8 || isSubmitting}
-              className="w-full mt-4 py-3.5 rounded-full text-base font-semibold text-white transition-all disabled:opacity-40"
-              style={{ backgroundColor: '#E9041E' }}
+            {/* ── Top section: compact info strip ── */}
+            <div
+              className="px-3 sm:px-5 py-2 sm:py-3 flex-shrink-0"
+              style={{ backgroundColor: serviceColorBg }}
             >
-              {isSubmitting
-                ? (isAr ? 'جاري الإنشاء...' : 'Création en cours...')
-                : (isAr ? 'استلام تذكرتي' : 'Recevoir mon ticket')}
-            </button>
+              <div className="flex items-center gap-2 sm:gap-2.5 mb-1 sm:mb-2">
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: `${serviceColor}30` }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px', color: serviceColor }}>
+                    smartphone
+                  </span>
+                </div>
+                <h3 className="text-sm sm:text-base font-bold" style={{ color: '#1A1A1A' }}>
+                  {isAr ? 'تابع من هاتفك' : 'Suivez depuis votre téléphone'}
+                </h3>
+              </div>
+              <div className="flex flex-wrap gap-x-5 gap-y-1">
+                {[
+                  { fr: 'Position en direct', ar: 'موقعك مباشرة' },
+                  { fr: 'Temps estimé', ar: 'وقت الانتظار' },
+                  { fr: 'Alerte SMS', ar: 'تنبيه SMS' },
+                ].map((b) => (
+                  <div key={b.fr} className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#10B981' }}>
+                      check_circle
+                    </span>
+                    <span className="text-xs" style={{ color: '#374151' }}>
+                      {isAr ? b.ar : b.fr}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Middle section: large phone input display ── */}
+            <div className="px-3 sm:px-5 py-2 sm:py-3 flex-shrink-0">
+              <div
+                className="flex items-center gap-2 sm:gap-3"
+                style={{
+                  backgroundColor: '#F9FAFB',
+                  borderRadius: '12px',
+                  padding: '10px 16px',
+                  border: `1.5px solid ${phoneDigits.length > 0 ? serviceColor + '60' : '#E5E7EB'}`,
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                <span className="text-base sm:text-lg font-semibold text-gray-400 flex-shrink-0">+216</span>
+                <span
+                  className="text-xl sm:text-3xl font-medium"
+                  style={{
+                    color: phoneDigits.length > 0 ? '#1A1A1A' : '#D1D5DB',
+                    direction: 'ltr',
+                    letterSpacing: '3px',
+                  }}
+                >
+                  {phoneDigits.length > 0 ? formatDisplayDigits(phoneDigits) : '__ ___ ___'}
+                </span>
+              </div>
+            </div>
+
+            {/* ── Bottom section: anchored keypad ── */}
+            <div
+              className="flex-1 flex flex-col px-3 sm:px-5 pt-1.5 pb-2 sm:pt-2 sm:pb-3"
+              style={{
+                backgroundColor: '#FAFAFA',
+                borderTop: '1px solid #E5E7EB',
+              }}
+            >
+              <div className="flex-1 flex flex-col">
+                <NumericKeypad
+                  value={phoneDigits}
+                  onChange={(v) => { setPhoneDigits(v); handleInteraction(); }}
+                  onSubmit={handlePhoneSubmit}
+                  accentColor={serviceColor}
+                  showConfirm
+                  confirmDisabled={phoneDigits.length !== 8 || isSubmitting}
+                />
+              </div>
+              {/* Privacy note */}
+              <p className="text-xs text-gray-400 text-center mt-1 sm:mt-2 flex items-center justify-center gap-1">
+                <span className="material-symbols-outlined" style={{ fontSize: '13px', color: '#10B981' }}>
+                  lock
+                </span>
+                {isAr
+                  ? 'رقمك محمي ولن يُستخدم إلا لهذه الخدمة'
+                  : 'Votre numéro est sécurisé'}
+              </p>
+            </div>
           </div>
 
           {/* ═══ RIGHT PANEL — Classic Waiting (muted) ═══ */}
           <div
-            className="flex-[2] flex flex-col items-center justify-center rounded-2xl p-5 sm:p-6 fade-in-delay"
+            className="flex-[2] sm:flex-[2] flex flex-col items-center justify-center rounded-2xl p-4 sm:p-6 fade-in-delay"
             style={{
               backgroundColor: '#F9FAFB',
               border: '1px solid #E5E7EB',
             }}
           >
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mb-3 sm:mb-4"
               style={{ backgroundColor: '#F3F4F6' }}
             >
-              <span className="material-symbols-outlined" style={{ fontSize: '32px', color: '#9CA3AF' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '28px', color: '#9CA3AF' }}>
                 weekend
               </span>
             </div>
 
-            <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2 text-center">
+            <h3 className="text-sm sm:text-lg font-semibold text-gray-700 mb-1 sm:mb-2 text-center">
               {isAr ? 'الانتظار في المكان' : 'Attendre sur place'}
             </h3>
 
-            <p className="text-sm text-gray-500 text-center mb-6 leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-500 text-center mb-3 sm:mb-6 leading-relaxed">
               {isAr
                 ? 'تابع رقمك على شاشة العرض في قاعة الانتظار.'
                 : "Suivez votre numéro sur l'écran d'affichage dans la salle d'attente."}
             </p>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-3 sm:mb-6">
               <span className="material-symbols-outlined" style={{ fontSize: '18px', color: '#9CA3AF' }}>
                 tv
               </span>
@@ -354,7 +368,7 @@ export default function KioskWaitingChoice() {
             <button
               onClick={handleClassicSubmit}
               disabled={isSubmitting}
-              className="w-full py-3.5 rounded-full text-base font-semibold transition-all disabled:opacity-40"
+              className="w-full py-3 sm:py-3.5 rounded-full text-sm sm:text-base font-semibold transition-all disabled:opacity-40"
               style={{
                 backgroundColor: 'transparent',
                 color: '#6B7280',

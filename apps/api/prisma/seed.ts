@@ -22,6 +22,88 @@ async function main() {
 
   console.log(`Created tenant: ${tenant.name} (${tenant.id})`);
 
+  // Create service templates (bank-level definitions)
+  const templateDefs = [
+    {
+      nameFr: 'Retrait / Dépôt',
+      nameAr: 'سحب / إيداع',
+      prefix: 'A',
+      icon: 'local_atm',
+      priorityWeight: 1,
+      avgServiceTime: 5,
+      descriptionFr: 'Opérations de caisse courantes',
+      descriptionAr: 'عمليات الصندوق الجارية',
+      subServicesFr: ["Retrait d'espèces", "Dépôt d'espèces"],
+      subServicesAr: ['سحب نقدي', 'إيداع نقدي'],
+      displayOrder: 0,
+    },
+    {
+      nameFr: 'Virements',
+      nameAr: 'تحويلات',
+      prefix: 'B',
+      icon: 'swap_horiz',
+      priorityWeight: 1,
+      avgServiceTime: 8,
+      descriptionFr: 'Émission et suivi de virements',
+      descriptionAr: 'إصدار ومتابعة التحويلات',
+      subServicesFr: ['Émission de virement'],
+      subServicesAr: ['تحويل بنكي'],
+      displayOrder: 1,
+    },
+    {
+      nameFr: 'Cartes & Documents',
+      nameAr: 'بطاقات ووثائق',
+      prefix: 'C',
+      icon: 'credit_card',
+      priorityWeight: 1,
+      avgServiceTime: 10,
+      descriptionFr: 'Cartes bancaires, chéquiers et relevés',
+      descriptionAr: 'بطاقات بنكية وشيكات وكشوفات',
+      subServicesFr: ['Retrait de carte bancaire', 'Réinitialisation code carte', 'Relevé de compte', 'Retrait de chéquier'],
+      subServicesAr: ['استلام بطاقة بنكية', 'إعادة تعيين رمز البطاقة', 'كشف حساب', 'استلام دفتر شيكات'],
+      displayOrder: 2,
+    },
+    {
+      nameFr: 'Autres services',
+      nameAr: 'خدمات أخرى',
+      prefix: 'D',
+      icon: 'more_horiz',
+      priorityWeight: 1,
+      avgServiceTime: 7,
+      descriptionFr: 'Renseignements et mises à jour',
+      descriptionAr: 'استفسارات وتحديثات',
+      subServicesFr: ['Renseignements divers', 'Mise à jour de données'],
+      subServicesAr: ['استفسارات متنوعة', 'تحديث البيانات'],
+      displayOrder: 3,
+    },
+  ];
+
+  const templates = await Promise.all(
+    templateDefs.map((def) =>
+      prisma.serviceTemplate.upsert({
+        where: { tenantId_nameFr: { tenantId: tenant.id, nameFr: def.nameFr } },
+        update: {
+          nameAr: def.nameAr,
+          icon: def.icon,
+          subServicesFr: def.subServicesFr,
+          subServicesAr: def.subServicesAr,
+          descriptionFr: def.descriptionFr,
+          descriptionAr: def.descriptionAr,
+          displayOrder: def.displayOrder,
+        },
+        create: {
+          tenantId: tenant.id,
+          ...def,
+          isActive: true,
+          showOnKiosk: true,
+          version: 1,
+        },
+      })
+    )
+  );
+
+  console.log(`Created ${templates.length} service templates`);
+
   // Create a branch
   const branch = await prisma.branch.upsert({
     where: { tenantId_code: { tenantId: tenant.id, code: 'LAC2' } },
@@ -40,88 +122,50 @@ async function main() {
 
   console.log(`Created branch: ${branch.name} (${branch.id})`);
 
-  // Create service categories
-  const services = await Promise.all([
-    prisma.serviceCategory.upsert({
-      where: { branchId_prefix: { branchId: branch.id, prefix: 'A' } },
-      update: {
-        nameAr: 'سحب نقدي',
-        nameFr: "Retrait d'espèces",
-      },
-      create: {
-        branchId: branch.id,
-        nameAr: 'سحب نقدي',
-        nameFr: "Retrait d'espèces",
-        prefix: 'A',
-        icon: '💵',
-        priorityWeight: 1,
-        avgServiceTime: 5,
-        isActive: true,
-      },
-    }),
-    prisma.serviceCategory.upsert({
-      where: { branchId_prefix: { branchId: branch.id, prefix: 'B' } },
-      update: {
-        nameAr: 'كشف الحساب',
-        nameFr: 'Relevés de compte',
-      },
-      create: {
-        branchId: branch.id,
-        nameAr: 'كشف الحساب',
-        nameFr: 'Relevés de compte',
-        prefix: 'B',
-        icon: '📥',
-        priorityWeight: 1,
-        avgServiceTime: 7,
-        isActive: true,
-      },
-    }),
-    prisma.serviceCategory.upsert({
-      where: { branchId_prefix: { branchId: branch.id, prefix: 'C' } },
-      update: {
-        nameAr: 'إيداع نقدي',
-        nameFr: "Dépôt d'espèces",
-      },
-      create: {
-        branchId: branch.id,
-        nameAr: 'إيداع نقدي',
-        nameFr: "Dépôt d'espèces",
-        prefix: 'C',
-        icon: '📋',
-        priorityWeight: 2,
-        avgServiceTime: 20,
-        isActive: true,
-      },
-    }),
-    prisma.serviceCategory.upsert({
-      where: { branchId_prefix: { branchId: branch.id, prefix: 'D' } },
-      update: {},
-      create: {
-        branchId: branch.id,
-        nameAr: 'قروض',
-        nameFr: 'Prêts',
-        prefix: 'D',
-        icon: '🏦',
-        priorityWeight: 3,
-        avgServiceTime: 30,
-        isActive: true,
-      },
-    }),
-    prisma.serviceCategory.upsert({
-      where: { branchId_prefix: { branchId: branch.id, prefix: 'E' } },
-      update: {},
-      create: {
-        branchId: branch.id,
-        nameAr: 'صرف العملات',
-        nameFr: 'Change',
-        prefix: 'E',
-        icon: '💱',
-        priorityWeight: 1,
-        avgServiceTime: 10,
-        isActive: true,
-      },
-    }),
-  ]);
+  // Deploy templates to branch (creates linked ServiceCategory records)
+  const services = await Promise.all(
+    templates.map((template) =>
+      prisma.serviceCategory.upsert({
+        where: { branchId_prefix: { branchId: branch.id, prefix: template.prefix } },
+        update: {
+          nameAr: template.nameAr,
+          nameFr: template.nameFr,
+          icon: template.icon,
+          priorityWeight: template.priorityWeight,
+          avgServiceTime: template.avgServiceTime,
+          descriptionFr: template.descriptionFr,
+          descriptionAr: template.descriptionAr,
+          serviceGroup: template.serviceGroup,
+          subServicesFr: template.subServicesFr,
+          subServicesAr: template.subServicesAr,
+          displayOrder: template.displayOrder,
+          showOnKiosk: template.showOnKiosk,
+          sourceTemplateId: template.id,
+          templateVersion: template.version,
+        },
+        create: {
+          branchId: branch.id,
+          nameAr: template.nameAr,
+          nameFr: template.nameFr,
+          prefix: template.prefix,
+          icon: template.icon,
+          priorityWeight: template.priorityWeight,
+          avgServiceTime: template.avgServiceTime,
+          descriptionFr: template.descriptionFr,
+          descriptionAr: template.descriptionAr,
+          serviceGroup: template.serviceGroup,
+          subServicesFr: template.subServicesFr,
+          subServicesAr: template.subServicesAr,
+          displayOrder: template.displayOrder,
+          showOnKiosk: template.showOnKiosk,
+          sourceTemplateId: template.id,
+          templateVersion: template.version,
+          overriddenFields: [],
+          isActive: true,
+        },
+      })
+    )
+  );
 
   console.log(`Created ${services.length} service categories`);
 
@@ -247,18 +291,16 @@ async function main() {
   console.log(`Created ${counters.length} counters`);
 
   // Assign services to counters
-  const retraitService = services.find((s) => s.prefix === 'A')!;
-  const depotService = services.find((s) => s.prefix === 'B')!;
-  const compteService = services.find((s) => s.prefix === 'C')!;
-  const pretService = services.find((s) => s.prefix === 'D')!;
-  const changeService = services.find((s) => s.prefix === 'E')!;
+  const serviceA = services.find((s) => s.prefix === 'A')!; // Retrait / Dépôt
+  const serviceB = services.find((s) => s.prefix === 'B')!; // Virements
+  const serviceC = services.find((s) => s.prefix === 'C')!; // Cartes & Documents
+  const serviceD = services.find((s) => s.prefix === 'D')!; // Autres services
 
-  // Counter 1: Retrait, Dépôt, Change (fast services)
+  // Counter 1: Retrait/Dépôt, Virements (fast services)
   await prisma.counterService.createMany({
     data: [
-      { counterId: counters[0].id, serviceId: retraitService.id },
-      { counterId: counters[0].id, serviceId: depotService.id },
-      { counterId: counters[0].id, serviceId: changeService.id },
+      { counterId: counters[0].id, serviceId: serviceA.id },
+      { counterId: counters[0].id, serviceId: serviceB.id },
     ],
     skipDuplicates: true,
   });
@@ -266,20 +308,19 @@ async function main() {
   // Counter 2: All services
   await prisma.counterService.createMany({
     data: [
-      { counterId: counters[1].id, serviceId: retraitService.id },
-      { counterId: counters[1].id, serviceId: depotService.id },
-      { counterId: counters[1].id, serviceId: compteService.id },
-      { counterId: counters[1].id, serviceId: pretService.id },
-      { counterId: counters[1].id, serviceId: changeService.id },
+      { counterId: counters[1].id, serviceId: serviceA.id },
+      { counterId: counters[1].id, serviceId: serviceB.id },
+      { counterId: counters[1].id, serviceId: serviceC.id },
+      { counterId: counters[1].id, serviceId: serviceD.id },
     ],
     skipDuplicates: true,
   });
 
-  // Counter 3: Compte, Prêt (slower services)
+  // Counter 3: Cartes & Documents, Autres (longer services)
   await prisma.counterService.createMany({
     data: [
-      { counterId: counters[2].id, serviceId: compteService.id },
-      { counterId: counters[2].id, serviceId: pretService.id },
+      { counterId: counters[2].id, serviceId: serviceC.id },
+      { counterId: counters[2].id, serviceId: serviceD.id },
     ],
     skipDuplicates: true,
   });
@@ -292,7 +333,7 @@ async function main() {
     prisma.ticket.create({
       data: {
         branchId: branch.id,
-        serviceCategoryId: retraitService.id,
+        serviceCategoryId: serviceA.id,
         ticketNumber: 'A-001',
         status: 'serving',
         priority: 'normal',
@@ -308,7 +349,7 @@ async function main() {
     prisma.ticket.create({
       data: {
         branchId: branch.id,
-        serviceCategoryId: depotService.id,
+        serviceCategoryId: serviceB.id,
         ticketNumber: 'B-001',
         status: 'waiting',
         priority: 'normal',
@@ -320,7 +361,7 @@ async function main() {
     prisma.ticket.create({
       data: {
         branchId: branch.id,
-        serviceCategoryId: retraitService.id,
+        serviceCategoryId: serviceA.id,
         ticketNumber: 'A-002',
         status: 'waiting',
         priority: 'normal',
@@ -332,7 +373,7 @@ async function main() {
     prisma.ticket.create({
       data: {
         branchId: branch.id,
-        serviceCategoryId: compteService.id,
+        serviceCategoryId: serviceC.id,
         ticketNumber: 'C-001',
         status: 'waiting',
         priority: 'vip',
@@ -344,8 +385,8 @@ async function main() {
     prisma.ticket.create({
       data: {
         branchId: branch.id,
-        serviceCategoryId: changeService.id,
-        ticketNumber: 'E-001',
+        serviceCategoryId: serviceD.id,
+        ticketNumber: 'D-001',
         status: 'waiting',
         priority: 'normal',
         customerPhone: '+21644444444',
