@@ -32,18 +32,19 @@ const SERVICE_CONFIG: Record<string, { className: string; icon: string; label: s
   'Retrait de carte bancaire': { className: 'carte', icon: 'credit_card', label: 'Carte' },
   // Foreign exchange
   'Change de devises': { className: 'change', icon: 'currency_exchange', label: 'Change' },
+  'Change': { className: 'change', icon: 'currency_exchange', label: 'Change' },
   // Account services
   'Ouverture de compte': { className: 'compte', icon: 'person_add', label: 'Compte' },
   // Credit / Loans
   'Crédit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
   'Credit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
+  'Prêts': { className: 'credit', icon: 'account_balance', label: 'Prêts' },
   // Other / Catch-all
   'Autres': { className: 'autres', icon: 'more_horiz', label: 'Autres' },
-  default: { className: 'autres', icon: 'help_outline', label: 'Service' },
 };
 
 function getServiceConfig(serviceName: string) {
-  return SERVICE_CONFIG[serviceName] || SERVICE_CONFIG.default;
+  return SERVICE_CONFIG[serviceName] || { className: 'autres', icon: 'help_outline', label: serviceName.split(' ')[0].slice(0, 8) };
 }
 
 // Average consultation time for wait estimation (minutes per customer)

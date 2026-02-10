@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>BléSaf — Affichage TV Agence</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #FFFFFF;
+  color: #1A1A1A;
+  -webkit-font-smoothing: antialiased;
+  min-width: 1200px;
+}
+
+/* ===== PRESENTER NAV BAR (top, subtle) ===== */
+.presenter-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  height: 40px;
+}
+.nav-btn {
+  padding: 4px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: transparent;
+  color: #94A3B8;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.nav-btn:hover {
+  border-color: #E9041E;
+  color: #E9041E;
+}
+.nav-btn.active {
+  background: #E9041E;
+  border-color: #E9041E;
+  color: #fff;
+}
+.nav-label {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 500;
+  color: #94A3B8;
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+}
+.nav-label span {
+  color: #E9041E;
+  font-weight: 700;
+}
+.nav-hint {
+  font-size: 10px;
+  color: #475569;
+  margin-left: 8px;
+}
+
+/* ===== DEMO BADGE ===== */
+.demo-badge {
+  position: fixed;
+  top: 50px;
+  right: 16px;
+  z-index: 999;
+  background: #E9041E;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  opacity: 0.85;
+  box-shadow: 0 2px 8px rgba(233,4,30,0.3);
+}
+
+/* ===== MAIN TV LAYOUT ===== */
+.tv-display {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 40px; /* space for presenter nav */
+  background: #FFFFFF;
+  overflow: hidden;
+}
+
+/* ===== HEADER BAR (white, matches actual app) ===== */
+.tv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #CAC4D0;
+  flex-shrink: 0;
+}
+.tv-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tv-header-logo {
+  height: 48px;
+  width: auto;
+}
+.tv-header-branch {
+  font-size: 13px;
+  color: #49454F;
+}
+.tv-header-time {
+  font-size: 24px;
+  font-weight: 300;
+  color: #1C1B1F;
+}
+
+/* ===== HERO SECTION (2/3 of vertical space) ===== */
+.tv-hero-section {
+  flex: 2;
+  display: flex;
+  background: #F5F5F5;
+  overflow: hidden;
+}
+.tv-hero-counters {
+  flex: 1;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ===== HERO COUNTER CARDS ===== */
+.tv-hero-card {
+  background: #FFFFFF;
+  border-radius: 28px;
+  padding: 24px 36px;
+  text-align: center;
+  min-width: 200px;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+  border-bottom: 4px solid var(--card-accent, #9CA3AF);
+}
+.tv-hero-card .counter-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #49454F;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.tv-hero-card .counter-number {
+  font-size: 80px;
+  font-weight: 300;
+  color: #1C1B1F;
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+.tv-hero-card .ticket-number {
+  font-size: 48px;
+  font-weight: 300;
+  color: var(--card-accent, #1C1B1F);
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.tv-hero-card .service-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 28px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: var(--tag-bg, #F9FAFB);
+  color: var(--card-accent, #666);
+}
+.tv-hero-card .service-tag .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Empty state for hero */
+.tv-hero-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #49454F;
+}
+.tv-hero-empty .material-symbols-outlined {
+  font-size: 64px;
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+.tv-hero-empty-text {
+  font-size: 18px;
+}
+
+/* Break card in hero */
+.tv-hero-card.break-card {
+  border-bottom-color: #F59E0B;
+  opacity: 0.8;
+}
+.tv-hero-card.break-card .counter-number {
+  font-size: 48px;
+  color: #F59E0B;
+}
+.tv-hero-card.break-card .service-tag {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+/* Closed card in hero */
+.tv-hero-card.closed-card {
+  border-bottom-color: #CAC4D0;
+  opacity: 0.5;
+}
+.tv-hero-card.closed-card .counter-number {
+  font-size: 48px;
+  color: #CAC4D0;
+}
+
+/* ===== QUEUE SECTION (1/3 of vertical space) ===== */
+.tv-queue-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border-top: 1px solid #CAC4D0;
+}
+.tv-queue-header {
+  padding: 12px 24px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.tv-queue-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #49454F;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tv-queue-title .material-symbols-outlined {
+  font-size: 18px;
+  color: #E9041E;
+}
+.tv-queue-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 13px;
+  color: #49454F;
+}
+.tv-queue-stats .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tv-queue-stats .material-symbols-outlined {
+  font-size: 16px;
+}
+.tv-queue-stats strong {
+  color: #1C1B1F;
+  font-weight: 600;
+}
+
+/* ===== QUEUE CARDS (horizontal row) ===== */
+.tv-queue-cards {
+  flex: 1;
+  padding: 0 24px 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+/* Individual Queue Card */
+.tv-queue-card {
+  flex: 1;
+  max-width: 160px;
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 12px 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #CAC4D0;
+}
+/* Top accent border */
+.tv-queue-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-accent, #9CA3AF);
+}
+/* First card highlight */
+.tv-queue-card:first-child {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
+  border-color: var(--card-accent, #9CA3AF);
+}
+.tv-queue-card:first-child::before {
+  height: 5px;
+}
+
+.tv-queue-position {
+  font-size: 10px;
+  font-weight: 500;
+  color: #49454F;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  margin-top: 2px;
+}
+.tv-queue-ticket {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--card-accent, #1C1B1F);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+/* SLA breach styling */
+.tv-queue-card.sla-breach {
+  border-color: #EF4444;
+}
+.tv-queue-card.sla-breach::before {
+  background: #EF4444;
+}
+.tv-queue-card.sla-breach .tv-queue-ticket {
+  color: #EF4444;
+}
+.tv-queue-card.sla-breach .tv-queue-wait {
+  color: #EF4444;
+  font-weight: 600;
+}
+
+.tv-queue-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.tv-queue-service-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #49454F;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+.tv-queue-wait {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: #49454F;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tv-queue-wait .material-symbols-outlined {
+  font-size: 10px;
+}
+
+/* More indicator card */
+.tv-queue-more-card {
+  flex: 0 0 60px;
+  background: transparent;
+  border: 2px dashed #CAC4D0;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #49454F;
+}
+.tv-queue-more-card .material-symbols-outlined {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+.tv-queue-more-card .more-count {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Empty queue state */
+.tv-queue-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #49454F;
+  gap: 8px;
+}
+.tv-queue-empty .material-symbols-outlined {
+  font-size: 40px;
+  opacity: 0.5;
+}
+.tv-queue-empty-text {
+  font-size: 14px;
+}
+
+/* ===== TRANSITIONS ===== */
+.fade-content {
+  transition: opacity 0.35s ease;
+}
+.fade-content.fading {
+  opacity: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== DEMO BADGE ===== -->
+<div class="demo-badge">DEMO</div>
+
+<!-- ===== PRESENTER NAVIGATION ===== -->
+<div class="presenter-nav" id="presenterNav">
+  <button class="nav-btn active" data-snap="0">14:00</button>
+  <button class="nav-btn" data-snap="1">14:10</button>
+  <button class="nav-btn" data-snap="2">14:15</button>
+  <button class="nav-btn" data-snap="3">14:30</button>
+  <button class="nav-btn" data-snap="4">14:45</button>
+  <button class="nav-btn" data-snap="5">15:00</button>
+  <div class="nav-label"><span id="navSnapshotLabel">Démarrage de la démo</span></div>
+  <div class="nav-hint">&#8592; &#8594; ou 1-6</div>
+</div>
+
+<!-- ===== TV SCREEN ===== -->
+<div class="tv-display">
+
+  <!-- Header (white, matches actual app) -->
+  <header class="tv-header">
+    <div class="tv-header-brand">
+      <!-- Inline UIB Logo SVG -->
+      <svg class="tv-header-logo" viewBox="0 0 120 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="48" height="24" fill="#E9041E"/>
+        <rect x="0" y="24" width="48" height="24" fill="#1A1A1A"/>
+        <text x="58" y="34" font-family="Inter, sans-serif" font-size="26" font-weight="700" fill="#1A1A1A">UIB</text>
+      </svg>
+      <span class="tv-header-branch" id="tvBranch">Agence Lac 2</span>
+    </div>
+    <div class="tv-header-time" id="tvClock">14:00</div>
+  </header>
+
+  <!-- Hero Section: 2/3 of vertical space -->
+  <div class="tv-hero-section">
+    <div class="tv-hero-counters fade-content" id="heroCounters">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Queue Section: 1/3 of vertical space -->
+  <div class="tv-queue-section">
+    <div class="tv-queue-header">
+      <div class="tv-queue-title">
+        <span class="material-symbols-outlined">schedule</span>
+        Prochains en file
+      </div>
+      <div class="tv-queue-stats" id="queueStats">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+    <div class="tv-queue-cards fade-content" id="queueCards">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script src="demo-data.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var currentStep = 0;
+  var totalSteps = 6;
+  var navBtns = document.querySelectorAll('.nav-btn');
+  var navLabel = document.getElementById('navSnapshotLabel');
+  var tvClock = document.getElementById('tvClock');
+  var heroCounters = document.getElementById('heroCounters');
+  var queueStats = document.getElementById('queueStats');
+  var queueCards = document.getElementById('queueCards');
+
+  var MAX_QUEUE_CARDS = 8;
+
+  // Service color mapping matching the actual app's MD3 design tokens
+  // Uses SG brand colors: Red for retrait, Black for releves, Rose for depot, etc.
+  var SERVICE_COLORS = {
+    retrait:      { accent: '#E9041E', bg: '#FDECEE' },
+    depot:        { accent: '#D66874', bg: '#FCE8EB' },
+    releves:      { accent: '#1A1A1A', bg: '#F5F5F5' },
+    consultation: { accent: '#7C3AED', bg: '#F3F0FF' },
+    virement:     { accent: '#059669', bg: '#ECFDF5' },
+    autres:       { accent: '#666666', bg: '#F9FAFB' }
+  };
+
+  function getAccent(serviceKey) {
+    return (SERVICE_COLORS[serviceKey] || SERVICE_COLORS.autres).accent;
+  }
+
+  function getTagBg(serviceKey) {
+    return (SERVICE_COLORS[serviceKey] || SERVICE_COLORS.autres).bg;
+  }
+
+  /** Simple HTML escape */
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /** Render hero counter cards (matches actual QueueDisplay.tsx design) */
+  function renderHeroCounters(snapshot) {
+    var counters = snapshot.counters;
+    var activeCounters = counters.filter(function(c) { return c.status === 'busy'; });
+
+    if (activeCounters.length === 0) {
+      heroCounters.innerHTML =
+        '<div class="tv-hero-empty">' +
+        '  <span class="material-symbols-outlined">hourglass_empty</span>' +
+        '  <div class="tv-hero-empty-text">En attente d\'appels</div>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < activeCounters.length; i++) {
+      var c = activeCounters[i];
+      var service = c.service ? DEMO_DATA.getService(c.service) : null;
+      var serviceKey = c.service || 'autres';
+      var accent = getAccent(serviceKey);
+      var tagBg = getTagBg(serviceKey);
+      var counterId = c.id.replace('G', '');
+      var shortLabel = service ? service.shortLabel : 'Service';
+      var icon = service ? service.icon : 'help_outline';
+
+      html += '<div class="tv-hero-card" style="--card-accent:' + accent + '; --tag-bg:' + tagBg + ';">';
+      html += '  <div class="counter-label">Guichet</div>';
+      html += '  <div class="counter-number">' + counterId + '</div>';
+      html += '  <div class="ticket-number">' + escapeHtml(c.ticket) + '</div>';
+      html += '  <span class="service-tag">';
+      html += '    <span class="material-symbols-outlined">' + icon + '</span>';
+      html += '    ' + escapeHtml(shortLabel);
+      html += '  </span>';
+      html += '</div>';
+    }
+
+    heroCounters.innerHTML = html;
+  }
+
+  /** Render queue stats */
+  function renderQueueStats(snapshot) {
+    var count = snapshot.waiting.length;
+    var avgServiceMins = 5;
+    var nextCallEst = count > 0 ? avgServiceMins : 0;
+
+    var html = '';
+    html += '<div class="stat-item">';
+    html += '  <span class="material-symbols-outlined">groups</span>';
+    html += '  <strong>' + count + '</strong> en attente';
+    html += '</div>';
+    html += '<div class="stat-item">';
+    html += '  <span class="material-symbols-outlined">avg_pace</span>';
+    html += '  Prochain appel: <strong>~' + nextCallEst + ' min</strong>';
+    html += '</div>';
+
+    queueStats.innerHTML = html;
+  }
+
+  /** Render queue cards (horizontal card layout matching actual app) */
+  function renderQueueCards(snapshot) {
+    var waiting = snapshot.waiting;
+    var count = waiting.length;
+
+    if (count === 0) {
+      queueCards.innerHTML =
+        '<div class="tv-queue-empty">' +
+        '  <span class="material-symbols-outlined">hourglass_empty</span>' +
+        '  <div class="tv-queue-empty-text">Aucun client en attente</div>' +
+        '</div>';
+      return;
+    }
+
+    var html = '';
+    var showCount = Math.min(count, MAX_QUEUE_CARDS);
+
+    for (var i = 0; i < showCount; i++) {
+      var w = waiting[i];
+      var service = DEMO_DATA.getService(w.service);
+      var serviceKey = w.service || 'autres';
+      var accent = getAccent(serviceKey);
+      var shortLabel = service ? service.shortLabel : 'Service';
+      var cardClass = 'tv-queue-card';
+      if (w.slaBreached) cardClass += ' sla-breach';
+
+      var waitDisplay;
+      if (w.waitMin < 1) {
+        waitDisplay = '< 1 min';
+      } else {
+        waitDisplay = Math.round(w.waitMin) + ' min';
+      }
+
+      html += '<div class="' + cardClass + '" style="--card-accent:' + accent + ';">';
+      html += '  <div class="tv-queue-position">Position ' + w.pos + '</div>';
+      html += '  <div class="tv-queue-ticket">' + escapeHtml(w.ticket) + '</div>';
+      html += '  <div class="tv-queue-card-footer">';
+      html += '    <span class="tv-queue-service-name">' + escapeHtml(shortLabel) + '</span>';
+      html += '    <div class="tv-queue-wait">';
+      html += '      <span class="material-symbols-outlined">schedule</span>';
+      html += '      ' + waitDisplay;
+      html += '    </div>';
+      html += '  </div>';
+      html += '</div>';
+    }
+
+    if (count > MAX_QUEUE_CARDS) {
+      html += '<div class="tv-queue-more-card">';
+      html += '  <span class="material-symbols-outlined">more_horiz</span>';
+      html += '  <span class="more-count">+' + (count - MAX_QUEUE_CARDS) + '</span>';
+      html += '</div>';
+    }
+
+    queueCards.innerHTML = html;
+  }
+
+  /** Update all sections for a given snapshot index */
+  function renderSnapshot(index) {
+    var snapshot = DEMO_DATA.snapshots[index];
+    if (!snapshot) return;
+
+    // Update clock
+    tvClock.textContent = snapshot.time;
+
+    // Update nav label
+    navLabel.textContent = snapshot.label;
+
+    // Render sections
+    renderHeroCounters(snapshot);
+    renderQueueStats(snapshot);
+    renderQueueCards(snapshot);
+  }
+
+  /** Navigate to a specific snapshot */
+  function goTo(index) {
+    if (index < 0 || index >= totalSteps) return;
+
+    // Update nav buttons
+    navBtns[currentStep].classList.remove('active');
+    navBtns[index].classList.add('active');
+
+    // Fade out content
+    var fadeElements = document.querySelectorAll('.fade-content');
+    fadeElements.forEach(function(el) { el.classList.add('fading'); });
+
+    currentStep = index;
+
+    // After fade out, update and fade in
+    setTimeout(function() {
+      renderSnapshot(currentStep);
+      fadeElements.forEach(function(el) { el.classList.remove('fading'); });
+    }, 200);
+  }
+
+  // ─── EVENT LISTENERS ──────────────────────────────────
+
+  // Click handlers for nav buttons
+  navBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(btn.getAttribute('data-snap'), 10);
+      goTo(idx);
+    });
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'Right') {
+      e.preventDefault();
+      goTo(currentStep + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      e.preventDefault();
+      goTo(currentStep - 1);
+    } else if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      goTo(parseInt(e.key, 10) - 1);
+    }
+  });
+
+  // ─── INITIALIZE ───────────────────────────────────────
+  renderSnapshot(0);
+
+})();
+</script>
+
+</body>
+</html>

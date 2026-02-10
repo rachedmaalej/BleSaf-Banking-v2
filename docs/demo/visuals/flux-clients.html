@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BléSaf — Flux Clients</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F3F4F6;
+    color: #1A1A1A;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Header */
+  .header {
+    background: #1A1A1A;
+    color: #fff;
+    padding: 32px 48px;
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .header h1 span { color: #E9041E; }
+  .header .subtitle {
+    font-size: 14px;
+    color: #9CA3AF;
+    font-weight: 400;
+  }
+
+  /* Main content */
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 48px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* Section card */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #E5E7EB;
+    padding: 28px 32px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #1A1A1A;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h2 .badge {
+    font-size: 11px;
+    font-weight: 500;
+    background: #F3F4F6;
+    color: #6B7280;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* SVG common */
+  svg text {
+    font-family: 'Inter', sans-serif;
+  }
+  .axis-label {
+    font-size: 11px;
+    fill: #9CA3AF;
+    font-weight: 400;
+  }
+  .axis-line {
+    stroke: #E5E7EB;
+    stroke-width: 1;
+  }
+  .grid-line {
+    stroke: #F3F4F6;
+    stroke-width: 1;
+  }
+
+  /* Timeline dots */
+  .dot {
+    cursor: pointer;
+    transition: r 0.15s ease, filter 0.15s ease;
+  }
+  .dot:hover {
+    filter: brightness(1.15) drop-shadow(0 0 4px rgba(0,0,0,0.25));
+  }
+  .vip-ring {
+    fill: none;
+    stroke: #F59E0B;
+    stroke-width: 2;
+    pointer-events: none;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    pointer-events: none;
+    background: #1A1A1A;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    white-space: nowrap;
+  }
+  .tooltip.visible { opacity: 1; }
+  .tooltip .ticket { color: #E9041E; font-weight: 600; }
+  .tooltip .vip-badge {
+    background: #F59E0B;
+    color: #1A1A1A;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 6px;
+  }
+
+  /* Gantt bars */
+  .gantt-bar {
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+  .gantt-bar:hover {
+    filter: brightness(1.1) drop-shadow(0 1px 3px rgba(0,0,0,0.2));
+  }
+  .gantt-bar text {
+    pointer-events: none;
+  }
+
+  /* Annotation line */
+  .annotation-line {
+    stroke: #9CA3AF;
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+  }
+  .annotation-text {
+    font-size: 10px;
+    fill: #6B7280;
+    font-weight: 500;
+  }
+  .annotation-peak {
+    font-size: 11px;
+    fill: #E9041E;
+    font-weight: 600;
+  }
+
+  /* Distribution bar */
+  .dist-segment {
+    transition: filter 0.15s ease;
+    cursor: pointer;
+  }
+  .dist-segment:hover {
+    filter: brightness(1.08);
+  }
+
+  /* Legend bar */
+  .legend-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #E5E7EB;
+    padding: 14px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    z-index: 50;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+  }
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .header { padding: 24px 20px; }
+    .content { padding: 20px 16px 120px; }
+    .card { padding: 20px; }
+    .legend-bar { padding: 12px 16px; gap: 16px; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>Blé</span>Saf &mdash; Flux Clients</h1>
+  <div class="subtitle">Simulation 60 minutes &nbsp;|&nbsp; Agence Lac 2, Tunis</div>
+</div>
+
+<div class="content">
+  <!-- Section 1: Timeline -->
+  <div class="card">
+    <h2>Timeline des Arriv&eacute;es <span class="badge">36 clients</span></h2>
+    <div id="timeline-container" style="overflow-x:auto;"></div>
+  </div>
+
+  <!-- Section 2: Courbe de Charge -->
+  <div class="card">
+    <h2>Courbe de Charge <span class="badge">Profondeur de file</span></h2>
+    <div id="charge-container"></div>
+  </div>
+
+  <!-- Section 3: Gantt -->
+  <div class="card">
+    <h2>Diagramme de Service <span class="badge">Guichets G1 &middot; G2 &middot; G3</span></h2>
+    <div id="gantt-container" style="overflow-x:auto;"></div>
+  </div>
+
+  <!-- Section 4: Distribution -->
+  <div class="card">
+    <h2>R&eacute;partition par Service <span class="badge">Total : 36</span></h2>
+    <div id="dist-container"></div>
+  </div>
+</div>
+
+<!-- Sticky Legend -->
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#E9041E"></div>Retrait</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1A1A1A"></div>Relev&eacute;s</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#D66874"></div>D&eacute;p&ocirc;t</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div>Pr&ecirc;ts</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#059669"></div>Change</div>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────
+const customers = [
+  { n:1,  time:'08:02', ticket:'A-001', service:'Retrait', name:'Amira Ben Salem',   priority:'normal' },
+  { n:2,  time:'08:04', ticket:'B-001', service:'Releves', name:'Mehdi Khelifi',     priority:'normal' },
+  { n:3,  time:'08:06', ticket:'A-002', service:'Retrait', name:'Sonia Mrad',        priority:'normal' },
+  { n:4,  time:'08:08', ticket:'C-001', service:'Depot',   name:'Karim Gharbi',      priority:'normal' },
+  { n:5,  time:'08:11', ticket:'A-003', service:'Retrait', name:'Imen Bouslama',     priority:'normal' },
+  { n:6,  time:'08:13', ticket:'E-001', service:'Change',  name:'Slim Bouazizi',     priority:'normal' },
+  { n:7,  time:'08:15', ticket:'B-002', service:'Releves', name:'Nadia Trabelsi',    priority:'normal' },
+  { n:8,  time:'08:16', ticket:'D-001', service:'Prets',   name:'Youssef Mansouri',  priority:'vip' },
+  { n:9,  time:'08:18', ticket:'A-004', service:'Retrait', name:'Hichem Ferjani',    priority:'normal' },
+  { n:10, time:'08:19', ticket:'A-005', service:'Retrait', name:'Rania Mejri',       priority:'normal' },
+  { n:11, time:'08:21', ticket:'C-002', service:'Depot',   name:'Walid Belhaj',      priority:'normal' },
+  { n:12, time:'08:23', ticket:'E-002', service:'Change',  name:'Fatma Cherif',      priority:'normal' },
+  { n:13, time:'08:24', ticket:'A-006', service:'Retrait', name:'Sami Tlili',        priority:'normal' },
+  { n:14, time:'08:26', ticket:'B-003', service:'Releves', name:'Olfa Chaabane',     priority:'normal' },
+  { n:15, time:'08:28', ticket:'A-007', service:'Retrait', name:'Ramzi Kammoun',     priority:'normal' },
+  { n:16, time:'08:30', ticket:'D-002', service:'Prets',   name:'Mounir Gasmi',      priority:'normal' },
+  { n:17, time:'08:31', ticket:'A-008', service:'Retrait', name:'Amel Ezzine',       priority:'normal' },
+  { n:18, time:'08:32', ticket:'C-003', service:'Depot',   name:'Ridha Oueslati',    priority:'normal' },
+  { n:19, time:'08:33', ticket:'B-004', service:'Releves', name:'Leila Ayari',       priority:'normal' },
+  { n:20, time:'08:34', ticket:'A-009', service:'Retrait', name:'Tarek Jaziri',      priority:'normal' },
+  { n:21, time:'08:35', ticket:'E-003', service:'Change',  name:'Mourad Sahli',      priority:'normal' },
+  { n:22, time:'08:36', ticket:'A-010', service:'Retrait', name:'Khaled Benayed',    priority:'normal' },
+  { n:23, time:'08:37', ticket:'C-004', service:'Depot',   name:'Ines Hammami',      priority:'normal' },
+  { n:24, time:'08:40', ticket:'A-011', service:'Retrait', name:'Habib Mejri',       priority:'normal' },
+  { n:25, time:'08:41', ticket:'B-005', service:'Releves', name:'Asma Laabidi',      priority:'normal' },
+  { n:26, time:'08:42', ticket:'D-003', service:'Prets',   name:'Hassan Dridi',      priority:'normal' },
+  { n:27, time:'08:43', ticket:'A-012', service:'Retrait', name:'Fathi Gharbi',      priority:'normal' },
+  { n:28, time:'08:44', ticket:'C-005', service:'Depot',   name:'Dalila Riahi',      priority:'normal' },
+  { n:29, time:'08:45', ticket:'E-004', service:'Change',  name:'Bilel Mtir',        priority:'normal' },
+  { n:30, time:'08:47', ticket:'A-013', service:'Retrait', name:'Zeineb Haddad',     priority:'normal' },
+  { n:31, time:'08:49', ticket:'B-006', service:'Releves', name:'Makrem Souissi',    priority:'normal' },
+  { n:32, time:'08:51', ticket:'A-014', service:'Retrait', name:'Adel Turki',        priority:'normal' },
+  { n:33, time:'08:53', ticket:'B-007', service:'Releves', name:'Salma Bouzid',      priority:'normal' },
+  { n:34, time:'08:55', ticket:'C-006', service:'Depot',   name:'Nizar Belkhodja',   priority:'normal' },
+  { n:35, time:'08:57', ticket:'D-004', service:'Prets',   name:'Rachid Ammar',      priority:'normal' },
+  { n:36, time:'08:59', ticket:'A-015', service:'Retrait', name:'Houda Saidi',       priority:'normal' },
+];
+
+const queueDepth = [
+  { time:'08:00', depth:0 },
+  { time:'08:05', depth:1 },
+  { time:'08:10', depth:3 },
+  { time:'08:15', depth:4 },
+  { time:'08:20', depth:6 },
+  { time:'08:25', depth:7 },
+  { time:'08:30', depth:8 },
+  { time:'08:35', depth:10 },
+  { time:'08:40', depth:11 },
+  { time:'08:45', depth:9 },
+  { time:'08:50', depth:7 },
+  { time:'08:55', depth:5 },
+  { time:'09:00', depth:2 },
+];
+
+const serviceColors = {
+  'Retrait': '#E9041E',
+  'Releves': '#1A1A1A',
+  'Depot':   '#D66874',
+  'Prets':   '#3B82F6',
+  'Change':  '#059669',
+};
+
+const serviceLabels = {
+  'Retrait': 'Retrait',
+  'Releves': 'Relev\u00e9s',
+  'Depot':   'D\u00e9p\u00f4t',
+  'Prets':   'Pr\u00eats',
+  'Change':  'Change',
+};
+
+// ─── HELPERS ───────────────────────────────────────────────────
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return (h - 8) * 60 + m;
+}
+
+function createSVG(w, h) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.style.display = 'block';
+  return svg;
+}
+
+function el(tag, attrs, text) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs || {})) e.setAttribute(k, v);
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+
+const tooltip = document.getElementById('tooltip');
+function showTooltip(evt, html) {
+  tooltip.innerHTML = html;
+  tooltip.classList.add('visible');
+  const rect = tooltip.getBoundingClientRect();
+  let x = evt.clientX + 12;
+  let y = evt.clientY - 10;
+  if (x + rect.width > window.innerWidth - 12) x = evt.clientX - rect.width - 12;
+  if (y + rect.height > window.innerHeight - 12) y = evt.clientY - rect.height - 10;
+  if (y < 8) y = 8;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+function hideTooltip() { tooltip.classList.remove('visible'); }
+
+// ─── SECTION 1: TIMELINE ──────────────────────────────────────
+(function drawTimeline() {
+  const W = 1100, H = 200;
+  const ml = 50, mr = 30, mt = 30, mb = 40;
+  const plotW = W - ml - mr;
+  const plotH = H - mt - mb;
+
+  const svg = createSVG(W, H);
+
+  // X scale: 0..60 min
+  function xScale(min) { return ml + (min / 60) * plotW; }
+
+  // Axis
+  svg.appendChild(el('line', { x1: ml, y1: H - mb, x2: W - mr, y2: H - mb, class: 'axis-line' }));
+
+  // Ticks every 5 min
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    svg.appendChild(el('line', { x1: x, y1: H - mb, x2: x, y2: H - mb + 6, stroke: '#9CA3AF', 'stroke-width': 1 }));
+    const hh = 8 + Math.floor(m / 60);
+    const mm = m % 60;
+    const label = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+    svg.appendChild(el('text', { x: x, y: H - mb + 20, 'text-anchor': 'middle', class: 'axis-label' }, label));
+  }
+
+  // Grid lines
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    svg.appendChild(el('line', { x1: x, y1: mt, x2: x, y2: H - mb, class: 'grid-line' }));
+  }
+
+  // Stack dots at close times
+  const slots = {};
+  customers.forEach(c => {
+    const min = timeToMinutes(c.time);
+    const key = Math.round(min);
+    if (!slots[key]) slots[key] = [];
+    slots[key].push(c);
+  });
+
+  const dotR = 7;
+  const dotSpacing = 18;
+
+  Object.entries(slots).forEach(([key, group]) => {
+    const min = Number(key);
+    const x = xScale(min);
+    group.forEach((c, i) => {
+      const y = (H - mb - 12) - i * dotSpacing;
+      const color = serviceColors[c.service];
+
+      const dot = el('circle', {
+        cx: x, cy: y, r: dotR,
+        fill: color,
+        class: 'dot',
+      });
+
+      // VIP ring
+      if (c.priority === 'vip') {
+        const ring = el('circle', { cx: x, cy: y, r: dotR + 3, class: 'vip-ring' });
+        svg.appendChild(ring);
+      }
+
+      dot.addEventListener('mouseenter', e => {
+        dot.setAttribute('r', dotR + 2);
+        const vipTag = c.priority === 'vip' ? '<span class="vip-badge">VIP</span>' : '';
+        showTooltip(e,
+          `<span class="ticket">${c.ticket}</span>${vipTag}<br>${c.name}<br>${serviceLabels[c.service]} &mdash; ${c.time}`
+        );
+      });
+      dot.addEventListener('mousemove', e => {
+        const vipTag = c.priority === 'vip' ? '<span class="vip-badge">VIP</span>' : '';
+        showTooltip(e,
+          `<span class="ticket">${c.ticket}</span>${vipTag}<br>${c.name}<br>${serviceLabels[c.service]} &mdash; ${c.time}`
+        );
+      });
+      dot.addEventListener('mouseleave', () => { dot.setAttribute('r', dotR); hideTooltip(); });
+
+      svg.appendChild(dot);
+    });
+  });
+
+  document.getElementById('timeline-container').appendChild(svg);
+})();
+
+// ─── SECTION 2: COURBE DE CHARGE ──────────────────────────────
+(function drawCharge() {
+  const W = 1100, H = 320;
+  const ml = 50, mr = 30, mt = 30, mb = 40;
+  const plotW = W - ml - mr;
+  const plotH = H - mt - mb;
+  const maxY = 13;
+
+  const svg = createSVG(W, H);
+
+  function xScale(min) { return ml + (min / 60) * plotW; }
+  function yScale(v) { return mt + plotH - (v / maxY) * plotH; }
+
+  // Horizontal grid
+  for (let v = 0; v <= 12; v += 2) {
+    const y = yScale(v);
+    svg.appendChild(el('line', { x1: ml, y1: y, x2: W - mr, y2: y, class: 'grid-line' }));
+    svg.appendChild(el('text', { x: ml - 10, y: y + 4, 'text-anchor': 'end', class: 'axis-label' }, String(v)));
+  }
+
+  // Vertical grid
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    svg.appendChild(el('line', { x1: x, y1: mt, x2: x, y2: H - mb, class: 'grid-line' }));
+  }
+
+  // Axes
+  svg.appendChild(el('line', { x1: ml, y1: H - mb, x2: W - mr, y2: H - mb, class: 'axis-line' }));
+  svg.appendChild(el('line', { x1: ml, y1: mt, x2: ml, y2: H - mb, class: 'axis-line' }));
+
+  // X ticks
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    const hh = 8 + Math.floor(m / 60);
+    const mm = m % 60;
+    const label = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+    svg.appendChild(el('text', { x: x, y: H - mb + 20, 'text-anchor': 'middle', class: 'axis-label' }, label));
+  }
+
+  // Y-axis label
+  const yLabel = el('text', { x: 14, y: mt + plotH / 2, 'text-anchor': 'middle', class: 'axis-label', transform: `rotate(-90, 14, ${mt + plotH / 2})` }, 'Clients en attente');
+  svg.appendChild(yLabel);
+
+  // Build area path
+  const points = queueDepth.map(d => {
+    const min = timeToMinutes(d.time);
+    return { x: xScale(min), y: yScale(d.depth) };
+  });
+
+  // Smooth curve using monotone cubic interpolation
+  function monotonePath(pts) {
+    if (pts.length < 2) return '';
+    const n = pts.length;
+    // Compute tangents
+    const dx = [], dy = [], m = [];
+    for (let i = 0; i < n - 1; i++) {
+      dx[i] = pts[i + 1].x - pts[i].x;
+      dy[i] = pts[i + 1].y - pts[i].y;
+      m[i] = dy[i] / dx[i];
+    }
+    const tangent = [m[0]];
+    for (let i = 1; i < n - 1; i++) {
+      if (m[i - 1] * m[i] <= 0) tangent[i] = 0;
+      else tangent[i] = (m[i - 1] + m[i]) / 2;
+    }
+    tangent[n - 1] = m[n - 2];
+
+    let path = `M${pts[0].x},${pts[0].y}`;
+    for (let i = 0; i < n - 1; i++) {
+      const d = dx[i] / 3;
+      path += ` C${pts[i].x + d},${pts[i].y + tangent[i] * d} ${pts[i + 1].x - d},${pts[i + 1].y - tangent[i + 1] * d} ${pts[i + 1].x},${pts[i + 1].y}`;
+    }
+    return path;
+  }
+
+  const curvePath = monotonePath(points);
+  const areaPath = curvePath + ` L${points[points.length - 1].x},${yScale(0)} L${points[0].x},${yScale(0)} Z`;
+
+  // Gradient
+  const defs = el('defs', {});
+  const grad = el('linearGradient', { id: 'chargeGrad', x1: '0', y1: '0', x2: '0', y2: '1' });
+  grad.appendChild(el('stop', { offset: '0%', 'stop-color': '#E9041E', 'stop-opacity': '0.25' }));
+  grad.appendChild(el('stop', { offset: '100%', 'stop-color': '#E9041E', 'stop-opacity': '0.03' }));
+  defs.appendChild(grad);
+  svg.appendChild(defs);
+
+  svg.appendChild(el('path', { d: areaPath, fill: 'url(#chargeGrad)' }));
+  svg.appendChild(el('path', { d: curvePath, fill: 'none', stroke: '#E9041E', 'stroke-width': 2.5, 'stroke-linejoin': 'round' }));
+
+  // Data points
+  points.forEach((p, i) => {
+    const circle = el('circle', { cx: p.x, cy: p.y, r: 4, fill: '#E9041E', stroke: '#fff', 'stroke-width': 2, style: 'cursor:pointer' });
+    circle.addEventListener('mouseenter', e => {
+      circle.setAttribute('r', 6);
+      showTooltip(e, `<strong>${queueDepth[i].time}</strong><br>${queueDepth[i].depth} clients en attente`);
+    });
+    circle.addEventListener('mousemove', e => showTooltip(e, `<strong>${queueDepth[i].time}</strong><br>${queueDepth[i].depth} clients en attente`));
+    circle.addEventListener('mouseleave', () => { circle.setAttribute('r', 4); hideTooltip(); });
+    svg.appendChild(circle);
+  });
+
+  // Annotations
+  const annotations = [
+    { time: '08:16', label: 'VIP Mansouri', above: true },
+    { time: '08:25', label: 'No-show Slim', above: true },
+    { time: '08:38', label: 'Ouverture G3', above: false },
+    { time: '08:40', label: 'Pause G2', above: true },
+    { time: '08:55', label: 'Fin pause G2', above: false },
+  ];
+
+  annotations.forEach(a => {
+    const min = timeToMinutes(a.time);
+    const x = xScale(min);
+    // Interpolate depth
+    let depth = 0;
+    for (let i = 0; i < queueDepth.length - 1; i++) {
+      const m1 = timeToMinutes(queueDepth[i].time);
+      const m2 = timeToMinutes(queueDepth[i + 1].time);
+      if (min >= m1 && min <= m2) {
+        const t = (min - m1) / (m2 - m1);
+        depth = queueDepth[i].depth + t * (queueDepth[i + 1].depth - queueDepth[i].depth);
+        break;
+      }
+    }
+    const yPt = yScale(depth);
+    const yText = a.above ? yPt - 24 : yPt + 28;
+    svg.appendChild(el('line', { x1: x, y1: yPt - 10, x2: x, y2: yPt + 10, class: 'annotation-line' }));
+    svg.appendChild(el('text', { x: x, y: yText, 'text-anchor': 'middle', class: 'annotation-text' }, a.label));
+  });
+
+  // Peak annotation
+  const peakMin = timeToMinutes('08:40');
+  const peakX = xScale(peakMin);
+  const peakY = yScale(11);
+  svg.appendChild(el('text', { x: peakX + 8, y: peakY - 14, 'text-anchor': 'start', class: 'annotation-peak' }, 'Pic : 11 clients'));
+
+  document.getElementById('charge-container').appendChild(svg);
+})();
+
+// ─── SECTION 3: GANTT ─────────────────────────────────────────
+(function drawGantt() {
+  const W = 1100, H = 200;
+  const ml = 50, mr = 30, mt = 20, mb = 40;
+  const plotW = W - ml - mr;
+  const laneH = 40;
+  const barH = 28;
+  const lanes = ['G1', 'G2', 'G3'];
+
+  const svg = createSVG(W, H);
+
+  function xScale(min) { return ml + (min / 60) * plotW; }
+
+  // Build Gantt assignments
+  // G1: always active, G2: active but break 40-55, G3: starts at 38
+  const ganttData = [
+    // G1 assignments
+    { g:'G1', ticket:'A-001', service:'Retrait', start:'08:02', end:'08:07' },
+    { g:'G1', ticket:'A-002', service:'Retrait', start:'08:07', end:'08:12' },
+    { g:'G1', ticket:'A-003', service:'Retrait', start:'08:12', end:'08:17' },
+    { g:'G1', ticket:'D-001', service:'Prets',   start:'08:17', end:'08:28' },
+    { g:'G1', ticket:'A-006', service:'Retrait', start:'08:28', end:'08:33' },
+    { g:'G1', ticket:'A-008', service:'Retrait', start:'08:33', end:'08:38' },
+    { g:'G1', ticket:'A-009', service:'Retrait', start:'08:38', end:'08:43' },
+    { g:'G1', ticket:'D-003', service:'Prets',   start:'08:43', end:'08:53' },
+    { g:'G1', ticket:'A-014', service:'Retrait', start:'08:53', end:'08:58' },
+    // G2 assignments
+    { g:'G2', ticket:'B-001', service:'Releves', start:'08:04', end:'08:10' },
+    { g:'G2', ticket:'C-001', service:'Depot',   start:'08:10', end:'08:16' },
+    { g:'G2', ticket:'E-001', service:'Change',  start:'08:16', end:'08:22' },
+    { g:'G2', ticket:'B-002', service:'Releves', start:'08:22', end:'08:28' },
+    { g:'G2', ticket:'B-003', service:'Releves', start:'08:28', end:'08:34' },
+    { g:'G2', ticket:'B-004', service:'Releves', start:'08:34', end:'08:40' },
+    // G2 break 08:40 - 08:55
+    { g:'G2', ticket:'C-006', service:'Depot',   start:'08:55', end:'09:00' },
+    // G3 assignments (opens at 08:38)
+    { g:'G3', ticket:'A-010', service:'Retrait', start:'08:38', end:'08:42' },
+    { g:'G3', ticket:'C-004', service:'Depot',   start:'08:42', end:'08:47' },
+    { g:'G3', ticket:'E-003', service:'Change',  start:'08:47', end:'08:52' },
+    { g:'G3', ticket:'A-012', service:'Retrait', start:'08:52', end:'08:56' },
+    { g:'G3', ticket:'D-004', service:'Prets',   start:'08:56', end:'09:00' },
+  ];
+
+  // Vertical grid
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    svg.appendChild(el('line', { x1: x, y1: mt, x2: x, y2: H - mb, class: 'grid-line' }));
+  }
+
+  // X axis
+  svg.appendChild(el('line', { x1: ml, y1: H - mb, x2: W - mr, y2: H - mb, class: 'axis-line' }));
+  for (let m = 0; m <= 60; m += 5) {
+    const x = xScale(m);
+    const hh = 8 + Math.floor(m / 60);
+    const mm = m % 60;
+    svg.appendChild(el('text', { x: x, y: H - mb + 20, 'text-anchor': 'middle', class: 'axis-label' }, `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`));
+  }
+
+  // Lane labels and backgrounds
+  lanes.forEach((lane, i) => {
+    const y = mt + i * laneH;
+    // Alternate bg
+    if (i % 2 === 0) {
+      svg.appendChild(el('rect', { x: ml, y: y, width: plotW, height: laneH, fill: '#FAFAFA' }));
+    }
+    svg.appendChild(el('text', { x: ml - 10, y: y + laneH / 2 + 4, 'text-anchor': 'end', 'font-size': '13', 'font-weight': '600', fill: '#374151' }, lane));
+  });
+
+  // G2 break block
+  const breakStart = xScale(timeToMinutes('08:40'));
+  const breakEnd = xScale(timeToMinutes('08:55'));
+  const g2Y = mt + 1 * laneH;
+  svg.appendChild(el('rect', {
+    x: breakStart, y: g2Y + (laneH - barH) / 2,
+    width: breakEnd - breakStart, height: barH,
+    rx: 4, fill: '#FEF3C7', stroke: '#F59E0B', 'stroke-width': 1, 'stroke-dasharray': '4 2'
+  }));
+  svg.appendChild(el('text', {
+    x: (breakStart + breakEnd) / 2, y: g2Y + laneH / 2 + 4,
+    'text-anchor': 'middle', 'font-size': '10', fill: '#B45309', 'font-weight': '500'
+  }, 'Pause pri\u00e8re'));
+
+  // G3 closed block (before 08:38)
+  const g3OpenX = xScale(timeToMinutes('08:38'));
+  const g3Y = mt + 2 * laneH;
+  svg.appendChild(el('rect', {
+    x: ml, y: g3Y + (laneH - barH) / 2,
+    width: g3OpenX - ml, height: barH,
+    rx: 4, fill: '#F3F4F6', stroke: '#D1D5DB', 'stroke-width': 1, 'stroke-dasharray': '4 2'
+  }));
+  svg.appendChild(el('text', {
+    x: ml + (g3OpenX - ml) / 2, y: g3Y + laneH / 2 + 4,
+    'text-anchor': 'middle', 'font-size': '10', fill: '#9CA3AF', 'font-weight': '500'
+  }, 'Ferm\u00e9'));
+
+  // Draw bars
+  ganttData.forEach(d => {
+    const laneIdx = lanes.indexOf(d.g);
+    const y = mt + laneIdx * laneH + (laneH - barH) / 2;
+    const x1 = xScale(timeToMinutes(d.start));
+    const x2 = xScale(timeToMinutes(d.end));
+    const w = x2 - x1;
+    const color = serviceColors[d.service];
+
+    const g = el('g', { class: 'gantt-bar' });
+
+    g.appendChild(el('rect', { x: x1, y: y, width: w, height: barH, rx: 4, fill: color }));
+
+    // Ticket label if bar is wide enough
+    if (w > 32) {
+      const textColor = d.service === 'Releves' ? '#fff' : (d.service === 'Depot' ? '#fff' : '#fff');
+      g.appendChild(el('text', {
+        x: x1 + w / 2, y: y + barH / 2 + 4,
+        'text-anchor': 'middle', 'font-size': '9', 'font-weight': '600',
+        fill: textColor
+      }, d.ticket));
+    }
+
+    g.addEventListener('mouseenter', e => {
+      showTooltip(e, `<span class="ticket">${d.ticket}</span><br>${serviceLabels[d.service]}<br>${d.start} \u2192 ${d.end} &mdash; ${d.g}`);
+    });
+    g.addEventListener('mousemove', e => {
+      showTooltip(e, `<span class="ticket">${d.ticket}</span><br>${serviceLabels[d.service]}<br>${d.start} \u2192 ${d.end} &mdash; ${d.g}`);
+    });
+    g.addEventListener('mouseleave', hideTooltip);
+
+    svg.appendChild(g);
+  });
+
+  document.getElementById('gantt-container').appendChild(svg);
+})();
+
+// ─── SECTION 4: REPARTITION ───────────────────────────────────
+(function drawDistribution() {
+  const W = 1100, H = 100;
+  const ml = 50, mr = 30, mt = 10, mb = 30;
+  const barW = W - ml - mr;
+  const barH = 40;
+  const barY = mt;
+
+  const svg = createSVG(W, H);
+
+  const services = [
+    { key: 'Retrait', count: 15 },
+    { key: 'Releves', count: 7 },
+    { key: 'Depot',   count: 6 },
+    { key: 'Prets',   count: 4 },
+    { key: 'Change',  count: 4 },
+  ];
+  const total = 36;
+
+  // Clip path for rounded ends on the stacked bar
+  const defs = el('defs', {});
+  const clip = el('clipPath', { id: 'distBarClip' });
+  clip.appendChild(el('rect', { x: ml, y: barY, width: barW, height: barH, rx: 6 }));
+  defs.appendChild(clip);
+  svg.appendChild(defs);
+
+  // Clipped group for bar segments + inside labels
+  const clipGroup = el('g', { 'clip-path': 'url(#distBarClip)' });
+  svg.appendChild(clipGroup);
+
+  let xOffset = ml;
+
+  services.forEach(s => {
+    const w = (s.count / total) * barW;
+    const color = serviceColors[s.key];
+    const pct = Math.round(s.count / total * 100);
+
+    const rect = el('rect', {
+      x: xOffset, y: barY, width: w, height: barH,
+      fill: color, class: 'dist-segment'
+    });
+
+    rect.addEventListener('mouseenter', e => showTooltip(e, `<strong>${serviceLabels[s.key]}</strong><br>${s.count} clients (${pct}%)`));
+    rect.addEventListener('mousemove', e => showTooltip(e, `<strong>${serviceLabels[s.key]}</strong><br>${s.count} clients (${pct}%)`));
+    rect.addEventListener('mouseleave', hideTooltip);
+
+    clipGroup.appendChild(rect);
+
+    // Label inside if bar is wide enough
+    if (w > 60) {
+      clipGroup.appendChild(el('text', {
+        x: xOffset + w / 2, y: barY + barH / 2 + 5,
+        'text-anchor': 'middle', 'font-size': '12', 'font-weight': '600', fill: '#fff',
+        style: 'pointer-events:none'
+      }, `${s.count} (${pct}%)`));
+    }
+
+    // Label below (outside clip, always visible)
+    svg.appendChild(el('text', {
+      x: xOffset + w / 2, y: barY + barH + 18,
+      'text-anchor': 'middle', 'font-size': '11', 'font-weight': '500', fill: '#6B7280',
+      style: 'pointer-events:none'
+    }, serviceLabels[s.key]));
+
+    xOffset += w;
+  });
+
+  document.getElementById('dist-container').appendChild(svg);
+})();
+</script>
+</body>
+</html>

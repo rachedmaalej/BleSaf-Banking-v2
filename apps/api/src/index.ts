@@ -11,6 +11,7 @@ import { AppError } from './lib/errors';
 import { setupSocketIO } from './socket';
 
 // Import routes
+import cron from 'node-cron';
 import authRoutes from './routes/auth';
 import queueRoutes from './routes/queue';
 import adminRoutes from './routes/admin';
@@ -223,6 +224,18 @@ async function start() {
     // Initialize schedule service (auto queue open/close)
     await scheduleService.initialize();
     logger.info('Schedule service initialized');
+
+    // Cleanup expired refresh tokens daily at 2:00 AM
+    cron.schedule('0 2 * * *', async () => {
+      try {
+        const { authService } = await import('./services/authService');
+        const count = await authService.cleanupExpiredTokens();
+        logger.info({ count }, 'Token cleanup completed');
+      } catch (err) {
+        logger.error({ err }, 'Token cleanup failed');
+      }
+    });
+    logger.info('Token cleanup cron scheduled (daily 2:00 AM)');
 
     // Start HTTP server
     httpServer.listen(config.PORT, () => {

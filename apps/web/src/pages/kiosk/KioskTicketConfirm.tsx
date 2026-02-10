@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { QRCodeSVG } from 'qrcode.react';
@@ -81,9 +81,11 @@ export default function KioskTicketConfirm() {
     }
   }, [serviceId, branchId, navigate]);
 
-  // Create ticket immediately on mount
+  // Create ticket immediately on mount (ref guard prevents StrictMode double-fire)
+  const checkinFired = useRef(false);
   useEffect(() => {
-    if (!serviceId) return;
+    if (!serviceId || checkinFired.current) return;
+    checkinFired.current = true;
 
     const createTicket = async () => {
       try {

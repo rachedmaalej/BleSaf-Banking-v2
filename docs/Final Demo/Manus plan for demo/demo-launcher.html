@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BléSaf — Demo Launcher</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+      min-height: 100vh;
+      color: #1A1A1A;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      text-align: center;
+      padding: 48px 0 32px;
+      opacity: 0;
+      animation: fadeInDown 0.6s ease forwards;
+    }
+
+    .header h1 {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #1A1A1A;
+    }
+
+    .header h1 span {
+      color: #E9041E;
+    }
+
+    .header .subtitle {
+      font-size: 18px;
+      color: #6B7280;
+      font-weight: 400;
+      margin-top: 8px;
+    }
+
+    .header .accent-line {
+      width: 80px;
+      height: 4px;
+      background: #E9041E;
+      margin: 20px auto 0;
+      border-radius: 2px;
+    }
+
+    .header .demo-date {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #9CA3AF;
+      font-weight: 500;
+    }
+
+    /* ===== TIMER SECTION ===== */
+    .timer-section {
+      text-align: center;
+      padding: 48px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.15s forwards;
+    }
+
+    .timer-display {
+      font-size: 80px;
+      font-weight: 700;
+      font-family: 'Inter', monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 4px;
+      color: #10B981;
+      transition: color 0.5s ease;
+      user-select: none;
+    }
+
+    .timer-display.amber {
+      color: #F59E0B;
+    }
+
+    .timer-display.red {
+      color: #EF4444;
+    }
+
+    .timer-display.pulse {
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-start {
+      background: #E9041E;
+      color: #fff;
+    }
+
+    .btn-pause {
+      background: #F59E0B;
+      color: #fff;
+      display: none;
+    }
+
+    .btn-reset {
+      background: #E5E7EB;
+      color: #6B7280;
+      padding: 12px 24px;
+      font-size: 14px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      max-width: 480px;
+      height: 6px;
+      background: #E5E7EB;
+      border-radius: 3px;
+      margin: 20px auto 0;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #10B981;
+      border-radius: 3px;
+      transition: width 1s linear, background 0.5s ease;
+    }
+
+    .progress-bar-fill.amber {
+      background: #F59E0B;
+    }
+
+    .progress-bar-fill.red {
+      background: #EF4444;
+    }
+
+    /* ===== SECTION TITLES ===== */
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title .material-symbols-outlined {
+      font-size: 28px;
+      color: #E9041E;
+    }
+
+    /* ===== MOCKUP GRID ===== */
+    .mockups-section {
+      padding: 40px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.3s forwards;
+    }
+
+    .mockup-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .mockup-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .mockup-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .mockup-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+      padding: 24px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mockup-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .mockup-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .mockup-card .card-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .mockup-card .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .mockup-card .card-desc {
+      font-size: 12px;
+      color: #6B7280;
+      margin-bottom: 16px;
+      flex: 1;
+    }
+
+    .mockup-card .card-link {
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Card-specific colors */
+    .mockup-card[data-color="blue"]::before { background: #2563EB; }
+    .mockup-card[data-color="blue"] .card-icon { color: #2563EB; }
+    .mockup-card[data-color="blue"] .card-link { color: #2563EB; }
+
+    .mockup-card[data-color="purple"]::before { background: #7C3AED; }
+    .mockup-card[data-color="purple"] .card-icon { color: #7C3AED; }
+    .mockup-card[data-color="purple"] .card-link { color: #7C3AED; }
+
+    .mockup-card[data-color="green"]::before { background: #059669; }
+    .mockup-card[data-color="green"] .card-icon { color: #059669; }
+    .mockup-card[data-color="green"] .card-link { color: #059669; }
+
+    .mockup-card[data-color="red"]::before { background: #E9041E; }
+    .mockup-card[data-color="red"] .card-icon { color: #E9041E; }
+    .mockup-card[data-color="red"] .card-link { color: #E9041E; }
+
+    .mockup-card[data-color="black"]::before { background: #1A1A1A; }
+    .mockup-card[data-color="black"] .card-icon { color: #1A1A1A; }
+    .mockup-card[data-color="black"] .card-link { color: #1A1A1A; }
+
+    /* ===== TIMELINE / AGENDA ===== */
+    .timeline-section {
+      padding: 40px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.45s forwards;
+    }
+
+    .acts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .acts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .act-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      padding: 24px;
+      border-left: 4px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .act-card.active {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      transform: scale(1.02);
+    }
+
+    .act-card[data-act="1"] { border-left-color: #2563EB; }
+    .act-card[data-act="1"].active { background: #EFF6FF; }
+
+    .act-card[data-act="2"] { border-left-color: #E9041E; }
+    .act-card[data-act="2"].active { background: #FEF2F2; }
+
+    .act-card[data-act="3"] { border-left-color: #1A1A1A; }
+    .act-card[data-act="3"].active { background: #F3F4F6; }
+
+    .act-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .act-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .act-card[data-act="1"] .act-number { background: #2563EB; }
+    .act-card[data-act="2"] .act-number { background: #E9041E; }
+    .act-card[data-act="3"] .act-number { background: #1A1A1A; }
+
+    .act-header-text h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .act-header-text .act-time-range {
+      font-size: 12px;
+      color: #9CA3AF;
+      font-weight: 500;
+    }
+
+    .act-header .material-symbols-outlined {
+      font-size: 24px;
+      margin-left: auto;
+    }
+
+    .act-card[data-act="1"] .act-header .material-symbols-outlined { color: #2563EB; }
+    .act-card[data-act="2"] .act-header .material-symbols-outlined { color: #E9041E; }
+    .act-card[data-act="3"] .act-header .material-symbols-outlined { color: #1A1A1A; }
+
+    .checkpoint-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .checkpoint {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .checkpoint-time {
+      font-weight: 600;
+      color: #6B7280;
+      white-space: nowrap;
+      min-width: 36px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .checkpoint-text {
+      color: #374151;
+    }
+
+    .checkpoint-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #D1D5DB;
+      margin-top: 6px;
+      flex-shrink: 0;
+      transition: background 0.3s ease;
+    }
+
+    .act-card[data-act="1"] .checkpoint-dot { background: #93C5FD; }
+    .act-card[data-act="2"] .checkpoint-dot { background: #D66874; }
+    .act-card[data-act="3"] .checkpoint-dot { background: #9CA3AF; }
+
+    .act-card.active .checkpoint-dot {
+      animation: dotPulse 2s ease infinite;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ===== COLLAPSIBLE SECTIONS ===== */
+    .collapsible-section {
+      padding: 20px 0;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.6s forwards;
+    }
+
+    .collapsible-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 16px 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    .collapsible-header:hover {
+      background: #F9FAFB;
+    }
+
+    .collapsible-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      flex: 1;
+    }
+
+    .collapsible-header .material-symbols-outlined {
+      color: #E9041E;
+    }
+
+    .collapsible-header .toggle-icon {
+      color: #9CA3AF;
+      transition: transform 0.3s ease;
+    }
+
+    .collapsible-header.open .toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .collapsible-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .collapsible-body.open {
+      max-height: 1000px;
+    }
+
+    .collapsible-content {
+      padding: 20px;
+      background: #fff;
+      border-radius: 0 0 12px 12px;
+      margin-top: -4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    /* ===== CREDENTIALS TABLE ===== */
+    .cred-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .cred-table th {
+      text-align: left;
+      padding: 10px 14px;
+      background: #F3F4F6;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6B7280;
+    }
+
+    .cred-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #F3F4F6;
+    }
+
+    .cred-table td code {
+      background: #F3F4F6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: 'Inter', monospace;
+    }
+
+    .cred-urls {
+      margin-top: 16px;
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .cred-urls span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cred-urls code {
+      background: #F3F4F6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Inter', monospace;
+    }
+
+    /* ===== VISUALIZATIONS GRID ===== */
+    .viz-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .viz-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .viz-card {
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .viz-card:hover {
+      background: #fff;
+      border-color: #E9041E;
+      box-shadow: 0 2px 8px rgba(233, 4, 30, 0.08);
+    }
+
+    .viz-card .material-symbols-outlined {
+      font-size: 32px;
+      color: #E9041E;
+    }
+
+    .viz-card .viz-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      word-break: break-all;
+    }
+
+    .viz-card .viz-open {
+      font-size: 12px;
+      font-weight: 600;
+      color: #E9041E;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      text-align: center;
+      padding: 40px 0;
+      border-top: 1px solid #E5E7EB;
+      margin-top: 40px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 0.75s forwards;
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: #9CA3AF;
+    }
+
+    .footer p:first-child {
+      font-weight: 600;
+      color: #6B7280;
+      margin-bottom: 4px;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== PRINT STYLES ===== */
+    @media print {
+      .timer-section,
+      .timer-controls,
+      .progress-bar-container,
+      .collapsible-header .toggle-icon {
+        display: none !important;
+      }
+
+      .collapsible-body {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .mockup-card:hover,
+      .act-card.active {
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      body {
+        background: #fff !important;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      .mockup-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .acts-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      * {
+        opacity: 1 !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <h1>Blé<span>Saf</span> — Demo Launcher</h1>
+      <p class="subtitle">Système de Gestion de File d'Attente Bancaire</p>
+      <div class="accent-line"></div>
+      <p class="demo-date">26 Octobre 2024</p>
+    </header>
+
+    <!-- ===== TIMER ===== -->
+    <section class="timer-section">
+      <div class="timer-display" id="timerDisplay">30:00</div>
+      <div class="timer-controls">
+        <button class="btn btn-start" id="btnStart" onclick="startTimer()">
+          <span class="material-symbols-outlined">play_arrow</span>
+          Démarrer
+        </button>
+        <button class="btn btn-pause" id="btnPause" onclick="pauseTimer()">
+          <span class="material-symbols-outlined">pause</span>
+          Pause
+        </button>
+        <button class="btn btn-reset" id="btnReset" onclick="resetTimer()">
+          <span class="material-symbols-outlined">refresh</span>
+          Réinitialiser
+        </button>
+      </div>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </section>
+
+    <!-- ===== SCREEN MOCKUPS ===== -->
+    <section class="mockups-section">
+      <h2 class="section-title">
+        <span class="material-symbols-outlined">devices</span>
+        Écrans de la Démo
+      </h2>
+      <div class="mockup-grid">
+
+        <a class="mockup-card" data-color="blue" href="kiosk-mockup.html" target="_blank">
+          <span class="material-symbols-outlined card-icon">touch_app</span>
+          <div class="card-title">Borne Client</div>
+          <div class="card-desc">Simulation de la borne libre-service</div>
+          <span class="card-link">Ouvrir <span>&rarr;</span></span>
+        </a>
+
+        <a class="mockup-card" data-color="purple" href="tv-display-mockup.html" target="_blank">
+          <span class="material-symbols-outlined card-icon">tv</span>
+          <div class="card-title">Écran TV</div>
+          <div class="card-desc">Affichage file d'attente agence</div>
+          <span class="card-link">Ouvrir <span>&rarr;</span></span>
+        </a>
+
+        <a class="mockup-card" data-color="green" href="teller-mockup.html" target="_blank">
+          <span class="material-symbols-outlined card-icon">point_of_sale</span>
+          <div class="card-title">Guichet</div>
+          <div class="card-desc">Interface guichetier (G1)</div>
+          <span class="card-link">Ouvrir <span>&rarr;</span></span>
+        </a>
+
+        <a class="mockup-card" data-color="red" href="bm-dashboard-mockup.html" target="_blank">
+          <span class="material-symbols-outlined card-icon">dashboard</span>
+          <div class="card-title">Tableau BM</div>
+          <div class="card-desc">Dashboard directeur d'agence + IA</div>
+          <span class="card-link">Ouvrir <span>&rarr;</span></span>
+        </a>
+
+        <a class="mockup-card" data-color="black" href="hq-dashboard-mockup.html" target="_blank">
+          <span class="material-symbols-outlined card-icon">hub</span>
+          <div class="card-title">Tableau HQ</div>
+          <div class="card-desc">Centre de commande réseau</div>
+          <span class="card-link">Ouvrir <span>&rarr;</span></span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ===== TIMELINE / AGENDA ===== -->
+    <section class="timeline-section">
+      <h2 class="section-title">
+        <span class="material-symbols-outlined">schedule</span>
+        Programme de la Démo (30 min)
+      </h2>
+      <div class="acts-grid">
+
+        <!-- Acte 1 -->
+        <div class="act-card" data-act="1" id="act1">
+          <div class="act-header">
+            <div class="act-number">1</div>
+            <div class="act-header-text">
+              <h3>Parcours Client</h3>
+              <div class="act-time-range">0 – 10 min</div>
+            </div>
+            <span class="material-symbols-outlined">person</span>
+          </div>
+          <ul class="checkpoint-list">
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:00</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Borne : Prise de ticket (Ines Hamdi)</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:04</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">TV : File d'attente en temps réel</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:08</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Guichet : Interface guichetier</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Acte 2 -->
+        <div class="act-card" data-act="2" id="act2">
+          <div class="act-header">
+            <div class="act-number">2</div>
+            <div class="act-header-text">
+              <h3>Intelligence Opérationnelle</h3>
+              <div class="act-time-range">10 – 20 min</div>
+            </div>
+            <span class="material-symbols-outlined">insights</span>
+          </div>
+          <ul class="checkpoint-list">
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:10</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">BM Dashboard : Vue d'ensemble (score 95)</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:13</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Crise : Score chute à 48, alerte IA</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:16</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Action : Activation G3, stabilisation</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:18</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Impact : Pause G2, SLA en baisse</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Acte 3 -->
+        <div class="act-card" data-act="3" id="act3">
+          <div class="act-header">
+            <div class="act-number">3</div>
+            <div class="act-header-text">
+              <h3>Vision Réseau</h3>
+              <div class="act-time-range">20 – 30 min</div>
+            </div>
+            <span class="material-symbols-outlined">hub</span>
+          </div>
+          <ul class="checkpoint-list">
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:20</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">HQ : Vue consolidée 5 agences</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:24</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Focus : Agence Menzah en crise</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:26</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">IA Réseau : Recommandations</span>
+            </li>
+            <li class="checkpoint">
+              <span class="checkpoint-time">0:28</span>
+              <span class="checkpoint-dot"></span>
+              <span class="checkpoint-text">Conclusion et Q&amp;A</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== CREDENTIALS (Collapsible) ===== -->
+    <section class="collapsible-section">
+      <div class="collapsible-header" onclick="toggleSection(this)">
+        <span class="material-symbols-outlined">key</span>
+        <h2>Identifiants de Secours (App Live)</h2>
+        <span class="material-symbols-outlined toggle-icon">expand_more</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="collapsible-content">
+          <table class="cred-table">
+            <thead>
+              <tr>
+                <th>Rôle</th>
+                <th>Email</th>
+                <th>Mot de passe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Admin</td>
+                <td><code>admin@blesaf.app</code></td>
+                <td><code>demo123</code></td>
+              </tr>
+              <tr>
+                <td>Banque</td>
+                <td><code>bank.admin@demo-bank.tn</code></td>
+                <td><code>demo123</code></td>
+              </tr>
+              <tr>
+                <td>Manager</td>
+                <td><code>manager@demo-bank.tn</code></td>
+                <td><code>demo123</code></td>
+              </tr>
+              <tr>
+                <td>Guichetier</td>
+                <td><code>teller1@demo-bank.tn</code></td>
+                <td><code>demo123</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="cred-urls">
+            <span>
+              <span class="material-symbols-outlined" style="font-size:16px">language</span>
+              Frontend : <code>localhost:5173</code>
+            </span>
+            <span>
+              <span class="material-symbols-outlined" style="font-size:16px">dns</span>
+              Backend : <code>localhost:3001</code>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VISUALIZATIONS (Collapsible) ===== -->
+    <section class="collapsible-section" style="animation-delay: 0.7s;">
+      <div class="collapsible-header" onclick="toggleSection(this)">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <h2>Visualisations (PNG)</h2>
+        <span class="material-symbols-outlined toggle-icon">expand_more</span>
+      </div>
+      <div class="collapsible-body">
+        <div class="collapsible-content">
+          <div class="viz-grid">
+
+            <a class="viz-card" href="viz_queue_length.png" target="_blank">
+              <span class="material-symbols-outlined">show_chart</span>
+              <div class="viz-name">viz_queue_length.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+            <a class="viz-card" href="viz_sla_trajectory.png" target="_blank">
+              <span class="material-symbols-outlined">trending_up</span>
+              <div class="viz-name">viz_sla_trajectory.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+            <a class="viz-card" href="viz_service_breakdown.png" target="_blank">
+              <span class="material-symbols-outlined">pie_chart</span>
+              <div class="viz-name">viz_service_breakdown.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+            <a class="viz-card" href="viz_counter_utilization.png" target="_blank">
+              <span class="material-symbols-outlined">stacked_bar_chart</span>
+              <div class="viz-name">viz_counter_utilization.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+            <a class="viz-card" href="viz_queue_velocity.png" target="_blank">
+              <span class="material-symbols-outlined">speed</span>
+              <div class="viz-name">viz_queue_velocity.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+            <a class="viz-card" href="viz_predictive_demand.png" target="_blank">
+              <span class="material-symbols-outlined">query_stats</span>
+              <div class="viz-name">viz_predictive_demand.png</div>
+              <div class="viz-open">Ouvrir</div>
+            </a>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <p>BléSaf — Système de Gestion de File d'Attente Bancaire</p>
+      <p>Powered by BléSaf v0.26</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // ===== TIMER =====
+    const TOTAL_SECONDS = 30 * 60;
+    let remainingSeconds = TOTAL_SECONDS;
+    let timerInterval = null;
+    let isRunning = false;
+
+    const timerDisplay = document.getElementById('timerDisplay');
+    const btnStart = document.getElementById('btnStart');
+    const btnPause = document.getElementById('btnPause');
+    const btnReset = document.getElementById('btnReset');
+    const progressBar = document.getElementById('progressBar');
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    function updateTimerDisplay() {
+      timerDisplay.textContent = formatTime(remainingSeconds);
+
+      // Color transitions
+      timerDisplay.classList.remove('amber', 'red', 'pulse');
+      progressBar.classList.remove('amber', 'red');
+
+      if (remainingSeconds <= 60) {
+        timerDisplay.classList.add('red', 'pulse');
+        progressBar.classList.add('red');
+        timerDisplay.style.color = '';
+      } else if (remainingSeconds <= 300) {
+        timerDisplay.classList.add('red');
+        progressBar.classList.add('red');
+        timerDisplay.style.color = '';
+      } else if (remainingSeconds <= 900) {
+        timerDisplay.classList.add('amber');
+        progressBar.classList.add('amber');
+        timerDisplay.style.color = '';
+      } else {
+        timerDisplay.style.color = '';
+      }
+
+      // Progress bar
+      const elapsed = TOTAL_SECONDS - remainingSeconds;
+      const percent = (elapsed / TOTAL_SECONDS) * 100;
+      progressBar.style.width = percent + '%';
+
+      // Update active act
+      updateActiveAct(elapsed);
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+
+      btnStart.style.display = 'none';
+      btnPause.style.display = 'inline-flex';
+
+      timerInterval = setInterval(function () {
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          isRunning = false;
+          btnPause.style.display = 'none';
+          btnStart.style.display = 'inline-flex';
+          return;
+        }
+        remainingSeconds--;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(timerInterval);
+      timerInterval = null;
+
+      btnPause.style.display = 'none';
+      btnStart.style.display = 'inline-flex';
+      btnStart.innerHTML = '<span class="material-symbols-outlined">play_arrow</span> Reprendre';
+    }
+
+    function resetTimer() {
+      isRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      remainingSeconds = TOTAL_SECONDS;
+
+      btnPause.style.display = 'none';
+      btnStart.style.display = 'inline-flex';
+      btnStart.innerHTML = '<span class="material-symbols-outlined">play_arrow</span> Démarrer';
+
+      updateTimerDisplay();
+    }
+
+    // ===== ACTIVE ACT HIGHLIGHT =====
+    function updateActiveAct(elapsedSeconds) {
+      const act1 = document.getElementById('act1');
+      const act2 = document.getElementById('act2');
+      const act3 = document.getElementById('act3');
+
+      act1.classList.remove('active');
+      act2.classList.remove('active');
+      act3.classList.remove('active');
+
+      if (!isRunning && remainingSeconds === TOTAL_SECONDS) return;
+
+      const elapsedMinutes = elapsedSeconds / 60;
+
+      if (elapsedMinutes < 10) {
+        act1.classList.add('active');
+      } else if (elapsedMinutes < 20) {
+        act2.classList.add('active');
+      } else {
+        act3.classList.add('active');
+      }
+    }
+
+    // ===== COLLAPSIBLE SECTIONS =====
+    function toggleSection(header) {
+      const body = header.nextElementSibling;
+      const isOpen = body.classList.contains('open');
+
+      if (isOpen) {
+        body.classList.remove('open');
+        header.classList.remove('open');
+      } else {
+        body.classList.add('open');
+        header.classList.add('open');
+      }
+    }
+
+    // Initialize display
+    updateTimerDisplay();
+  </script>
+
+</body>
+</html>

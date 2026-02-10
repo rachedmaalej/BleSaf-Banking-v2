@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { loginSchema, refreshTokenSchema } from '@blesaf/shared';
 import { authService } from '../services/authService';
 import { authenticate } from '../middleware/auth';
@@ -6,11 +7,19 @@ import { BadRequestError } from '../lib/errors';
 
 const router = Router();
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10, // 10 attempts per window per IP
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many login attempts, please try again after 15 minutes', code: 'RATE_LIMITED' },
+});
+
 /**
  * POST /api/auth/login
  * Login with email and password
  */
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginLimiter, async (req, res, next) => {
   try {
     const data = loginSchema.parse(req.body);
 

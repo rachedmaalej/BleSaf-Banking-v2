@@ -31,20 +31,24 @@ if (config.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Set the tenant context for Row Level Security (RLS)
  * Must be called at the start of each request for tenant-scoped queries
  */
 export async function setTenantContext(tenantId: string): Promise<void> {
-  // Set PostgreSQL session variable for RLS policies
-  await prisma.$executeRawUnsafe(`SET app.current_tenant = '${tenantId}'`);
+  if (!UUID_REGEX.test(tenantId)) {
+    throw new Error('Invalid tenant ID format');
+  }
+  await prisma.$executeRaw`SELECT set_config('app.current_tenant', ${tenantId}, false)`;
 }
 
 /**
  * Clear the tenant context
  */
 export async function clearTenantContext(): Promise<void> {
-  await prisma.$executeRawUnsafe(`RESET app.current_tenant`);
+  await prisma.$executeRaw`RESET app.current_tenant`;
 }
 
 export default prisma;

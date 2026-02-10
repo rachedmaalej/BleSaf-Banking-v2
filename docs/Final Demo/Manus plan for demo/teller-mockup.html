@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>BléSaf Demo — Écran Guichetier</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #F9FAFB;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+  color: #1A1A1A;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ===== DEMO BADGE ===== */
+.demo-badge {
+  position: fixed;
+  top: 18px;
+  right: -30px;
+  background: #E9041E;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  padding: 4px 40px;
+  transform: rotate(45deg);
+  z-index: 9999;
+  box-shadow: 0 2px 8px rgba(233,4,30,0.4);
+  text-transform: uppercase;
+}
+
+/* ===== PRESENTER NAV BAR ===== */
+.presenter-nav {
+  background: #1A1A1A;
+  color: #fff;
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.presenter-nav-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #E9041E;
+  letter-spacing: -0.3px;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+.presenter-nav-label span { color: #fff; }
+.nav-btn-group {
+  display: flex;
+  gap: 6px;
+}
+.snap-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 2px solid #374151;
+  background: transparent;
+  color: #9CA3AF;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.snap-btn:hover { border-color: #E9041E; color: #E9041E; }
+.snap-btn.active {
+  background: #E9041E;
+  border-color: #E9041E;
+  color: #fff;
+}
+.snap-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6B7280;
+  background: #374151;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+.nav-hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-hint kbd {
+  background: #374151;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-family: 'Inter', monospace;
+  color: #9CA3AF;
+}
+
+/* ===== TELLER HEADER ===== */
+.teller-header {
+  background: #1A1A1A;
+  color: #fff;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px solid #E9041E;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.counter-label {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+.counter-id {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9CA3AF;
+}
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-badge.active {
+  background: rgba(16,185,129,0.15);
+  color: #10B981;
+}
+.status-badge.break-status {
+  background: rgba(245,158,11,0.15);
+  color: #F59E0B;
+}
+.status-badge.closed-status {
+  background: rgba(107,114,128,0.15);
+  color: #9CA3AF;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.header-center {
+  text-align: center;
+}
+.teller-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+.teller-role {
+  font-size: 13px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+.header-right {
+  text-align: right;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.clock-display {
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.branch-label {
+  font-size: 13px;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  min-height: calc(100vh - 200px);
+}
+
+/* ===== LEFT COLUMN: CURRENT TICKET ===== */
+.left-column {
+  padding: 32px 40px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.service-accent-bar {
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
+
+.ticket-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.ticket-card-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.ticket-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.ticket-number {
+  font-size: 88px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -3px;
+}
+.service-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+.service-badge .material-symbols-outlined { font-size: 20px; }
+.customer-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6B7280;
+  margin-bottom: 20px;
+}
+.timer-section {
+  text-align: center;
+}
+.timer-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9CA3AF;
+  margin-bottom: 4px;
+}
+.timer-value {
+  font-size: 48px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.timer-value.green { color: #10B981; }
+.timer-value.amber { color: #F59E0B; }
+.timer-value.red { color: #EF4444; }
+
+/* No-service / Break / Closed state */
+.no-service-message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: #9CA3AF;
+}
+.no-service-icon {
+  font-size: 80px;
+  color: #D1D5DB;
+}
+.no-service-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: #9CA3AF;
+}
+.no-service-sub {
+  font-size: 14px;
+  color: #D1D5DB;
+  font-weight: 500;
+}
+.call-next-btn {
+  padding: 16px 40px;
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  margin-top: 8px;
+}
+.call-next-btn:hover { background: #1D4ED8; transform: translateY(-1px); }
+.call-next-btn:active { transform: scale(0.97); }
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #fff;
+  min-height: 56px;
+  position: relative;
+  overflow: hidden;
+}
+.action-btn .material-symbols-outlined { font-size: 22px; }
+.action-btn:active {
+  transform: scale(0.95);
+}
+.action-btn.complete { background: #10B981; }
+.action-btn.complete:hover { background: #059669; }
+.action-btn.noshow { background: #F59E0B; }
+.action-btn.noshow:hover { background: #D97706; }
+.action-btn.pause { background: #6B7280; }
+.action-btn.pause:hover { background: #4B5563; }
+
+/* Ripple effect */
+.action-btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  transform: scale(0);
+  animation: ripple-anim 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ===== RIGHT COLUMN: QUEUE INFO ===== */
+.right-column {
+  background: #fff;
+  border-left: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #F9FAFB;
+  border-bottom: 1px solid #E5E7EB;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6B7280;
+}
+.count-badge {
+  background: #E9041E;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Next Ticket */
+.next-ticket-panel {
+  padding: 16px 20px;
+  border-bottom: 1px solid #E5E7EB;
+}
+.next-ticket-card {
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+.next-ticket-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #374151;
+}
+.next-ticket-info {
+  flex: 1;
+}
+.next-ticket-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 2px;
+}
+.next-ticket-service {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #6B7280;
+}
+.service-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.next-ticket-wait {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9CA3AF;
+}
+.next-ticket-wait.sla-red {
+  color: #EF4444;
+  font-weight: 700;
+}
+.call-next-sidebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px;
+  background: #2563EB;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.call-next-sidebar-btn:hover { background: #1D4ED8; }
+.call-next-sidebar-btn .material-symbols-outlined { font-size: 18px; }
+
+.empty-next {
+  text-align: center;
+  padding: 20px;
+  color: #9CA3AF;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Queue Summary Stats */
+.queue-summary {
+  padding: 12px 20px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+.summary-stat {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+}
+.summary-stat-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #374151;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+.summary-stat-value.green { color: #10B981; }
+.summary-stat-value.amber { color: #F59E0B; }
+.summary-stat-value.red { color: #EF4444; }
+.summary-stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #9CA3AF;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Queue List */
+.queue-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 16px;
+}
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-left: 3px solid transparent;
+  transition: background 0.2s;
+  font-size: 13px;
+}
+.queue-item:hover {
+  background: #F9FAFB;
+}
+.queue-item.sla-breached {
+  border-color: #FECACA;
+  background: #FFF5F5;
+  border-left-color: #EF4444;
+}
+.queue-ticket {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  min-width: 48px;
+}
+.queue-item.sla-breached .queue-ticket {
+  color: #EF4444;
+}
+.queue-name {
+  font-size: 12px;
+  color: #6B7280;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.queue-wait {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9CA3AF;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.queue-item.sla-breached .queue-wait {
+  color: #EF4444;
+}
+.queue-more {
+  text-align: center;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9CA3AF;
+  background: #F3F4F6;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* ===== BOTTOM BAR ===== */
+.bottom-bar {
+  background: #fff;
+  border-top: 1px solid #E5E7EB;
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.bottom-bar-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+.dot-strip {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.queue-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: default;
+  position: relative;
+  transition: transform 0.15s;
+}
+.queue-dot:hover {
+  transform: scale(1.4);
+  z-index: 10;
+}
+.queue-dot.sla-breach {
+  box-shadow: 0 0 0 2px #EF4444;
+}
+.queue-dot-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1A1A1A;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+}
+.queue-dot:hover .queue-dot-tooltip {
+  display: block;
+}
+.bottom-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ===== OVERLAY: BREAK STATE ===== */
+.break-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 10;
+  border-radius: 16px;
+}
+.break-overlay .material-symbols-outlined {
+  font-size: 72px;
+  color: #F59E0B;
+}
+.break-overlay-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #D97706;
+}
+
+/* ===== OVERLAY: CLOSED STATE ===== */
+.closed-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(243,244,246,0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 10;
+  border-radius: 16px;
+}
+.closed-overlay .material-symbols-outlined {
+  font-size: 72px;
+  color: #9CA3AF;
+}
+.closed-overlay-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: #6B7280;
+}
+
+/* ===== DIM EFFECT FOR CLOSED ===== */
+.main-content.dimmed .left-column,
+.main-content.dimmed .right-column {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.main-content.dimmed .bottom-bar-wrapper {
+  opacity: 0.45;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== DEMO BADGE ===== -->
+<div class="demo-badge">DEMO</div>
+
+<!-- ===== PRESENTER NAV BAR ===== -->
+<div class="presenter-nav">
+  <div class="presenter-nav-label">Blé<span>Saf</span> Demo <span style="color:#6B7280;font-weight:400;margin-left:4px;">— Écran Guichetier</span></div>
+  <div class="nav-btn-group" id="navBtnGroup">
+    <button class="snap-btn active" data-snap="0">14:00</button>
+    <button class="snap-btn" data-snap="1">14:10</button>
+    <button class="snap-btn" data-snap="2">14:15</button>
+    <button class="snap-btn" data-snap="3">14:30</button>
+    <button class="snap-btn" data-snap="4">14:45</button>
+    <button class="snap-btn" data-snap="5">15:00</button>
+  </div>
+  <span class="snap-label" id="snapLabel">Démarrage de la démo</span>
+  <div class="nav-hint">
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> naviguer
+  </div>
+</div>
+
+<!-- ===== TELLER HEADER ===== -->
+<div class="teller-header" id="tellerHeader">
+  <div class="header-left">
+    <div>
+      <div class="counter-label">Guichet 1 — G1</div>
+    </div>
+    <div class="status-badge active" id="statusBadge">
+      <div class="status-dot"></div>
+      <span id="statusText">En service</span>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="teller-name" id="tellerName">Mohamed Sassi</div>
+    <div class="teller-role" id="tellerRole">Guichetier Senior</div>
+  </div>
+  <div class="header-right">
+    <div>
+      <div class="clock-display" id="clockDisplay">14:00</div>
+      <div class="branch-label">Agence Lac 2</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main-content" id="mainContent">
+
+  <!-- LEFT COLUMN -->
+  <div class="left-column" id="leftColumn">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-column">
+    <!-- Next Ticket Section -->
+    <div class="section-header">
+      <div class="section-title">Prochain</div>
+    </div>
+    <div class="next-ticket-panel" id="nextTicketPanel">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Queue Section -->
+    <div class="section-header">
+      <div class="section-title">File d'attente</div>
+      <div class="count-badge" id="queueCount">0</div>
+    </div>
+
+    <!-- Queue Summary Stats -->
+    <div class="queue-summary" id="queueSummary">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Queue List -->
+    <div class="queue-list" id="queueList">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM BAR ===== -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bottom-bar-label">Vue file</div>
+  <div class="dot-strip" id="dotStrip">
+    <!-- Populated by JS -->
+  </div>
+  <div class="bottom-total" id="bottomTotal">0 clients en attente</div>
+</div>
+
+<!-- ===== DATA ===== -->
+<script src="demo-data.js"></script>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+(function() {
+  'use strict';
+
+  var currentStep = 0;
+  var totalSteps = 6;
+
+  // DOM references
+  var navBtns = document.querySelectorAll('.snap-btn');
+  var snapLabel = document.getElementById('snapLabel');
+  var leftColumn = document.getElementById('leftColumn');
+  var nextTicketPanel = document.getElementById('nextTicketPanel');
+  var queueCount = document.getElementById('queueCount');
+  var queueSummary = document.getElementById('queueSummary');
+  var queueList = document.getElementById('queueList');
+  var dotStrip = document.getElementById('dotStrip');
+  var bottomTotal = document.getElementById('bottomTotal');
+  var clockDisplay = document.getElementById('clockDisplay');
+  var statusBadge = document.getElementById('statusBadge');
+  var statusText = document.getElementById('statusText');
+  var mainContent = document.getElementById('mainContent');
+
+  // ─── FORMAT ELAPSED AS MM:SS ──────────────────────────
+  function formatElapsed(minutes) {
+    var mins = Math.floor(minutes);
+    var secs = Math.round((minutes - mins) * 60);
+    if (secs >= 60) { mins++; secs = 0; }
+    return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+  }
+
+  // ─── GET TIMER COLOR CLASS ────────────────────────────
+  function getTimerClass(minutes) {
+    if (minutes < 10) return 'green';
+    if (minutes <= 15) return 'amber';
+    return 'red';
+  }
+
+  // ─── RENDER LEFT COLUMN ───────────────────────────────
+  function renderLeftColumn(snapshot) {
+    var g1 = null;
+    for (var i = 0; i < snapshot.counters.length; i++) {
+      if (snapshot.counters[i].id === 'G1') {
+        g1 = snapshot.counters[i];
+        break;
+      }
+    }
+    if (!g1) return;
+
+    // Update status badge
+    if (g1.status === 'busy') {
+      statusBadge.className = 'status-badge active';
+      statusText.textContent = 'En service';
+      mainContent.classList.remove('dimmed');
+    } else if (g1.status === 'break') {
+      statusBadge.className = 'status-badge break-status';
+      statusText.textContent = 'En pause';
+      mainContent.classList.remove('dimmed');
+    } else {
+      statusBadge.className = 'status-badge closed-status';
+      statusText.textContent = 'Fermé';
+      mainContent.classList.add('dimmed');
+    }
+
+    if (g1.status === 'busy' && g1.ticket) {
+      var svc = DEMO_DATA.getService(g1.service);
+      var timerClass = getTimerClass(g1.elapsed);
+      var html = '';
+
+      // Ticket card with accent
+      html += '<div class="ticket-card">';
+      html += '  <div class="ticket-card-accent" style="background:' + svc.color + ';"></div>';
+
+      // Ticket display
+      html += '  <div class="ticket-display">';
+      html += '    <div class="ticket-number" style="color:' + svc.color + ';">' + g1.ticket + '</div>';
+      html += '    <div class="service-badge" style="background:' + svc.color + ';">';
+      html += '      <span class="material-symbols-outlined">' + svc.icon + '</span>';
+      html += '      ' + svc.label;
+      html += '    </div>';
+      html += '    <div class="customer-name">' + g1.customer + '</div>';
+      html += '    <div class="timer-section">';
+      html += '      <div class="timer-label">Temps de service</div>';
+      html += '      <div class="timer-value ' + timerClass + '">' + formatElapsed(g1.elapsed) + '</div>';
+      html += '    </div>';
+      html += '  </div>';
+      html += '</div>';
+
+      // Action buttons
+      html += '<div class="action-buttons">';
+      html += '  <button class="action-btn complete" onclick="handleRipple(event, this)">';
+      html += '    <span class="material-symbols-outlined">check_circle</span>';
+      html += '    Terminer le service';
+      html += '  </button>';
+      html += '  <button class="action-btn noshow" onclick="handleRipple(event, this)">';
+      html += '    <span class="material-symbols-outlined">person_off</span>';
+      html += '    Client non-présent';
+      html += '  </button>';
+      html += '  <button class="action-btn pause" onclick="handleRipple(event, this)">';
+      html += '    <span class="material-symbols-outlined">pause</span>';
+      html += '    Mettre en pause';
+      html += '  </button>';
+      html += '</div>';
+
+      leftColumn.innerHTML = html;
+
+    } else if (g1.status === 'break') {
+      // Break state
+      var breakHtml = '';
+      breakHtml += '<div class="ticket-card" style="position:relative;">';
+      breakHtml += '  <div class="break-overlay">';
+      breakHtml += '    <span class="material-symbols-outlined">coffee</span>';
+      breakHtml += '    <div class="break-overlay-text">En pause</div>';
+      breakHtml += '    <div class="no-service-sub">Le guichetier est en pause</div>';
+      breakHtml += '  </div>';
+      breakHtml += '  <div class="no-service-message">';
+      breakHtml += '    <span class="material-symbols-outlined no-service-icon">coffee</span>';
+      breakHtml += '    <div class="no-service-text">Aucun ticket en cours</div>';
+      breakHtml += '  </div>';
+      breakHtml += '</div>';
+      leftColumn.innerHTML = breakHtml;
+
+    } else {
+      // Closed or idle
+      var noHtml = '';
+      noHtml += '<div class="ticket-card" style="position:relative;">';
+
+      if (g1.status === 'closed') {
+        noHtml += '  <div class="closed-overlay">';
+        noHtml += '    <span class="material-symbols-outlined">do_not_disturb</span>';
+        noHtml += '    <div class="closed-overlay-text">Guichet fermé</div>';
+        noHtml += '  </div>';
+      }
+
+      noHtml += '  <div class="no-service-message">';
+      noHtml += '    <span class="material-symbols-outlined no-service-icon">person_search</span>';
+      noHtml += '    <div class="no-service-text">Aucun ticket en cours</div>';
+      if (snapshot.waiting.length > 0) {
+        noHtml += '  <button class="call-next-btn" onclick="handleRipple(event, this)">';
+        noHtml += '    <span class="material-symbols-outlined">campaign</span>';
+        noHtml += '    Appeler le prochain';
+        noHtml += '  </button>';
+      }
+      noHtml += '  </div>';
+      noHtml += '</div>';
+      leftColumn.innerHTML = noHtml;
+    }
+  }
+
+  // ─── RENDER NEXT TICKET ───────────────────────────────
+  function renderNextTicket(snapshot) {
+    if (snapshot.waiting.length === 0) {
+      nextTicketPanel.innerHTML = '<div class="empty-next"><span class="material-symbols-outlined" style="font-size:32px;display:block;margin-bottom:6px;color:#D1D5DB;">inbox</span>File vide — aucun client en attente</div>';
+      return;
+    }
+
+    var next = snapshot.waiting[0];
+    var svc = DEMO_DATA.getService(next.service);
+    var waitClass = next.slaBreached ? ' sla-red' : '';
+    var html = '';
+
+    html += '<div class="next-ticket-card">';
+    html += '  <div class="next-ticket-number" style="color:' + svc.color + ';">' + next.ticket + '</div>';
+    html += '  <div class="next-ticket-info">';
+    html += '    <div class="next-ticket-name">' + next.name + '</div>';
+    html += '    <div class="next-ticket-service">';
+    html += '      <span class="service-dot" style="background:' + svc.color + ';"></span>';
+    html += '      ' + svc.label;
+    html += '    </div>';
+    html += '  </div>';
+    html += '  <div class="next-ticket-wait' + waitClass + '">' + next.waitMin + ' min</div>';
+    html += '</div>';
+
+    // Call next button
+    html += '<button class="call-next-sidebar-btn" onclick="handleRipple(event, this)">';
+    html += '  <span class="material-symbols-outlined">campaign</span>';
+    html += '  Appeler suivant';
+    html += '</button>';
+
+    nextTicketPanel.innerHTML = html;
+  }
+
+  // ─── RENDER QUEUE SUMMARY ──────────────────────────────
+  function renderQueueSummary(snapshot) {
+    var waiting = snapshot.waiting;
+    var totalWaiting = waiting.length;
+    var slaBreaches = 0;
+    var totalWait = 0;
+
+    for (var i = 0; i < waiting.length; i++) {
+      totalWait += waiting[i].waitMin;
+      if (waiting[i].slaBreached) slaBreaches++;
+    }
+
+    var avgWait = totalWaiting > 0 ? Math.round(totalWait / totalWaiting) : 0;
+    var avgClass = avgWait <= 5 ? 'green' : (avgWait <= 15 ? 'amber' : 'red');
+    var slaClass = slaBreaches > 0 ? 'red' : 'green';
+
+    var html = '';
+    html += '<div class="summary-stat">';
+    html += '  <div class="summary-stat-value">' + totalWaiting + '</div>';
+    html += '  <div class="summary-stat-label">En attente</div>';
+    html += '</div>';
+    html += '<div class="summary-stat">';
+    html += '  <div class="summary-stat-value ' + avgClass + '">' + avgWait + ' min</div>';
+    html += '  <div class="summary-stat-label">Temps moyen</div>';
+    html += '</div>';
+    html += '<div class="summary-stat">';
+    html += '  <div class="summary-stat-value ' + slaClass + '">' + slaBreaches + '</div>';
+    html += '  <div class="summary-stat-label">Dépassements SLA</div>';
+    html += '</div>';
+
+    queueSummary.innerHTML = html;
+  }
+
+  // ─── RENDER QUEUE LIST ────────────────────────────────
+  function renderQueueList(snapshot) {
+    var waiting = snapshot.waiting;
+    queueCount.textContent = waiting.length;
+
+    if (waiting.length === 0) {
+      queueList.innerHTML = '<div class="empty-next" style="padding:32px 0;"><span class="material-symbols-outlined" style="font-size:32px;display:block;margin-bottom:6px;color:#D1D5DB;">done_all</span>Aucun client en attente</div>';
+      return;
+    }
+
+    // Show first 5 items (or fewer)
+    var maxShow = 5;
+    var html = '';
+
+    for (var i = 0; i < Math.min(waiting.length, maxShow); i++) {
+      var item = waiting[i];
+      var svc = DEMO_DATA.getService(item.service);
+      var breachClass = item.slaBreached ? ' sla-breached' : '';
+      html += '<div class="queue-item' + breachClass + '" style="border-left-color:' + (item.slaBreached ? '#EF4444' : svc.color) + ';">';
+      html += '  <span class="queue-ticket">' + item.ticket + '</span>';
+      html += '  <span class="service-dot" style="background:' + svc.color + ';"></span>';
+      html += '  <span class="queue-name">' + item.name + '</span>';
+      html += '  <span class="queue-wait">' + item.waitMin + ' min</span>';
+      html += '</div>';
+    }
+
+    if (waiting.length > maxShow) {
+      html += '<div class="queue-more">+ ' + (waiting.length - maxShow) + ' autres clients</div>';
+    }
+
+    queueList.innerHTML = html;
+  }
+
+  // ─── RENDER BOTTOM BAR ────────────────────────────────
+  function renderBottomBar(snapshot) {
+    var waiting = snapshot.waiting;
+    var dots = '';
+
+    for (var i = 0; i < waiting.length; i++) {
+      var svc = DEMO_DATA.getService(waiting[i].service);
+      var breachClass = waiting[i].slaBreached ? ' sla-breach' : '';
+      dots += '<div class="queue-dot' + breachClass + '" style="background:' + svc.color + ';">';
+      dots += '  <span class="queue-dot-tooltip">' + waiting[i].ticket + ' — ' + waiting[i].name + '</span>';
+      dots += '</div>';
+    }
+
+    dotStrip.innerHTML = dots;
+    var count = waiting.length;
+    bottomTotal.textContent = count + ' client' + (count !== 1 ? 's' : '') + ' en attente';
+  }
+
+  // ─── RENDER ALL ───────────────────────────────────────
+  function renderSnapshot(index) {
+    var snapshot = DEMO_DATA.snapshots[index];
+    if (!snapshot) return;
+
+    // Update clock and label
+    clockDisplay.textContent = snapshot.time;
+    snapLabel.textContent = snapshot.label;
+
+    // Render all sections
+    renderLeftColumn(snapshot);
+    renderNextTicket(snapshot);
+    renderQueueSummary(snapshot);
+    renderQueueList(snapshot);
+    renderBottomBar(snapshot);
+  }
+
+  // ─── NAVIGATION ───────────────────────────────────────
+  function goTo(index) {
+    if (index < 0 || index >= totalSteps) return;
+    if (index === currentStep) return;
+
+    navBtns[currentStep].classList.remove('active');
+    currentStep = index;
+    navBtns[currentStep].classList.add('active');
+
+    renderSnapshot(currentStep);
+  }
+
+  // Click handlers
+  navBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(btn.getAttribute('data-snap'), 10);
+      goTo(idx);
+    });
+  });
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'Right') {
+      e.preventDefault();
+      goTo(currentStep + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+      e.preventDefault();
+      goTo(currentStep - 1);
+    } else if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      goTo(parseInt(e.key, 10) - 1);
+    }
+  });
+
+  // ─── RIPPLE FEEDBACK ───────────────────────────────────
+  window.handleRipple = function(e, btn) {
+    var rect = btn.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    var ripple = document.createElement('span');
+    ripple.className = 'ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+    btn.appendChild(ripple);
+    setTimeout(function() {
+      ripple.remove();
+    }, 600);
+  };
+
+  // ─── INITIAL RENDER ───────────────────────────────────
+  renderSnapshot(0);
+
+})();
+</script>
+
+</body>
+</html>

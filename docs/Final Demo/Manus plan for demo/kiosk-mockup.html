@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1200">
+  <title>BléSaf - Borne Interactive Kiosk</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════════════════ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #F9FAFB;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #1A1A1A;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       DEMO BADGE
+       ═══════════════════════════════════════════════════════ */
+    .demo-badge {
+      position: fixed;
+      top: 28px;
+      right: -32px;
+      background: #E9041E;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 40px;
+      transform: rotate(45deg);
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(233, 4, 30, 0.4);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       KIOSK FRAME
+       ═══════════════════════════════════════════════════════ */
+    .kiosk-frame {
+      width: 100%;
+      max-width: 640px;
+      min-height: 800px;
+      max-height: 94vh;
+      background: #FFFFFF;
+      border-radius: 24px;
+      box-shadow:
+        0 25px 80px rgba(0, 0, 0, 0.12),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PERSISTENT HEADER BAR
+       ═══════════════════════════════════════════════════════ */
+    .kiosk-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: #1A1A1A;
+      color: #FFFFFF;
+      flex-shrink: 0;
+      z-index: 50;
+    }
+
+    .kiosk-header .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .kiosk-header .header-logo {
+      font-size: 18px;
+      font-weight: 800;
+      color: #E9041E;
+      letter-spacing: -0.5px;
+    }
+
+    .kiosk-header .header-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .kiosk-header .header-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .kiosk-header .header-time {
+      font-size: 15px;
+      font-weight: 600;
+      color: #FFFFFF;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PERSISTENT FOOTER
+       ═══════════════════════════════════════════════════════ */
+    .kiosk-footer {
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 500;
+      color: #9CA3AF;
+      border-top: 1px solid #F3F4F6;
+      flex-shrink: 0;
+      background: #FAFAFA;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN CONTAINER
+       ═══════════════════════════════════════════════════════ */
+    .screens-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 300ms ease;
+      pointer-events: none;
+      overflow-y: auto;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN HEADER (Back button + Title) for screens 2-4
+       ═══════════════════════════════════════════════════════ */
+    .screen-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #F3F4F6;
+      flex-shrink: 0;
+    }
+
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 200ms, border-color 200ms;
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      background: #F3F4F6;
+      border-color: #D1D5DB;
+    }
+
+    .back-btn .material-symbols-outlined {
+      font-size: 22px;
+      color: #374151;
+    }
+
+    .screen-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1A1A1A;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 1: WELCOME
+       ═══════════════════════════════════════════════════════ */
+    .welcome-screen {
+      background: linear-gradient(180deg, #FFFFFF 0%, #F9FAFB 100%);
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .welcome-logo {
+      margin-bottom: 16px;
+    }
+
+    .welcome-logo .logo-text {
+      font-size: 60px;
+      font-weight: 800;
+      color: #E9041E;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+
+    .welcome-logo .logo-subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: #6B7280;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .welcome-divider {
+      width: 64px;
+      height: 3px;
+      background: #E9041E;
+      border-radius: 2px;
+      margin: 32px auto;
+    }
+
+    .welcome-title {
+      font-size: 42px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+      font-weight: 400;
+      color: #6B7280;
+      margin-bottom: 40px;
+    }
+
+    .welcome-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 48px;
+      background: #E9041E;
+      color: #FFFFFF;
+      font-size: 20px;
+      font-weight: 700;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 200ms;
+      animation: pulse-btn 2s ease-in-out infinite;
+      box-shadow: 0 4px 20px rgba(233, 4, 30, 0.3);
+    }
+
+    .welcome-btn:hover {
+      background: #CC0319;
+      box-shadow: 0 6px 28px rgba(233, 4, 30, 0.4);
+      transform: translateY(-1px);
+    }
+
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 4px 20px rgba(233, 4, 30, 0.3); }
+      50% { box-shadow: 0 4px 32px rgba(233, 4, 30, 0.5); }
+    }
+
+    .welcome-branch {
+      margin-top: 48px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #9CA3AF;
+    }
+
+    .welcome-branch .branch-name {
+      font-weight: 600;
+      color: #6B7280;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 2: LANGUAGE SELECTION
+       ═══════════════════════════════════════════════════════ */
+    .language-screen {
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px;
+    }
+
+    .language-screen .screen-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 48px;
+    }
+
+    .language-grid {
+      display: flex;
+      gap: 24px;
+    }
+
+    .language-btn {
+      width: 200px;
+      height: 150px;
+      border-radius: 16px;
+      border: 2px solid #E5E7EB;
+      background: #FFFFFF;
+      cursor: pointer;
+      transition: all 200ms ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .language-btn:hover {
+      border-color: #E9041E;
+      box-shadow: 0 8px 28px rgba(233, 4, 30, 0.12);
+      transform: translateY(-3px);
+    }
+
+    .language-btn .flag {
+      font-size: 48px;
+      line-height: 1;
+    }
+
+    .language-btn .lang-label {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .language-back-row {
+      margin-top: 32px;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 3: SERVICE SELECTION
+       ═══════════════════════════════════════════════════════ */
+    .services-screen {
+      padding-bottom: 24px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 24px;
+      flex: 1;
+      align-content: start;
+    }
+
+    .service-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 18px;
+      background: #FFFFFF;
+      border: 2px solid #E5E7EB;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 250ms ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 80px;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 5px;
+      transition: width 250ms ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .service-card:hover .service-icon .material-symbols-outlined,
+    .service-card:hover .service-label {
+      transition: color 250ms ease;
+    }
+
+    .service-card.selected {
+      border-color: transparent;
+      transform: scale(0.97);
+    }
+
+    .service-card .service-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 250ms ease;
+    }
+
+    .service-card .service-icon .material-symbols-outlined {
+      font-size: 24px;
+      color: #FFFFFF;
+    }
+
+    .service-card .service-label {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1A1A1A;
+      line-height: 1.3;
+    }
+
+    .service-card.demo-highlight {
+      animation: highlight-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes highlight-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+      50% { box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.12); }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 4: PHONE INPUT
+       ═══════════════════════════════════════════════════════ */
+    .phone-screen {
+      padding-bottom: 24px;
+    }
+
+    .phone-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 24px;
+      gap: 16px;
+    }
+
+    .phone-subtitle {
+      font-size: 14px;
+      color: #6B7280;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .phone-input-wrapper {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 380px;
+      border: 2px solid #E5E7EB;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #F9FAFB;
+      transition: border-color 200ms;
+    }
+
+    .phone-input-wrapper:focus-within,
+    .phone-input-wrapper.has-value {
+      border-color: #E9041E;
+    }
+
+    .phone-prefix {
+      padding: 16px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #6B7280;
+      background: #F3F4F6;
+      border-right: 1px solid #E5E7EB;
+      user-select: none;
+    }
+
+    .phone-display {
+      flex: 1;
+      padding: 16px;
+      font-size: 22px;
+      font-weight: 600;
+      color: #1A1A1A;
+      letter-spacing: 2px;
+      min-height: 56px;
+    }
+
+    .phone-display.empty {
+      color: #D1D5DB;
+    }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .numpad-btn {
+      height: 56px;
+      min-height: 48px;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      font-size: 22px;
+      font-weight: 600;
+      color: #1A1A1A;
+      cursor: pointer;
+      transition: all 150ms;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .numpad-btn:hover {
+      background: #F3F4F6;
+    }
+
+    .numpad-btn:active {
+      background: #E5E7EB;
+      transform: scale(0.96);
+    }
+
+    .numpad-btn.muted {
+      color: #9CA3AF;
+      font-size: 18px;
+    }
+
+    .phone-actions {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 380px;
+      margin-top: 8px;
+    }
+
+    .phone-actions .btn {
+      flex: 1;
+      padding: 16px;
+      min-height: 52px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 200ms;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-skip {
+      background: #F3F4F6;
+      color: #6B7280;
+    }
+
+    .btn-skip:hover {
+      background: #E5E7EB;
+    }
+
+    .btn-confirm {
+      background: #E9041E;
+      color: #FFFFFF;
+    }
+
+    .btn-confirm:hover {
+      background: #CC0319;
+      box-shadow: 0 4px 16px rgba(233, 4, 30, 0.3);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SCREEN 5: TICKET CONFIRMATION
+       ═══════════════════════════════════════════════════════ */
+    .ticket-screen {
+      align-items: center;
+      padding: 32px 24px;
+    }
+
+    .checkmark-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #10B981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      animation: check-pop 500ms ease-out;
+    }
+
+    @keyframes check-pop {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .checkmark-circle .material-symbols-outlined {
+      font-size: 40px;
+      color: #FFFFFF;
+    }
+
+    .ticket-screen .screen-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 20px;
+    }
+
+    .ticket-card {
+      width: 100%;
+      max-width: 420px;
+      background: #FFFFFF;
+      border: 1.5px solid #E5E7EB;
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .ticket-number {
+      font-size: 52px;
+      font-weight: 800;
+      color: #2563EB;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+    }
+
+    .ticket-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .ticket-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .ticket-row .label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #9CA3AF;
+    }
+
+    .ticket-row .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1A1A1A;
+    }
+
+    .ticket-row .value.highlight {
+      color: #E9041E;
+    }
+
+    .ticket-divider {
+      width: 100%;
+      height: 1px;
+      background: #F3F4F6;
+    }
+
+    .qr-placeholder {
+      width: 120px;
+      height: 120px;
+      border: 2px dashed #D1D5DB;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      background: #F9FAFB;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 3px;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 8px;
+    }
+
+    .qr-cell {
+      border-radius: 2px;
+    }
+
+    .qr-cell.dark {
+      background: #374151;
+    }
+
+    .qr-cell.light {
+      background: #E5E7EB;
+    }
+
+    .qr-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9CA3AF;
+      letter-spacing: 1px;
+    }
+
+    .sms-notice {
+      font-size: 13px;
+      color: #6B7280;
+      text-align: center;
+      margin-bottom: 20px;
+      padding: 0 16px;
+      line-height: 1.6;
+    }
+
+    .btn-print {
+      width: 100%;
+      max-width: 420px;
+      padding: 16px;
+      min-height: 52px;
+      border-radius: 12px;
+      background: #E9041E;
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 200ms;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-print:hover {
+      background: #CC0319;
+      box-shadow: 0 4px 16px rgba(233, 4, 30, 0.3);
+    }
+
+    .new-ticket-link {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #9CA3AF;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 200ms;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+    }
+
+    .new-ticket-link:hover {
+      color: #E9041E;
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════════════════ */
+    @media (max-height: 850px) {
+      .kiosk-frame {
+        min-height: 680px;
+      }
+      .welcome-title {
+        font-size: 34px;
+      }
+      .welcome-logo .logo-text {
+        font-size: 48px;
+      }
+      .ticket-number {
+        font-size: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- DEMO BADGE -->
+  <div class="demo-badge">DEMO</div>
+
+  <!-- KIOSK FRAME -->
+  <div class="kiosk-frame" id="kioskFrame">
+
+    <!-- PERSISTENT HEADER BAR -->
+    <div class="kiosk-header">
+      <div class="header-left">
+        <span class="header-logo">UIB</span>
+        <span class="header-divider"></span>
+        <span class="header-label">Borne Libre-Service</span>
+      </div>
+      <span class="header-time" id="headerTime">14:19</span>
+    </div>
+
+    <!-- SCREENS WRAPPER -->
+    <div class="screens-wrapper">
+
+      <!-- SCREEN 1: WELCOME -->
+      <div class="screen welcome-screen active" id="screen1">
+        <div class="welcome-logo">
+          <div class="logo-text">UIB</div>
+          <div class="logo-subtitle">Union Internationale de Banques</div>
+        </div>
+        <div class="welcome-divider"></div>
+        <div class="welcome-title">Bienvenue</div>
+        <div class="welcome-subtitle">Prenez votre ticket</div>
+        <button class="welcome-btn" onclick="goToScreen(2)">
+          <span class="material-symbols-outlined" style="font-size:24px">touch_app</span>
+          Commencer
+        </button>
+        <div class="welcome-branch">
+          <span class="branch-name" id="branchName">Agence Lac 2</span> &mdash; <span id="branchDate">26 Octobre 2024</span>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: LANGUAGE SELECTION -->
+      <div class="screen language-screen" id="screen2">
+        <div class="screen-title">Choisissez votre langue</div>
+        <div class="language-grid" id="languageGrid"></div>
+        <div class="language-back-row">
+          <div class="back-btn" onclick="goToScreen(1)" title="Retour">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: SERVICE SELECTION -->
+      <div class="screen services-screen" id="screen3">
+        <div class="screen-header">
+          <div class="back-btn" onclick="goToScreen(2)">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </div>
+          <h2>Selectionnez votre service</h2>
+        </div>
+        <div class="services-grid" id="servicesGrid"></div>
+      </div>
+
+      <!-- SCREEN 4: PHONE INPUT -->
+      <div class="screen phone-screen" id="screen4">
+        <div class="screen-header">
+          <div class="back-btn" onclick="goToScreen(3)">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </div>
+          <h2>Numero de telephone (optionnel)</h2>
+        </div>
+        <div class="phone-body">
+          <div class="phone-subtitle">Recevez une notification SMS quand votre tour approche</div>
+          <div class="phone-input-wrapper" id="phoneWrapper">
+            <div class="phone-prefix">+216</div>
+            <div class="phone-display empty" id="phoneDisplay">__ ___ ___</div>
+          </div>
+          <div class="numpad" id="numpad"></div>
+          <div class="phone-actions">
+            <button class="btn btn-skip" onclick="goToScreen(5)">Passer</button>
+            <button class="btn btn-confirm" onclick="goToScreen(5)">Confirmer</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: TICKET CONFIRMATION -->
+      <div class="screen ticket-screen" id="screen5">
+        <div class="checkmark-circle" id="checkCircle">
+          <span class="material-symbols-outlined">check</span>
+        </div>
+        <div class="screen-title">Votre ticket</div>
+        <div class="ticket-card" id="ticketCard"></div>
+        <div class="qr-placeholder" id="qrPlaceholder"></div>
+        <div class="sms-notice" id="smsNotice"></div>
+        <button class="btn-print" id="printBtn" onclick="handlePrint()">
+          <span class="material-symbols-outlined" style="font-size:20px">print</span>
+          Imprimer
+        </button>
+        <div class="new-ticket-link" onclick="resetKiosk()">Nouveau ticket</div>
+      </div>
+
+    </div>
+
+    <!-- PERSISTENT FOOTER -->
+    <div class="kiosk-footer">
+      BleSaf &mdash; Systeme de Gestion de File d'Attente
+    </div>
+
+  </div>
+
+  <script src="demo-data.js"></script>
+  <script>
+    // ═══════════════════════════════════════════════════════
+    // STATE
+    // ═══════════════════════════════════════════════════════
+    let currentScreen = 1;
+    let phoneNumber = '';
+    let selectedService = null;
+
+    // ═══════════════════════════════════════════════════════
+    // INITIALIZATION
+    // ═══════════════════════════════════════════════════════
+    function init() {
+      // Populate branch info from DEMO_DATA
+      if (typeof DEMO_DATA !== 'undefined') {
+        document.getElementById('branchName').textContent = DEMO_DATA.meta.branch;
+        document.getElementById('branchDate').textContent = DEMO_DATA.meta.date;
+      }
+
+      buildLanguageButtons();
+      buildServiceCards();
+      buildNumpad();
+      buildTicketScreen();
+      prefillPhone();
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN NAVIGATION
+    // ═══════════════════════════════════════════════════════
+    function goToScreen(target) {
+      if (target === currentScreen) return;
+
+      const currentEl = document.getElementById('screen' + currentScreen);
+      const targetEl = document.getElementById('screen' + target);
+
+      if (!currentEl || !targetEl) return;
+
+      // Fade out current
+      currentEl.classList.remove('active');
+
+      // Small delay then fade in target
+      setTimeout(function() {
+        targetEl.classList.add('active');
+
+        // Replay checkmark animation on screen 5
+        if (target === 5) {
+          const circle = document.getElementById('checkCircle');
+          circle.style.animation = 'none';
+          void circle.offsetWidth;
+          circle.style.animation = 'check-pop 500ms ease-out';
+        }
+      }, 80);
+
+      // Reset phone state when going back
+      if (target <= 3) {
+        phoneNumber = '';
+        updatePhoneDisplay();
+      }
+
+      currentScreen = target;
+    }
+
+    function resetKiosk() {
+      phoneNumber = '';
+      updatePhoneDisplay();
+      selectedService = null;
+
+      // Remove selected state from service cards
+      document.querySelectorAll('.service-card.selected').forEach(function(card) {
+        card.classList.remove('selected');
+      });
+
+      // Reset print button
+      var btn = document.getElementById('printBtn');
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:20px">print</span> Imprimer';
+      btn.style.background = '#E9041E';
+
+      goToScreen(1);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN 2: LANGUAGE BUTTONS
+    // ═══════════════════════════════════════════════════════
+    function buildLanguageButtons() {
+      var grid = document.getElementById('languageGrid');
+      var langs = DEMO_DATA.kiosk.languages;
+
+      langs.forEach(function(lang) {
+        var btn = document.createElement('div');
+        btn.className = 'language-btn';
+        btn.innerHTML =
+          '<span class="flag">' + lang.flag + '</span>' +
+          '<span class="lang-label">' + lang.label + '</span>';
+
+        btn.onclick = function() {
+          // Both choices advance to services (demo always in French)
+          goToScreen(3);
+        };
+
+        grid.appendChild(btn);
+      });
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN 3: SERVICE CARDS
+    // ═══════════════════════════════════════════════════════
+    function buildServiceCards() {
+      var grid = document.getElementById('servicesGrid');
+      var services = DEMO_DATA.kiosk.services;
+
+      services.forEach(function(svc, index) {
+        var card = document.createElement('div');
+        card.className = 'service-card';
+        card.setAttribute('data-service', svc.id);
+        card.setAttribute('data-color', svc.color);
+
+        // Highlight "Retrait d'especes" as demo choice
+        if (svc.id === 'retrait') {
+          card.classList.add('demo-highlight');
+        }
+
+        card.innerHTML =
+          '<div class="service-icon" style="background:' + svc.color + '">' +
+            '<span class="material-symbols-outlined">' + svc.icon + '</span>' +
+          '</div>' +
+          '<span class="service-label">' + svc.label + '</span>';
+
+        card.onclick = function() {
+          selectedService = svc;
+
+          // Remove highlight from all, mark this as selected
+          document.querySelectorAll('.service-card').forEach(function(c) {
+            c.classList.remove('selected');
+            c.classList.remove('demo-highlight');
+          });
+          card.classList.add('selected');
+
+          // Brief press effect then navigate
+          setTimeout(function() {
+            goToScreen(4);
+          }, 200);
+        };
+
+        grid.appendChild(card);
+      });
+
+      // Inject colored left-border CSS for each card
+      var style = document.createElement('style');
+      var css = '';
+      services.forEach(function(svc, i) {
+        css += '.services-grid .service-card:nth-child(' + (i + 1) + ')::before { background: ' + svc.color + '; }\n';
+        // Hover: full color background with white text
+        css += '.services-grid .service-card:nth-child(' + (i + 1) + '):hover { background: ' + svc.color + '; border-color: ' + svc.color + '; }\n';
+        css += '.services-grid .service-card:nth-child(' + (i + 1) + '):hover .service-label { color: #FFFFFF; }\n';
+        css += '.services-grid .service-card:nth-child(' + (i + 1) + '):hover .service-icon { background: rgba(255,255,255,0.2) !important; }\n';
+      });
+      style.textContent = css;
+      document.head.appendChild(style);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN 4: NUMPAD
+    // ═══════════════════════════════════════════════════════
+    function buildNumpad() {
+      var pad = document.getElementById('numpad');
+      var keys = ['1','2','3','4','5','6','7','8','9','*','0','#'];
+
+      keys.forEach(function(key) {
+        var btn = document.createElement('button');
+        btn.className = 'numpad-btn';
+        if (key === '*' || key === '#') {
+          btn.classList.add('muted');
+        }
+        btn.textContent = key;
+
+        btn.onclick = function() {
+          if (phoneNumber.length < 8 && /^[0-9]$/.test(key)) {
+            phoneNumber += key;
+            updatePhoneDisplay();
+          }
+        };
+
+        pad.appendChild(btn);
+      });
+    }
+
+    function prefillPhone() {
+      // Pre-fill with "98 765 432" for demo
+      phoneNumber = '98765432';
+      updatePhoneDisplay();
+    }
+
+    function updatePhoneDisplay() {
+      var display = document.getElementById('phoneDisplay');
+      var wrapper = document.getElementById('phoneWrapper');
+
+      if (phoneNumber.length === 0) {
+        display.textContent = '__ ___ ___';
+        display.classList.add('empty');
+        wrapper.classList.remove('has-value');
+      } else {
+        var formatted = phoneNumber;
+        if (phoneNumber.length > 2) {
+          formatted = phoneNumber.slice(0, 2) + ' ' + phoneNumber.slice(2);
+        }
+        if (phoneNumber.length > 5) {
+          formatted = phoneNumber.slice(0, 2) + ' ' + phoneNumber.slice(2, 5) + ' ' + phoneNumber.slice(5);
+        }
+        display.textContent = formatted;
+        display.classList.remove('empty');
+        wrapper.classList.add('has-value');
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // SCREEN 5: TICKET
+    // ═══════════════════════════════════════════════════════
+    function buildTicketScreen() {
+      var ticket = DEMO_DATA.kiosk.demoTicket;
+      var card = document.getElementById('ticketCard');
+
+      card.innerHTML =
+        '<div class="ticket-number">' + ticket.ticket + '</div>' +
+        '<div class="ticket-details">' +
+          '<div class="ticket-row">' +
+            '<span class="label">Service</span>' +
+            '<span class="value">' + ticket.service + '</span>' +
+          '</div>' +
+          '<div class="ticket-divider"></div>' +
+          '<div class="ticket-row">' +
+            '<span class="label">Position</span>' +
+            '<span class="value highlight">' + ticket.position + 'eme en file</span>' +
+          '</div>' +
+          '<div class="ticket-divider"></div>' +
+          '<div class="ticket-row">' +
+            '<span class="label">Temps estime</span>' +
+            '<span class="value">~' + ticket.estimatedWait + ' min</span>' +
+          '</div>' +
+          '<div class="ticket-divider"></div>' +
+          '<div class="ticket-row">' +
+            '<span class="label">Heure</span>' +
+            '<span class="value">' + ticket.time + '</span>' +
+          '</div>' +
+        '</div>';
+
+      // QR placeholder
+      var qr = document.getElementById('qrPlaceholder');
+      var pattern = [
+        1,1,1,0,1,
+        1,0,1,1,0,
+        0,1,0,1,1,
+        1,0,1,0,1,
+        1,1,0,1,1
+      ];
+      var gridHTML = '<div class="qr-grid">';
+      pattern.forEach(function(cell) {
+        gridHTML += '<div class="qr-cell ' + (cell ? 'dark' : 'light') + '"></div>';
+      });
+      gridHTML += '</div>';
+      qr.innerHTML = gridHTML + '<span class="qr-label">QR CODE</span>';
+
+      // SMS notice
+      document.getElementById('smsNotice').textContent = ticket.message;
+    }
+
+    function handlePrint() {
+      var btn = document.getElementById('printBtn');
+      var originalHTML = btn.innerHTML;
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:20px">check_circle</span> Ticket imprime';
+      btn.style.background = '#10B981';
+      setTimeout(function() {
+        btn.innerHTML = originalHTML;
+        btn.style.background = '#E9041E';
+      }, 2000);
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // BOOT
+    // ═══════════════════════════════════════════════════════
+    init();
+  </script>
+
+</body>
+</html>

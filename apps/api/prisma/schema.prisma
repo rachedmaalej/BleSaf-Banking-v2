@@ -203,6 +203,7 @@ model Ticket {
 
   @@index([branchId, status])
   @@index([branchId, createdAt])
+  @@index([branchId, status, createdAt]) // Composite for call-next (FOR UPDATE SKIP LOCKED)
   @@index([serviceCategoryId, status])
   @@index([servedByUserId])
 }
@@ -273,6 +274,7 @@ model TicketHistory {
   createdAt DateTime @default(now())
 
   @@index([ticketId])
+  @@index([ticketId, createdAt]) // Composite for history timeline queries
   @@index([actorId])
   @@index([createdAt])
 }
