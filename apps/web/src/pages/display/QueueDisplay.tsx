@@ -22,25 +22,26 @@ interface Announcement {
 
 // Service class names, icons, and SHORT labels for TV display
 // Labels should be short (max 8 chars) to fit in queue cards
+// Colors: Blue #8DC7DE, Green #9FD775, Orange #FBAC54, Gray #BABABA
 const SERVICE_CONFIG: Record<string, { className: string; icon: string; label: string }> = {
-  // Core banking services
+  // ── Actual DB names (seed.ts) ──
+  'Retrait / Dépôt':   { className: 'retrait', icon: 'local_atm', label: 'Retrait' },
+  'Virements':         { className: 'virement', icon: 'swap_horiz', label: 'Virement' },
+  'Cartes & Documents': { className: 'carte', icon: 'credit_card', label: 'Cartes' },
+  'Autres services':   { className: 'autres', icon: 'more_horiz', label: 'Autres' },
+  // ── Demo seed names (seed-demo.ts) ──
   "Retrait d'espèces": { className: 'retrait', icon: 'local_atm', label: 'Retrait' },
-  "Dépôt d'espèces": { className: 'depot', icon: 'payments', label: 'Dépôt' },
+  "Dépôt d'espèces":   { className: 'depot', icon: 'payments', label: 'Dépôt' },
   'Relevés de compte': { className: 'releves', icon: 'receipt_long', label: 'Relevés' },
-  'Virement': { className: 'virement', icon: 'swap_horiz', label: 'Virement' },
-  // Card services
+  'Virement':          { className: 'virement', icon: 'swap_horiz', label: 'Virement' },
+  'Prêts':             { className: 'credit', icon: 'account_balance', label: 'Prêts' },
+  'Change':            { className: 'change', icon: 'currency_exchange', label: 'Change' },
+  // ── Other possible names ──
   'Retrait de carte bancaire': { className: 'carte', icon: 'credit_card', label: 'Carte' },
-  // Foreign exchange
   'Change de devises': { className: 'change', icon: 'currency_exchange', label: 'Change' },
-  'Change': { className: 'change', icon: 'currency_exchange', label: 'Change' },
-  // Account services
   'Ouverture de compte': { className: 'compte', icon: 'person_add', label: 'Compte' },
-  // Credit / Loans
-  'Crédit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
-  'Credit': { className: 'credit', icon: 'account_balance', label: 'Crédit' },
-  'Prêts': { className: 'credit', icon: 'account_balance', label: 'Prêts' },
-  // Other / Catch-all
-  'Autres': { className: 'autres', icon: 'more_horiz', label: 'Autres' },
+  'Crédit':            { className: 'credit', icon: 'account_balance', label: 'Crédit' },
+  'Autres':            { className: 'autres', icon: 'more_horiz', label: 'Autres' },
 };
 
 function getServiceConfig(serviceName: string) {
@@ -262,27 +263,27 @@ export default function QueueDisplay() {
           color: #49454F;
         }
 
-        /* MD3 Design Tokens - SG Brand Colors */
+        /* MD3 Design Tokens - Service Differentiation Colors (matching Kiosk groups) */
         .tv-display {
-          /* Retrait d'espèces: SG Red */
-          --retrait-bg: #FDECEE;
-          --retrait-accent: #E9041E;
-          --retrait-text: #E9041E;
+          /* Group 1 — Retrait / Dépôt: Blue */
+          --svc-blue-bg: #DBECF4;
+          --svc-blue-accent: #8DC7DE;
+          --svc-blue-text: #5A9BB5;
 
-          /* Relevés de compte: Black */
-          --releves-bg: #F5F5F5;
-          --releves-accent: #1A1A1A;
-          --releves-text: #1A1A1A;
+          /* Group 2 — Virements: Green */
+          --svc-green-bg: #DEF5B7;
+          --svc-green-accent: #9FD775;
+          --svc-green-text: #6AAE3E;
 
-          /* Dépôt d'espèces: Rose */
-          --depot-bg: #FCE8EB;
-          --depot-accent: #D66874;
-          --depot-text: #D66874;
+          /* Group 3 — Cartes & Documents: Orange */
+          --svc-orange-bg: #FFE9B7;
+          --svc-orange-accent: #FBAC54;
+          --svc-orange-text: #D08A2E;
 
-          /* Autres: Gray */
-          --autres-bg: #F9FAFB;
-          --autres-accent: #666666;
-          --autres-text: #666666;
+          /* Group 4 — Autres services: Gray */
+          --svc-gray-bg: #E8E8E8;
+          --svc-gray-accent: #BABABA;
+          --svc-gray-text: #8A8A8A;
 
           --md3-primary: #E9041E;
           --md3-surface: #FFFFFF;
@@ -310,11 +311,20 @@ export default function QueueDisplay() {
           font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        /* Service Colors */
-        .retrait { --service-bg: var(--retrait-bg); --service-accent: var(--retrait-accent); --service-text: var(--retrait-text); }
-        .releves { --service-bg: var(--releves-bg); --service-accent: var(--releves-accent); --service-text: var(--releves-text); }
-        .depot { --service-bg: var(--depot-bg); --service-accent: var(--depot-accent); --service-text: var(--depot-text); }
-        .autres { --service-bg: var(--autres-bg); --service-accent: var(--autres-accent); --service-text: var(--autres-text); }
+        /* Service Colors — grouped to match Kiosk color assignment */
+        /* Group 1: Retrait / Dépôt → Blue */
+        .retrait { --service-bg: var(--svc-blue-bg); --service-accent: var(--svc-blue-accent); --service-text: var(--svc-blue-text); }
+        .depot   { --service-bg: var(--svc-blue-bg); --service-accent: var(--svc-blue-accent); --service-text: var(--svc-blue-text); }
+        /* Group 2: Virements → Green */
+        .virement { --service-bg: var(--svc-green-bg); --service-accent: var(--svc-green-accent); --service-text: var(--svc-green-text); }
+        /* Group 3: Cartes & Documents → Orange */
+        .carte   { --service-bg: var(--svc-orange-bg); --service-accent: var(--svc-orange-accent); --service-text: var(--svc-orange-text); }
+        .releves { --service-bg: var(--svc-orange-bg); --service-accent: var(--svc-orange-accent); --service-text: var(--svc-orange-text); }
+        .change  { --service-bg: var(--svc-orange-bg); --service-accent: var(--svc-orange-accent); --service-text: var(--svc-orange-text); }
+        .compte  { --service-bg: var(--svc-orange-bg); --service-accent: var(--svc-orange-accent); --service-text: var(--svc-orange-text); }
+        /* Group 4: Autres services → Gray */
+        .credit  { --service-bg: var(--svc-gray-bg); --service-accent: var(--svc-gray-accent); --service-text: var(--svc-gray-text); }
+        .autres  { --service-bg: var(--svc-gray-bg); --service-accent: var(--svc-gray-accent); --service-text: var(--svc-gray-text); }
 
         /* Service Tag */
         .service-tag {
