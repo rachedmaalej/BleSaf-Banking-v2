@@ -278,9 +278,12 @@ export default function TellerDashboard() {
           className="flex justify-between items-center px-3 sm:px-6 py-2 sm:py-3 bg-white flex-shrink-0"
           style={{ borderBottom: '1px solid #CAC4D0' }}
         >
-          <div className="flex items-center gap-2 sm:gap-4">
-            <img src="/uib-logo.png" alt="UIB" className="h-8 sm:h-10 lg:h-12 w-auto" />
-            <span className="text-sm sm:text-lg font-bold" style={{ color: '#1C1B1F' }}>
+          <div className="flex items-center gap-3">
+            <img src="/uib-logo.png" alt="UIB" className="h-10 w-auto" />
+            <span className="text-sm font-barlow" style={{ color: '#999999' }}>
+              {branch?.name || ''}
+            </span>
+            <span className="text-sm font-barlow font-semibold" style={{ color: '#333333' }}>
               Guichet {tellerQueue.counter.number}
             </span>
           </div>

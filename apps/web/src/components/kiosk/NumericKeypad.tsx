@@ -5,7 +5,6 @@ interface NumericKeypadProps {
   onChange: (value: string) => void;
   onSubmit?: () => void;
   maxDigits?: number;
-  accentColor?: string;
   showConfirm?: boolean;
   confirmDisabled?: boolean;
 }
@@ -15,7 +14,6 @@ export default function NumericKeypad({
   onChange,
   onSubmit,
   maxDigits = 8,
-  accentColor = '#8DC7DE',
   showConfirm = false,
   confirmDisabled = true,
 }: NumericKeypadProps) {
@@ -39,99 +37,67 @@ export default function NumericKeypad({
   const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'backspace', '0', showConfirm ? 'confirm' : 'empty'] as const;
 
   return (
-    <>
-      <style>{`
-        @keyframes keyFlash {
-          0% { transform: scale(1); }
-          40% { transform: scale(0.93); }
-          100% { transform: scale(1); }
-        }
-        .kpad-flash {
-          animation: keyFlash 0.18s ease-out;
-        }
-      `}</style>
-      <div
-        className="grid grid-cols-3 gap-1.5 sm:gap-2.5 flex-1"
-        style={{ width: '100%', gridTemplateRows: 'repeat(4, 1fr)' }}
-      >
-        {keys.map((key) => {
-          if (key === 'empty') {
-            return <div key={key} />;
-          }
+    <div className="grid grid-cols-3 gap-1 flex-1" style={{ gridTemplateRows: 'repeat(4, 1fr)' }}>
+      {keys.map((key) => {
+        if (key === 'empty') return <div key={key} />;
 
-          if (key === 'backspace') {
-            const isPressed = pressedKey === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => { handleBackspace(); triggerPress(key); }}
-                disabled={value.length === 0}
-                className={`flex items-center justify-center rounded-xl sm:rounded-2xl transition-colors disabled:opacity-20 ${isPressed ? 'kpad-flash' : ''}`}
-                style={{
-                  height: '100%',
-                  minHeight: '44px',
-                  backgroundColor: isPressed ? `${accentColor}20` : '#F3F4F6',
-                  border: '1.5px solid #E5E7EB',
-                }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: '24px', color: '#6B7280' }}
-                >
-                  backspace
-                </span>
-              </button>
-            );
-          }
-
-          if (key === 'confirm') {
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => !confirmDisabled && onSubmit?.()}
-                disabled={confirmDisabled}
-                className="flex items-center justify-center rounded-xl sm:rounded-2xl transition-all disabled:opacity-30"
-                style={{
-                  height: '100%',
-                  minHeight: '44px',
-                  backgroundColor: '#E9041E',
-                  border: '1.5px solid #E9041E',
-                }}
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: '28px', color: 'white' }}
-                >
-                  send
-                </span>
-              </button>
-            );
-          }
-
-          // Digit key
+        if (key === 'backspace') {
           const isPressed = pressedKey === key;
           return (
             <button
               key={key}
               type="button"
-              onClick={() => { handleDigit(key); triggerPress(key); }}
-              className={`flex items-center justify-center rounded-xl sm:rounded-2xl text-xl sm:text-2xl font-medium transition-colors ${isPressed ? 'kpad-flash' : ''}`}
+              onClick={() => { handleBackspace(); triggerPress(key); }}
+              disabled={value.length === 0}
+              className="flex items-center justify-center rounded-md cursor-pointer transition-colors disabled:opacity-20 hover:bg-gray-200"
               style={{
-                height: '100%',
                 minHeight: '44px',
-                backgroundColor: isPressed ? `${accentColor}25` : '#FFFFFF',
-                border: `1.5px solid ${isPressed ? accentColor : '#E5E7EB'}`,
-                color: '#1A1A1A',
-                boxShadow: isPressed ? `0 0 0 3px ${accentColor}15` : '0 1px 2px rgba(0,0,0,0.04)',
+                backgroundColor: isPressed ? '#E5E5E5' : '#F5F5F5',
+                border: '1px solid #E5E5E5',
               }}
             >
-              {key}
+              <span className="material-symbols-outlined text-base text-dark">
+                backspace
+              </span>
             </button>
           );
-        })}
-      </div>
-    </>
+        }
+
+        if (key === 'confirm') {
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => !confirmDisabled && onSubmit?.()}
+              disabled={confirmDisabled}
+              className="flex items-center justify-center rounded-md cursor-pointer transition-all disabled:opacity-30 bg-brand-red border-brand-red"
+              style={{ minHeight: '44px' }}
+            >
+              <span className="material-symbols-outlined text-white" style={{ fontSize: '24px' }}>
+                send
+              </span>
+            </button>
+          );
+        }
+
+        // Digit key
+        const isPressed = pressedKey === key;
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => { handleDigit(key); triggerPress(key); }}
+            className="flex items-center justify-center rounded-md font-barlow-c font-semibold text-2xl text-dark cursor-pointer transition-colors hover:bg-gray-200"
+            style={{
+              minHeight: '44px',
+              backgroundColor: isPressed ? '#E5E5E5' : '#F5F5F5',
+              border: '1px solid #E5E5E5',
+            }}
+          >
+            {key}
+          </button>
+        );
+      })}
+    </div>
   );
 }

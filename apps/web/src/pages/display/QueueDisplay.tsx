@@ -48,6 +48,14 @@ function getServiceConfig(serviceName: string) {
   return SERVICE_CONFIG[serviceName] || { className: 'autres', icon: 'help_outline', label: serviceName.split(' ')[0].slice(0, 8) };
 }
 
+// Services to display on the welcome screen (matches kiosk service groups)
+const WELCOME_SERVICES = [
+  { className: 'retrait', icon: 'local_atm', name: 'Retrait / Depot', desc: 'Retraits et depots d\'especes' },
+  { className: 'virement', icon: 'swap_horiz', name: 'Virements', desc: 'Transferts nationaux et internationaux' },
+  { className: 'carte', icon: 'credit_card', name: 'Cartes & Documents', desc: 'Cartes bancaires et releves' },
+  { className: 'autres', icon: 'more_horiz', name: 'Autres services', desc: 'Renseignements et assistance' },
+];
+
 // Average consultation time for wait estimation (minutes per customer)
 const AVG_SERVICE_TIME_MINS = 5;
 
@@ -212,9 +220,9 @@ export default function QueueDisplay() {
     priority: ticket.priority || 'normal', // Include priority for VIP indication
   }));
 
-  // Get first 8 for display
+  // Get first 8 as detailed cards, rest as compact badges
   const visibleQueue = waitingQueue.slice(0, 8);
-  const remainingCount = Math.max(0, waitingQueue.length - 8);
+  const overflowQueue = waitingQueue.slice(8);
 
   // Calculate next call estimate
   const nextCallEstimateMins = waitingQueue.length > 0 ? AVG_SERVICE_TIME_MINS : 0;
@@ -381,19 +389,21 @@ export default function QueueDisplay() {
         }
 
         .tv-header .brand img {
-          height: 48px;
+          height: 40px;
           width: auto;
         }
 
         .tv-header .branch {
-          font-size: 13px;
-          color: var(--md3-on-surface-variant);
+          font-family: 'Barlow', sans-serif;
+          font-size: 14px;
+          color: #999999;
         }
 
         .tv-header .time-value {
+          font-family: 'Inter', system-ui, sans-serif;
           font-size: 24px;
           font-weight: 300;
-          color: var(--md3-on-surface);
+          color: #1C1B1F;
         }
 
         /* Hero Section: 2/3 of vertical space */
@@ -717,6 +727,37 @@ export default function QueueDisplay() {
           font-weight: 600;
         }
 
+        /* Overflow ticket badges (tickets beyond 8) */
+        .tv-queue-overflow {
+          padding: 0 24px 10px;
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 6px;
+          flex-shrink: 0;
+        }
+
+        .tv-queue-overflow-label {
+          font-size: 10px;
+          font-weight: 600;
+          color: var(--md3-on-surface-variant);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-right: 4px;
+        }
+
+        .tv-queue-overflow-badge {
+          display: inline-flex;
+          align-items: center;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 600;
+          color: var(--service-text);
+          background: var(--service-bg);
+          letter-spacing: 0.3px;
+        }
+
         /* Empty queue state */
         .tv-queue-empty {
           flex: 1;
@@ -786,6 +827,181 @@ export default function QueueDisplay() {
           font-size: 20px;
           opacity: 0.5;
         }
+
+        /* ── Welcome Screen (idle / no tickets) ── */
+        .tv-welcome {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+          animation: welcome-fadein 0.8s ease-out;
+        }
+
+        @keyframes welcome-fadein {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero welcome area */
+        .tv-welcome-hero {
+          flex: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background: var(--md3-surface-variant);
+          position: relative;
+          padding: 32px;
+        }
+
+        .tv-welcome-greeting {
+          font-size: 56px;
+          font-weight: 300;
+          color: var(--md3-on-surface);
+          letter-spacing: -0.02em;
+          margin-bottom: 8px;
+        }
+
+        .tv-welcome-branch {
+          font-size: 22px;
+          font-weight: 400;
+          color: var(--md3-on-surface-variant);
+          margin-bottom: 20px;
+        }
+
+        .tv-welcome-divider {
+          width: 60px;
+          height: 3px;
+          background: var(--md3-primary);
+          border-radius: 2px;
+          margin-bottom: 20px;
+        }
+
+        .tv-welcome-date {
+          font-size: 16px;
+          font-weight: 400;
+          color: var(--md3-on-surface-variant);
+          margin-bottom: 6px;
+        }
+
+        .tv-welcome-hours {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 15px;
+          color: var(--md3-on-surface-variant);
+        }
+
+        .tv-welcome-hours .material-icon {
+          font-size: 18px;
+          color: #10B981;
+        }
+
+        .tv-welcome-hours strong {
+          color: var(--md3-on-surface);
+        }
+
+        /* Services strip */
+        .tv-welcome-services {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          background: var(--md3-surface);
+          border-top: 1px solid var(--md3-outline-variant);
+        }
+
+        .tv-welcome-services-header {
+          padding: 14px 24px 8px;
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--md3-on-surface-variant);
+          text-transform: uppercase;
+          letter-spacing: 1.5px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+        }
+
+        .tv-welcome-services-header .material-icon {
+          font-size: 18px;
+          color: var(--md3-primary);
+        }
+
+        .tv-welcome-services-grid {
+          flex: 1;
+          padding: 0 24px 8px;
+          display: flex;
+          align-items: stretch;
+          justify-content: center;
+          gap: 14px;
+          overflow: hidden;
+        }
+
+        .tv-welcome-service-card {
+          flex: 1;
+          max-width: 200px;
+          background: var(--service-bg);
+          border-radius: var(--md3-radius-medium);
+          padding: 14px 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          gap: 6px;
+          border: 1px solid transparent;
+          transition: transform 0.3s ease;
+        }
+
+        .tv-welcome-service-card .material-icon {
+          font-size: 28px;
+          color: var(--service-accent);
+        }
+
+        .tv-welcome-service-card .service-name {
+          font-size: 12px;
+          font-weight: 600;
+          color: var(--service-text);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .tv-welcome-service-card .service-desc {
+          font-size: 10px;
+          color: var(--service-text);
+          opacity: 0.8;
+          line-height: 1.3;
+        }
+
+        /* CTA strip */
+        .tv-welcome-cta {
+          padding: 10px 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          background: var(--md3-surface);
+          border-top: 1px solid var(--md3-outline-variant);
+          flex-shrink: 0;
+        }
+
+        .tv-welcome-cta .material-icon {
+          font-size: 22px;
+          color: var(--md3-primary);
+          animation: cta-pulse 2s infinite;
+        }
+
+        .tv-welcome-cta-text {
+          font-size: 15px;
+          font-weight: 500;
+          color: var(--md3-on-surface);
+        }
+
+        @keyframes cta-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.7; transform: scale(1.08); }
+        }
       `}</style>
 
       <div className="tv-display">
@@ -798,110 +1014,165 @@ export default function QueueDisplay() {
           <div className="time-value">{timeString}</div>
         </header>
 
-        {/* Hero Section: 2/3 of vertical space */}
-        <div className="tv-hero-section">
-          <div className={`tv-hero-counters ${isAnnouncementVisible ? 'with-announcement' : ''}`}>
-            {activeCounters.length > 0 ? (
-              activeCounters.map((counter) => {
-                const serviceConfig = getServiceConfig(counter.currentTicket!.serviceName);
-                const isNew = counter.currentTicket!.ticketNumber === lastCalledTicket;
+        {/* Welcome Screen OR Active Queue Display */}
+        {activeCounters.length === 0 && waitingQueue.length === 0 ? (
+          /* ── Welcome Screen ── */
+          <div className="tv-welcome">
+            <div className="tv-welcome-hero">
+              <div className="tv-welcome-greeting">Bienvenue</div>
+              <div className="tv-welcome-branch">{branchStatus.branchName}</div>
+              <div className="tv-welcome-divider" />
+              <div className="tv-welcome-date">
+                {currentTime.toLocaleDateString('fr-FR', {
+                  weekday: 'long',
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+              </div>
+              <div className="tv-welcome-hours">
+                <span className="material-icon">check_circle</span>
+                Ouvert aujourd'hui&ensp;<strong>08:00 – 16:00</strong>
+              </div>
+            </div>
 
-                return (
-                  <div
-                    key={counter.id}
-                    className={`tv-hero-card ${serviceConfig.className} ${isNew ? 'is-new' : ''}`}
-                  >
-                    {isNew && <span className="new-badge">NEW</span>}
-                    <div className="counter-label">Guichet</div>
-                    <div className="counter-number">{counter.number}</div>
-                    <div className="ticket-number">{counter.currentTicket!.ticketNumber}</div>
-                    <span className={`service-tag ${serviceConfig.className}`}>
-                      <span className="material-icon">{serviceConfig.icon}</span>
-                      {serviceConfig.label}
-                    </span>
+            <div className="tv-welcome-services">
+              <div className="tv-welcome-services-header">
+                <span className="material-icon">category</span>
+                Nos services
+              </div>
+              <div className="tv-welcome-services-grid">
+                {WELCOME_SERVICES.map((svc) => (
+                  <div key={svc.className} className={`tv-welcome-service-card ${svc.className}`}>
+                    <span className="material-icon">{svc.icon}</span>
+                    <span className="service-name">{svc.name}</span>
+                    <span className="service-desc">{svc.desc}</span>
                   </div>
-                );
-              })
-            ) : (
-              <div className="tv-hero-empty">
-                <span className="material-icon">hourglass_empty</span>
-                <div className="tv-hero-empty-text">En attente d'appels</div>
+                ))}
               </div>
-            )}
-          </div>
-
-          {/* Slide-right Announcement Banner - inline in hero section */}
-          {activeAnnouncement && (
-            <AnnouncementBanner
-              announcement={activeAnnouncement}
-              language="fr"
-              onDismiss={handleAnnouncementDismiss}
-              onVisibilityChange={handleAnnouncementVisibilityChange}
-              variant="right"
-            />
-          )}
-        </div>
-
-        {/* Queue Section: 1/3 of vertical space - Large Hero Cards */}
-        <div className="tv-queue-section">
-          <div className="tv-queue-header">
-            <div className="tv-queue-title">
-              <span className="material-icon">schedule</span>
-              Prochains en file
-            </div>
-            <div className="tv-queue-stats">
-              <div className="stat-item">
-                <span className="material-icon">groups</span>
-                <strong>{branchStatus.stats.totalWaiting}</strong> en attente
-              </div>
-              <div className="stat-item">
-                <span className="material-icon">avg_pace</span>
-                Prochain appel: <strong>~{nextCallEstimateMins} min</strong>
+              <div className="tv-welcome-cta">
+                <span className="material-icon">touch_app</span>
+                <span className="tv-welcome-cta-text">Prenez votre ticket au kiosque pour commencer</span>
               </div>
             </div>
           </div>
+        ) : (
+          /* ── Active Queue Display ── */
+          <>
+            {/* Hero Section: 2/3 of vertical space */}
+            <div className="tv-hero-section">
+              <div className={`tv-hero-counters ${isAnnouncementVisible ? 'with-announcement' : ''}`}>
+                {activeCounters.length > 0 ? (
+                  activeCounters.map((counter) => {
+                    const serviceConfig = getServiceConfig(counter.currentTicket!.serviceName);
+                    const isNew = counter.currentTicket!.ticketNumber === lastCalledTicket;
 
-          {visibleQueue.length > 0 ? (
-            <div className="tv-queue-cards">
-              {visibleQueue.map((item, index) => {
-                const serviceConfig = getServiceConfig(item.serviceName);
-                const waitMins = item.estimatedWaitMins;
-                const isVip = item.priority === 'vip';
-                // Get short service name (first word or abbreviation)
-                const shortServiceName = serviceConfig.label || item.serviceName.split(' ')[0].slice(0, 8);
-
-                return (
-                  <div key={item.ticketNumber} className={`tv-queue-card ${serviceConfig.className} ${isVip ? 'is-vip' : ''}`}>
-                    <div className="tv-queue-position">
-                      Position {index + 1}
-                      {isVip && <span className="vip-badge">VIP</span>}
-                    </div>
-                    <div className="tv-queue-ticket">{item.ticketNumber}</div>
-                    <div className="tv-queue-card-footer">
-                      <span className="tv-queue-service-name">{shortServiceName}</span>
-                      <div className="tv-queue-wait">
-                        <span className="material-icon">schedule</span>
-                        {waitMins} min
+                    return (
+                      <div
+                        key={counter.id}
+                        className={`tv-hero-card ${serviceConfig.className} ${isNew ? 'is-new' : ''}`}
+                      >
+                        {isNew && <span className="new-badge">NEW</span>}
+                        <div className="counter-label">Guichet</div>
+                        <div className="counter-number">{counter.number}</div>
+                        <div className="ticket-number">{counter.currentTicket!.ticketNumber}</div>
+                        <span className={`service-tag ${serviceConfig.className}`}>
+                          <span className="material-icon">{serviceConfig.icon}</span>
+                          {serviceConfig.label}
+                        </span>
                       </div>
-                    </div>
+                    );
+                  })
+                ) : (
+                  <div className="tv-hero-empty">
+                    <span className="material-icon">hourglass_empty</span>
+                    <div className="tv-hero-empty-text">En attente d'appels</div>
                   </div>
-                );
-              })}
+                )}
+              </div>
 
-              {remainingCount > 0 && (
-                <div className="tv-queue-more-card">
-                  <span className="material-icon">more_horiz</span>
-                  <span className="more-count">+{remainingCount}</span>
+              {/* Slide-right Announcement Banner - inline in hero section */}
+              {activeAnnouncement && (
+                <AnnouncementBanner
+                  announcement={activeAnnouncement}
+                  language="fr"
+                  onDismiss={handleAnnouncementDismiss}
+                  onVisibilityChange={handleAnnouncementVisibilityChange}
+                  variant="right"
+                />
+              )}
+            </div>
+
+            {/* Queue Section: 1/3 of vertical space - Large Hero Cards */}
+            <div className="tv-queue-section">
+              <div className="tv-queue-header">
+                <div className="tv-queue-title">
+                  <span className="material-icon">schedule</span>
+                  File d'attente
+                </div>
+                <div className="tv-queue-stats">
+                  <div className="stat-item">
+                    <span className="material-icon">groups</span>
+                    <strong>{branchStatus.stats.totalWaiting}</strong> en attente
+                  </div>
+                  <div className="stat-item">
+                    <span className="material-icon">avg_pace</span>
+                    Prochain appel: <strong>~{nextCallEstimateMins} min</strong>
+                  </div>
+                </div>
+              </div>
+
+              {visibleQueue.length > 0 ? (
+                <>
+                  <div className="tv-queue-cards">
+                    {visibleQueue.map((item, index) => {
+                      const serviceConfig = getServiceConfig(item.serviceName);
+                      const waitMins = item.estimatedWaitMins;
+                      const isVip = item.priority === 'vip';
+                      const shortServiceName = serviceConfig.label || item.serviceName.split(' ')[0].slice(0, 8);
+
+                      return (
+                        <div key={item.ticketNumber} className={`tv-queue-card ${serviceConfig.className} ${isVip ? 'is-vip' : ''}`}>
+                          <div className="tv-queue-position">
+                            Position {index + 1}
+                            {isVip && <span className="vip-badge">VIP</span>}
+                          </div>
+                          <div className="tv-queue-ticket">{item.ticketNumber}</div>
+                          <div className="tv-queue-card-footer">
+                            <span className="tv-queue-service-name">{shortServiceName}</span>
+                            <div className="tv-queue-wait">
+                              <span className="material-icon">schedule</span>
+                              {waitMins} min
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {overflowQueue.length > 0 && (
+                    <div className="tv-queue-overflow">
+                      <span className="tv-queue-overflow-label">Aussi en file :</span>
+                      {overflowQueue.map((item) => {
+                        const serviceConfig = getServiceConfig(item.serviceName);
+                        return (
+                          <span key={item.ticketNumber} className={`tv-queue-overflow-badge ${serviceConfig.className}`}>
+                            {item.ticketNumber}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="tv-queue-empty">
+                  <span className="material-icon">hourglass_empty</span>
+                  <div className="tv-queue-empty-text">Aucun client en attente</div>
                 </div>
               )}
             </div>
-          ) : (
-            <div className="tv-queue-empty">
-              <span className="material-icon">hourglass_empty</span>
-              <div className="tv-queue-empty-text">Aucun client en attente</div>
-            </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
       {/* Closed/Paused Status Overlay */}
