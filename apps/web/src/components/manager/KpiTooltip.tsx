@@ -58,21 +58,21 @@ export function KpiTooltip({ tooltipKey, children }: KpiTooltipProps) {
   return (
     <div
       ref={containerRef}
-      className="relative inline-flex items-center gap-1 group"
+      className="relative group"
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
     >
       {children}
       <button
         type="button"
-        className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+        className="absolute top-1.5 end-1.5 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity"
         onClick={(e) => {
           e.stopPropagation();
           setShow(!show);
         }}
         aria-label={text}
       >
-        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>info</span>
+        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>info</span>
       </button>
 
       {show && pos && (

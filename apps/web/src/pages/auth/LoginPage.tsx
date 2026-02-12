@@ -180,7 +180,7 @@ export default function LoginPage() {
         .login-right {
           display: none;
           flex: 1;
-          background: linear-gradient(135deg, ${SG_COLORS.red} 0%, #B8031A 100%);
+          background: url('/login-bg.jpg') center center / cover no-repeat;
           position: relative;
           overflow: hidden;
         }
@@ -198,11 +198,11 @@ export default function LoginPage() {
         .login-right::before {
           content: '';
           position: absolute;
-          top: -50%;
-          right: -50%;
-          width: 100%;
-          height: 100%;
-          background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.45);
         }
 
         .login-right-content {
@@ -619,7 +619,7 @@ export default function LoginPage() {
           <div className="login-right-content">
             <h2 className="login-right-title">Gerez vos files d'attente</h2>
             <p className="login-right-subtitle">
-              Suivez en temps reel, reduisez les temps d'attente et ameliorez l'experience client dans votre agence.
+              Suivez en temps reel, reduisez les temps d'attente et ameliorez l'experience client dans vos agences.
             </p>
           </div>
         </div>

@@ -21,7 +21,6 @@ import TellerDashboard from './pages/teller/TellerDashboard';
 import BranchDashboardV2 from './pages/manager/BranchDashboardV2';
 import ManagerReports from './pages/manager/ManagerReports';
 import ManagerSettings from './pages/manager/ManagerSettings';
-import HQDashboard from './pages/admin/HQDashboard';
 import HQDashboardV2 from './pages/admin/HQDashboardV2';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminBranches from './pages/admin/AdminBranches';
@@ -90,16 +89,6 @@ function App() {
         {/* Protected - HQ Admin */}
         <Route
           path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
-              <AppLayout>
-                <HQDashboard />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/v2"
           element={
             <ProtectedRoute allowedRoles={['bank_admin', 'super_admin']}>
               <AppLayout>

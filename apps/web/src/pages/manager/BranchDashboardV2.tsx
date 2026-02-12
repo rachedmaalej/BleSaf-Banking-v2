@@ -473,7 +473,7 @@ export default function BranchDashboardV2() {
               {/* Health Score accent strip */}
               <KpiTooltip tooltipKey="healthScore">
                 <div
-                  className="w-24 flex-shrink-0 flex flex-col items-center justify-center py-4 transition-colors duration-700"
+                  className="w-36 flex-shrink-0 flex flex-col items-center justify-center py-4 transition-colors duration-700"
                   style={{
                     background: `linear-gradient(180deg, ${healthColor}18 0%, ${healthColor}08 100%)`,
                     borderRight: `3px solid ${healthColor}`,
@@ -570,46 +570,60 @@ export default function BranchDashboardV2() {
                 </KpiTooltip>
               </div>
 
-              {/* Icon-only Quick Actions */}
-              <div className="flex items-center gap-2 px-4 border-l border-gray-100">
-                <button
-                  onClick={() => {
-                    const longWaitTicket = (branchStatus?.waitingTickets || []).find((tk: any) => {
-                      const wm = Math.floor((Date.now() - new Date(tk.createdAt).getTime()) / 60000);
-                      return wm >= 15;
-                    });
-                    if (longWaitTicket) prioritizeTicket(longWaitTicket.id);
-                    else if (branchStatus?.waitingTickets?.length) {
-                      setToast({ message: 'Aucun client en attente prolongee', type: 'success' }); setTimeout(() => setToast(null), 2000);
-                    }
-                  }}
-                  disabled={!branchStatus?.waitingTickets?.length}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white transition-all hover:scale-110 disabled:opacity-50"
-                  style={{ background: SG_COLORS.red }}
-                  title="Prioriser VIP"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>priority_high</span>
-                </button>
-                <button
-                  onClick={() => setCounterConfigModalOpen(true)}
-                  className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 transition-all hover:scale-110"
-                  title={`Guichets ${openCounters}/${totalCounters}`}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>storefront</span>
-                </button>
-                {queueStatus === 'paused' ? (
-                  <button onClick={handleResumeQueue} className="w-8 h-8 rounded-lg flex items-center justify-center text-white transition-all hover:scale-110" style={{ background: SG_COLORS.green }} title="Reprendre la file">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>play_arrow</span>
+              {/* Quick Actions 2x2 Grid — MD3 Tonal Buttons */}
+              <div className="w-[200px] flex-shrink-0 border-l border-gray-200 px-3 py-3 flex items-center justify-center">
+                <div className="grid grid-cols-2 gap-1.5">
+                  {/* Pause / Resume */}
+                  {queueStatus === 'paused' ? (
+                    <button
+                      onClick={handleResumeQueue}
+                      className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 transition-colors"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#059669' }}>play_arrow</span>
+                      <span className="text-[10px] font-medium" style={{ color: '#059669' }}>Reprendre</span>
+                    </button>
+                  ) : queueStatus === 'closed' ? (
+                    <button
+                      onClick={handleResumeQueue}
+                      className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 transition-colors"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#059669' }}>door_open</span>
+                      <span className="text-[10px] font-medium" style={{ color: '#059669' }}>Ouvrir</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handlePauseQueue}
+                      className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-amber-50 hover:bg-amber-100 active:bg-amber-200 transition-colors"
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#D97706' }}>pause_circle</span>
+                      <span className="text-[10px] font-medium" style={{ color: '#D97706' }}>Pause file</span>
+                    </button>
+                  )}
+                  {/* Open All Counters */}
+                  <button
+                    onClick={handleOpenAllCounters}
+                    className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-emerald-50 hover:bg-emerald-100 active:bg-emerald-200 transition-colors"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#059669' }}>door_open</span>
+                    <span className="text-[10px] font-medium" style={{ color: '#059669' }}>Ouvrir tout</span>
                   </button>
-                ) : queueStatus === 'closed' ? (
-                  <button onClick={handleResumeQueue} className="w-8 h-8 rounded-lg flex items-center justify-center text-white transition-all hover:scale-110" style={{ background: SG_COLORS.green }} title="Ouvrir la file">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>door_open</span>
+                  {/* Announcement */}
+                  <button
+                    onClick={() => setAnnouncementModalOpen(true)}
+                    className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 transition-colors"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#4B5563' }}>campaign</span>
+                    <span className="text-[10px] font-medium" style={{ color: '#4B5563' }}>Annonce</span>
                   </button>
-                ) : (
-                  <button onClick={handlePauseQueue} className="w-8 h-8 rounded-lg flex items-center justify-center border transition-all hover:scale-110" style={{ borderColor: SG_COLORS.amber, color: SG_COLORS.amber }} title="Pause file">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>pause</span>
+                  {/* End Day */}
+                  <button
+                    onClick={handleCloseQueue}
+                    className="flex flex-col items-center justify-center gap-1 w-[82px] h-[40px] rounded-xl bg-red-50 hover:bg-red-100 active:bg-red-200 transition-colors"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#DC2626' }}>logout</span>
+                    <span className="text-[10px] font-medium" style={{ color: '#DC2626' }}>{closeConfirm ? 'Confirmer?' : 'Fin journee'}</span>
                   </button>
-                )}
+                </div>
               </div>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
@@ -9,15 +9,12 @@ const SG_COLORS = {
   black: '#1A1A1A',
   rose: '#D66874',
   gray: '#666666',
-  green: '#10B981',
-  amber: '#F59E0B',
 };
 
 interface NavItem {
   name: string;
   href: string;
   icon: string;
-  disabled?: boolean;
 }
 
 export default function ManagerLayout() {
@@ -27,38 +24,12 @@ export default function ManagerLayout() {
   const { user, branch, logout } = useAuthStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
 
-  // Navigation items for Branch Manager
   const navigation: NavItem[] = [
-    {
-      name: t('manager.dashboard'),
-      href: '/manager',
-      icon: 'dashboard',
-    },
-    {
-      name: t('manager.reports', 'Rapports'),
-      href: '/manager/reports',
-      icon: 'analytics',
-    },
-    {
-      name: t('manager.settings', 'Parametres'),
-      href: '/manager/settings',
-      icon: 'settings',
-    },
+    { name: t('manager.dashboard'), href: '/manager', icon: 'dashboard' },
+    { name: t('manager.reports', 'Rapports'), href: '/manager/reports', icon: 'bar_chart' },
+    { name: t('manager.settings', 'Parametres'), href: '/manager/settings', icon: 'settings' },
   ];
-
-  // Close user menu when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-        setUserMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -66,213 +37,203 @@ export default function ManagerLayout() {
   };
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === 'fr' ? 'ar' : 'fr';
-    i18n.changeLanguage(newLang);
+    i18n.changeLanguage(i18n.language === 'fr' ? 'ar' : 'fr');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-50">
-        <div className="h-full px-4 lg:px-6 flex items-center justify-between">
-          {/* Left: Logo + Branch Name */}
-          <div className="flex items-center gap-3">
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100"
-            >
-              <span className="material-symbols-outlined" style={{ fontSize: '24px', color: SG_COLORS.gray }}>
-                {mobileMenuOpen ? 'close' : 'menu'}
-              </span>
-            </button>
-
-            {/* UIB Logo */}
-            <img src="/uib-logo.png" alt="UIB" className="h-9 w-auto" />
-
-            {/* Branch Name */}
-            <div className="hidden sm:block">
-              <h1 className="text-sm font-semibold" style={{ color: SG_COLORS.black }}>
-                {branch?.name || 'BléSaf'}
-              </h1>
-            </div>
-          </div>
-
-          {/* Center: Navigation Tabs (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  to={item.disabled ? '#' : item.href}
-                  onClick={(e) => item.disabled && e.preventDefault()}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                    item.disabled
-                      ? 'opacity-40 cursor-not-allowed'
-                      : isActive
-                      ? 'text-white'
-                      : 'hover:bg-gray-100'
-                  }`}
-                  style={{
-                    backgroundColor: isActive && !item.disabled ? SG_COLORS.black : undefined,
-                    color: isActive && !item.disabled ? 'white' : SG_COLORS.gray,
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                    {item.icon}
-                  </span>
-                  {item.name}
-                  {item.disabled && (
-                    <span
-                      className="text-xs px-1.5 py-0.5 rounded"
-                      style={{ backgroundColor: 'rgba(0,0,0,0.05)', color: SG_COLORS.gray }}
-                    >
-                      Bientôt
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right: Language + User */}
-          <div className="flex items-center gap-2">
-            {/* Language Toggle */}
-            <button
-              onClick={toggleLanguage}
-              className="hidden sm:flex items-center px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
-              style={{ color: SG_COLORS.gray }}
-            >
-              {i18n.language === 'fr' ? 'عربية' : 'Français'}
-            </button>
-
-            {/* User Dropdown */}
-            <div className="relative" ref={userMenuRef}>
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(26, 26, 26, 0.1)' }}
-                >
-                  <span className="text-sm font-semibold" style={{ color: SG_COLORS.black }}>
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <span className="hidden md:block text-sm font-medium" style={{ color: SG_COLORS.black }}>
-                  {user?.name}
-                </span>
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: SG_COLORS.gray }}>
-                  {userMenuOpen ? 'expand_less' : 'expand_more'}
-                </span>
-              </button>
-
-              {/* User Dropdown Menu */}
-              {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                  {/* User Info */}
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-medium" style={{ color: SG_COLORS.black }}>
-                      {user?.name}
-                    </p>
-                    <p className="text-xs" style={{ color: SG_COLORS.gray }}>
-                      {t(`roles.${user?.role}`)}
-                    </p>
-                  </div>
-
-                  {/* Language (mobile) */}
-                  <button
-                    onClick={() => {
-                      toggleLanguage();
-                      setUserMenuOpen(false);
-                    }}
-                    className="sm:hidden w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors"
-                    style={{ color: SG_COLORS.gray }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                      translate
-                    </span>
-                    {i18n.language === 'fr' ? 'العربية' : 'Français'}
-                  </button>
-
-                  {/* Logout */}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-red-50 transition-colors"
-                    style={{ color: SG_COLORS.rose }}
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
-                      logout
-                    </span>
-                    {t('auth.logout')}
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 lg:flex">
+      {/* ===== Desktop: Expandable Rail Sidebar (64px → 240px on hover, pushes content) ===== */}
+      <aside
+        className="group/rail hidden lg:flex lg:flex-col flex-shrink-0 sticky top-0 h-screen bg-white border-e border-gray-200 z-30 overflow-hidden"
+        style={{
+          width: 90,
+          transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.width = '240px'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.width = '90px'; }}
+      >
+        {/* Logo */}
+        <div className="h-[60px] flex items-center justify-center border-b border-gray-200">
+          <img src="/uib-logo.png" alt="UIB" className="h-8 w-auto flex-shrink-0" />
         </div>
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg">
-            <nav className="px-4 py-3 space-y-1">
+        {/* Branch name — revealed on expand */}
+        {branch && (
+          <div className="px-2 py-3 border-b border-gray-100 whitespace-nowrap overflow-hidden">
+            <div className="flex items-center" style={{ paddingInlineStart: 27, gap: 12 }}>
+              <span className="material-symbols-outlined flex-shrink-0 text-gray-400" style={{ fontSize: 20 }}>store</span>
+              <span className="text-[13px] font-semibold truncate opacity-0 group-hover/rail:opacity-100 transition-opacity duration-200 delay-100" style={{ color: SG_COLORS.black }}>
+                {branch.name}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation Icons → Icons + Labels on expand */}
+        <nav className="flex-1 flex flex-col px-2 pt-3 gap-1">
+          {navigation.map((item) => {
+            const isActive = location.pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                to={item.href}
+                className="flex items-center h-11 rounded-[10px] transition-colors whitespace-nowrap overflow-hidden"
+                style={{
+                  backgroundColor: isActive ? SG_COLORS.black : undefined,
+                  color: isActive ? 'white' : '#9CA3AF',
+                  paddingInlineStart: 26,
+                  gap: 12,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = '#F3F4F6';
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) e.currentTarget.style.backgroundColor = '';
+                }}
+              >
+                <span className="material-symbols-outlined flex-shrink-0" style={{ fontSize: 22 }}>
+                  {item.icon}
+                </span>
+                <span className="text-[13px] font-medium opacity-0 group-hover/rail:opacity-100 transition-opacity duration-200 delay-100">
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* User Section — avatar always visible, info revealed on expand */}
+        <div className="border-t border-gray-200 px-3 py-3 whitespace-nowrap overflow-hidden">
+          <div className="flex items-center gap-2.5">
+            <div
+              className="w-9 h-9 flex-shrink-0 rounded-full flex items-center justify-center font-bold text-sm"
+              style={{ backgroundColor: 'rgba(26,26,26,0.08)', color: SG_COLORS.black }}
+            >
+              {user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0 opacity-0 group-hover/rail:opacity-100 transition-opacity duration-200 delay-100">
+              <p className="text-[13px] font-semibold truncate" style={{ color: SG_COLORS.black }}>
+                {user?.name}
+              </p>
+              <p className="text-[11px]" style={{ color: SG_COLORS.gray }}>
+                {t(`roles.${user?.role}`)}
+              </p>
+            </div>
+          </div>
+          {/* Action links — visible on expand */}
+          <div className="flex gap-1 mt-2 opacity-0 group-hover/rail:opacity-100 transition-opacity duration-200 delay-100">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded-md hover:bg-gray-100 transition-colors"
+              style={{ color: SG_COLORS.gray }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>language</span>
+              {i18n.language === 'fr' ? 'العربية' : 'Français'}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium rounded-md hover:bg-red-50 transition-colors"
+              style={{ color: SG_COLORS.rose }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
+              {t('auth.logout')}
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {/* ===== Mobile: Top Header with Hamburger ===== */}
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 z-50 flex items-center px-4 gap-3">
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 -ml-2 rounded-lg hover:bg-gray-100"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 24, color: SG_COLORS.gray }}>
+            {mobileMenuOpen ? 'close' : 'menu'}
+          </span>
+        </button>
+        <img src="/uib-logo.png" alt="UIB" className="h-7 w-auto" />
+      </header>
+
+      {/* Mobile Slide-out Drawer */}
+      {mobileMenuOpen && (
+        <>
+          <div className="lg:hidden fixed inset-0 bg-gray-600/50 z-40" onClick={() => setMobileMenuOpen(false)} />
+          <div className="lg:hidden fixed inset-y-0 start-0 w-64 bg-white z-50 flex flex-col shadow-xl">
+            {/* Drawer header */}
+            <div className="h-14 flex items-center justify-between px-4 border-b border-gray-200">
+              <img src="/uib-logo.png" alt="UIB" className="h-7 w-auto" />
+              <button onClick={() => setMobileMenuOpen(false)} className="p-1 rounded-lg hover:bg-gray-100">
+                <span className="material-symbols-outlined" style={{ fontSize: 22, color: SG_COLORS.gray }}>close</span>
+              </button>
+            </div>
+            {/* Branch name */}
+            {branch && (
+              <div className="px-4 py-2.5 border-b border-gray-100 flex items-center gap-2">
+                <span className="material-symbols-outlined text-gray-400" style={{ fontSize: 18 }}>store</span>
+                <p className="text-[13px] font-semibold" style={{ color: SG_COLORS.black }}>{branch.name}</p>
+              </div>
+            )}
+            {/* Drawer nav */}
+            <nav className="flex-1 px-3 py-4 space-y-1">
               {navigation.map((item) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <Link
                     key={item.href}
-                    to={item.disabled ? '#' : item.href}
-                    onClick={(e) => {
-                      if (item.disabled) {
-                        e.preventDefault();
-                      } else {
-                        setMobileMenuOpen(false);
-                      }
-                    }}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                      item.disabled
-                        ? 'opacity-40 cursor-not-allowed'
-                        : isActive
-                        ? 'text-white'
-                        : 'hover:bg-gray-100'
-                    }`}
+                    to={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
                     style={{
-                      backgroundColor: isActive && !item.disabled ? SG_COLORS.black : undefined,
-                      color: isActive && !item.disabled ? 'white' : SG_COLORS.gray,
+                      backgroundColor: isActive ? SG_COLORS.black : undefined,
+                      color: isActive ? 'white' : SG_COLORS.gray,
                     }}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>
-                      {item.icon}
-                    </span>
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>{item.icon}</span>
                     {item.name}
-                    {item.disabled && (
-                      <span
-                        className="text-xs px-1.5 py-0.5 rounded ml-auto"
-                        style={{ backgroundColor: 'rgba(0,0,0,0.05)' }}
-                      >
-                        Bientôt
-                      </span>
-                    )}
                   </Link>
                 );
               })}
             </nav>
+            {/* Drawer footer — user info */}
+            <div className="border-t border-gray-200 p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
+                  style={{ backgroundColor: 'rgba(26,26,26,0.08)', color: SG_COLORS.black }}
+                >
+                  {user?.name?.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" style={{ color: SG_COLORS.black }}>{user?.name}</p>
+                  <p className="text-xs" style={{ color: SG_COLORS.gray }}>{t(`roles.${user?.role}`)}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={toggleLanguage}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg hover:bg-gray-100"
+                  style={{ color: SG_COLORS.gray }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>language</span>
+                  {i18n.language === 'fr' ? 'العربية' : 'Français'}
+                </button>
+                <button onClick={handleLogout}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-medium rounded-lg hover:bg-red-50"
+                  style={{ color: SG_COLORS.rose }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>logout</span>
+                  {t('auth.logout')}
+                </button>
+              </div>
+            </div>
           </div>
-        )}
-      </header>
+        </>
+      )}
 
-      {/* Main Content (with top padding for fixed header) */}
-      <main className="pt-16">
+      {/* ===== Main Content (flex-1 so it shrinks when sidebar expands) ===== */}
+      <main className="flex-1 min-w-0 pt-14 lg:pt-0">
         <Outlet />
       </main>
-
-      {/* Load Material Symbols */}
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-      />
     </div>
   );
 }
