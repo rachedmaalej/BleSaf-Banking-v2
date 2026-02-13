@@ -33,6 +33,7 @@ export default function KioskTicketConfirm() {
 
   const [isPrinting, setIsPrinting] = useState(false);
   const [printDone, setPrintDone] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Redirect if no ticket data
   useEffect(() => {
@@ -52,6 +53,25 @@ export default function KioskTicketConfirm() {
       setIsPrinting(false);
       setPrintDone(true);
     }, 2000);
+  };
+
+  const handleCopyLink = async () => {
+    const statusUrl = `${window.location.origin}/status/${ticketData?.ticket.id}`;
+    try {
+      await navigator.clipboard.writeText(statusUrl);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 3000);
+    } catch {
+      // Fallback for older browsers / insecure contexts
+      const input = document.createElement('input');
+      input.value = statusUrl;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 3000);
+    }
   };
 
   const goHome = () => navigate(`/kiosk/${branchId}`);
@@ -152,6 +172,7 @@ export default function KioskTicketConfirm() {
             </div>
           ) : (
             /* ═══ Print Mode: Print Card + Que Faire ═══ */
+            <>
             <div className="grid grid-cols-2 gap-3">
               {/* Print Button Card */}
               <button
@@ -212,6 +233,26 @@ export default function KioskTicketConfirm() {
                 </div>
               </div>
             </div>
+
+            {/* Copy status link button */}
+            <button
+              onClick={handleCopyLink}
+              className={`w-full flex items-center justify-center gap-2 rounded-lg border px-4 py-3 transition-colors ${
+                linkCopied
+                  ? 'border-k-green bg-k-green-light'
+                  : 'border-pale bg-white hover:border-brand-red hover:bg-brand-red-light'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-[18px] ${linkCopied ? 'text-k-green' : 'text-brand-red'}`}>
+                {linkCopied ? 'check_circle' : 'content_copy'}
+              </span>
+              <span className="font-barlow-c font-bold text-xs uppercase tracking-wide text-dark">
+                {linkCopied
+                  ? (isAr ? 'تم نسخ الرابط!' : 'LIEN COPIÉ\u00A0!')
+                  : (isAr ? 'نسخ رابط المتابعة' : 'COPIER LE LIEN DE SUIVI')}
+              </span>
+            </button>
+            </>
           )}
 
           {/* ── Bottom Section ── */}
