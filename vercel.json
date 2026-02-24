@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @blesaf/web build",
+  "buildCommand": "pnpm --filter @blesaf/shared build && pnpm --filter @blesaf/web exec vite build",
   "outputDirectory": "apps/web/dist",
   "installCommand": "pnpm install --frozen-lockfile"
 }
