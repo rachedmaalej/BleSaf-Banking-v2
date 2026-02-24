@@ -1,5 +1,5 @@
 import { formatInTimeZone, toZonedTime, fromZonedTime } from 'date-fns-tz';
-import { startOfDay, endOfDay, format } from 'date-fns';
+import { startOfDay, endOfDay } from 'date-fns';
 
 /**
  * Convert a date to UTC for storage

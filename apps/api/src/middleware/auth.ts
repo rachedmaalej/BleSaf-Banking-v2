@@ -83,7 +83,7 @@ export function verifyToken(token: string): JWTPayload {
  */
 export function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
   return jwt.sign(payload, config.JWT_SECRET, {
-    expiresIn: config.JWT_ACCESS_EXPIRES,
+    expiresIn: config.JWT_ACCESS_EXPIRES as any,
   });
 }
 
@@ -92,6 +92,6 @@ export function generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): s
  */
 export function generateRefreshToken(userId: string): string {
   return jwt.sign({ userId, type: 'refresh' }, config.JWT_SECRET, {
-    expiresIn: config.JWT_REFRESH_EXPIRES,
+    expiresIn: config.JWT_REFRESH_EXPIRES as any,
   });
 }
