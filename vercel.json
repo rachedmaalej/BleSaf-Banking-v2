@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @blesaf/shared build && pnpm --filter @blesaf/web build:ci && mv apps/web/dist dist",
+  "buildCommand": "pnpm --filter @blesaf/shared build && pnpm --filter @blesaf/web build:ci",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --frozen-lockfile"
 }
