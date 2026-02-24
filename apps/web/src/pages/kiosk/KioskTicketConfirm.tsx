@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { QRCodeSVG } from 'qrcode.react';
 import KioskHeader from '@/components/kiosk/KioskHeader';
 
 interface TicketData {
@@ -34,17 +35,27 @@ export default function KioskTicketConfirm() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [printDone, setPrintDone] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [countdown, setCountdown] = useState(10);
 
   // Redirect if no ticket data
   useEffect(() => {
     if (!ticketData) navigate(`/kiosk/${branchId}`);
   }, [ticketData, branchId, navigate]);
 
-  // Auto-redirect after 10 seconds
+  // Countdown + auto-redirect after 10 seconds
   useEffect(() => {
     if (!ticketData) return;
-    const timer = setTimeout(() => navigate(`/kiosk/${branchId}`), 10000);
-    return () => clearTimeout(timer);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          navigate(`/kiosk/${branchId}`);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
   }, [ticketData, branchId, navigate]);
 
   const handlePrint = () => {
@@ -77,6 +88,11 @@ export default function KioskTicketConfirm() {
   const goHome = () => navigate(`/kiosk/${branchId}`);
 
   if (!ticketData) return null;
+
+  const statusUrl = `${window.location.origin}/status/${ticketData.ticket.id}`;
+  // SVG circle countdown: radius=18, circumference≈113
+  const CIRC = 2 * Math.PI * 18;
+  const dashOffset = CIRC * (1 - countdown / 10);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-off-white">
@@ -153,21 +169,17 @@ export default function KioskTicketConfirm() {
                 </p>
               </div>
 
-              {/* Que Faire Card */}
-              <div className="bg-white border border-pale rounded-lg p-4">
-                <p className="font-barlow-c font-bold text-[10px] tracking-[2px] uppercase text-light mb-2">
-                  {isAr ? 'ماذا تفعل الآن؟' : 'QUE FAIRE MAINTENANT\u00A0?'}
+              {/* QR Code Card */}
+              <div className="bg-white border border-pale rounded-lg p-4 flex flex-col items-center justify-center gap-2">
+                <QRCodeSVG
+                  value={statusUrl}
+                  size={96}
+                  level="M"
+                  includeMargin={false}
+                />
+                <p className="text-[10px] text-light font-barlow text-center leading-tight">
+                  {isAr ? 'امسح لمتابعة موقعك' : 'Scannez pour suivre votre position'}
                 </p>
-                <div className="flex items-start gap-2">
-                  <span className="material-symbols-outlined flex-shrink-0 mt-0.5 text-light text-[16px]">
-                    phone_iphone
-                  </span>
-                  <span className="text-xs text-mid leading-relaxed font-barlow">
-                    {isAr
-                      ? 'اضغط على الرابط الموجود في الرسالة وتابع تقدمك في الطابور على هاتفك'
-                      : "Cliquez sur le lien contenu dans le SMS et suivez votre progression dans la file d'attente sur votre téléphone"}
-                  </span>
-                </div>
               </div>
             </div>
           ) : (
@@ -204,33 +216,17 @@ export default function KioskTicketConfirm() {
                 )}
               </button>
 
-              {/* Que Faire Card */}
-              <div className="bg-white border border-pale rounded-lg p-4">
-                <p className="font-barlow-c font-bold text-[10px] tracking-[2px] uppercase text-light mb-2">
-                  {isAr ? 'ماذا تفعل الآن؟' : 'QUE FAIRE MAINTENANT\u00A0?'}
+              {/* QR Code Card */}
+              <div className="bg-white border border-pale rounded-lg p-4 flex flex-col items-center justify-center gap-2">
+                <QRCodeSVG
+                  value={statusUrl}
+                  size={96}
+                  level="M"
+                  includeMargin={false}
+                />
+                <p className="text-[10px] text-light font-barlow text-center leading-tight">
+                  {isAr ? 'امسح لمتابعة موقعك' : 'Scannez pour suivre votre position'}
                 </p>
-                {/* Instruction 1: QR */}
-                <div className="flex items-start gap-2">
-                  <span className="material-symbols-outlined flex-shrink-0 mt-0.5 text-light text-[16px]">
-                    qr_code_scanner
-                  </span>
-                  <span className="text-xs text-mid leading-relaxed font-barlow">
-                    {isAr
-                      ? 'امسح رمز QR على تذكرتك لمتابعة موقعك على هاتفك'
-                      : 'Scannez le QR code sur votre ticket pour suivre votre position sur votre téléphone'}
-                  </span>
-                </div>
-                {/* Instruction 2: TV */}
-                <div className="flex items-start gap-2 mt-1">
-                  <span className="material-symbols-outlined flex-shrink-0 mt-0.5 text-light text-[16px]">
-                    tv
-                  </span>
-                  <span className="text-xs text-mid leading-relaxed font-barlow">
-                    {isAr
-                      ? 'أو تابع رقمك على شاشة العرض في قاعة الانتظار'
-                      : "Ou suivez votre numéro sur l'écran d'affichage dans la salle d'attente"}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -269,8 +265,29 @@ export default function KioskTicketConfirm() {
             </div>
           )}
 
-          {/* TERMINER button */}
-          <div className="text-center mt-2">
+          {/* Countdown + TERMINER */}
+          <div className="flex items-center justify-center gap-4 mt-2">
+            {/* Circular countdown */}
+            <div className="relative w-11 h-11 flex-shrink-0">
+              <svg className="w-11 h-11 -rotate-90" viewBox="0 0 44 44">
+                {/* Track */}
+                <circle cx="22" cy="22" r="18" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                {/* Progress */}
+                <circle
+                  cx="22" cy="22" r="18"
+                  fill="none"
+                  stroke="#E9041E"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={CIRC}
+                  strokeDashoffset={dashOffset}
+                  style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+                />
+              </svg>
+              <span className="absolute inset-0 flex items-center justify-center font-barlow-c font-extrabold text-sm text-near-black">
+                {countdown}
+              </span>
+            </div>
             <button
               onClick={goHome}
               className="font-barlow-c font-bold text-sm uppercase tracking-[1.5px] border-2 border-pale bg-white text-mid px-8 py-3 rounded-lg hover:border-dark hover:text-dark transition-colors"

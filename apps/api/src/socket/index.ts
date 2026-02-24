@@ -279,4 +279,13 @@ export function emitAnnouncementDismissed(branchId: string, announcementId: stri
     .emit(SOCKET_EVENTS.ANNOUNCEMENT_DISMISSED, { announcementId });
 }
 
+/**
+ * Get the Socket.IO server instance.
+ * Used by services that need to emit events (breakService, etc.)
+ */
+export function getIO(): Server {
+  if (!io) throw new Error('Socket.IO not initialized — call setupSocketIO() first');
+  return io;
+}
+
 export { io };

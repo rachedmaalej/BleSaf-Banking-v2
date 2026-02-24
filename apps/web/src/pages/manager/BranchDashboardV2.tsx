@@ -649,7 +649,7 @@ export default function BranchDashboardV2() {
         const slaTarget = dailyTarget?.slaTarget || 80;
 
         // Forecast bars
-        const forecastPoints = forecast || [];
+        const forecastPoints = forecast?.hourlyForecast || [];
         const maxVol = Math.max(...forecastPoints.map((f) => f.predictedVolume), 1);
 
         return (

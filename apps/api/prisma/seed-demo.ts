@@ -9,11 +9,58 @@ const prisma = new PrismaClient();
 // ============================================================
 
 const SERVICE_DEFS = [
-  { prefix: 'A', nameFr: "Retrait d'espèces", nameAr: 'سحب نقدي', icon: '💵', weight: 1, avgTime: 5 },
-  { prefix: 'B', nameFr: 'Relevés de compte', nameAr: 'كشف الحساب', icon: '📥', weight: 1, avgTime: 7 },
-  { prefix: 'C', nameFr: "Dépôt d'espèces", nameAr: 'إيداع نقدي', icon: '📋', weight: 2, avgTime: 20 },
-  { prefix: 'D', nameFr: 'Prêts', nameAr: 'قروض', icon: '🏦', weight: 3, avgTime: 30 },
-  { prefix: 'E', nameFr: 'Change', nameAr: 'صرف العملات', icon: '💱', weight: 1, avgTime: 10 },
+  {
+    prefix: 'A',
+    nameFr: 'Retrait / Dépôt',
+    nameAr: 'سحب / إيداع',
+    icon: 'local_atm',
+    priorityWeight: 1,
+    avgTime: 5,
+    descriptionFr: 'Opérations de caisse courantes',
+    descriptionAr: 'عمليات الصندوق الجارية',
+    subServicesFr: ["Retrait d'espèces", "Dépôt d'espèces"],
+    subServicesAr: ['سحب نقدي', 'إيداع نقدي'],
+    displayOrder: 0,
+  },
+  {
+    prefix: 'B',
+    nameFr: 'Virements',
+    nameAr: 'تحويلات',
+    icon: 'swap_horiz',
+    priorityWeight: 1,
+    avgTime: 8,
+    descriptionFr: 'Émission et suivi de virements',
+    descriptionAr: 'إصدار ومتابعة التحويلات',
+    subServicesFr: ['Émission de virement'],
+    subServicesAr: ['تحويل بنكي'],
+    displayOrder: 1,
+  },
+  {
+    prefix: 'C',
+    nameFr: 'Cartes & Documents',
+    nameAr: 'بطاقات ووثائق',
+    icon: 'credit_card',
+    priorityWeight: 1,
+    avgTime: 10,
+    descriptionFr: 'Cartes bancaires, chéquiers et relevés',
+    descriptionAr: 'بطاقات بنكية وشيكات وكشوفات',
+    subServicesFr: ['Retrait de carte bancaire', 'Réinitialisation code carte', 'Relevé de compte', 'Retrait de chéquier'],
+    subServicesAr: ['استلام بطاقة بنكية', 'إعادة تعيين رمز البطاقة', 'كشف حساب', 'استلام دفتر شيكات'],
+    displayOrder: 2,
+  },
+  {
+    prefix: 'D',
+    nameFr: 'Autres services',
+    nameAr: 'خدمات أخرى',
+    icon: 'more_horiz',
+    priorityWeight: 1,
+    avgTime: 7,
+    descriptionFr: 'Renseignements et mises à jour',
+    descriptionAr: 'استفسارات وتحديثات',
+    subServicesFr: ['Renseignements divers', 'Mise à jour de données'],
+    subServicesAr: ['استفسارات متنوعة', 'تحديث البيانات'],
+    displayOrder: 3,
+  },
 ];
 
 interface BranchConfig {
@@ -252,19 +299,49 @@ async function main() {
     });
 
     // Services
+    // Delete tickets on obsolete service prefixes before removing them (FK constraint)
+    const obsoleteServices = await prisma.serviceCategory.findMany({
+      where: { branchId: branch.id, prefix: { notIn: SERVICE_DEFS.map((s) => s.prefix) } },
+      select: { id: true },
+    });
+    if (obsoleteServices.length > 0) {
+      const ids = obsoleteServices.map((s) => s.id);
+      await prisma.ticket.deleteMany({ where: { serviceCategoryId: { in: ids } } });
+      await prisma.serviceCategory.deleteMany({ where: { id: { in: ids } } });
+    }
+
     const services = await Promise.all(
       SERVICE_DEFS.map((s) =>
         prisma.serviceCategory.upsert({
           where: { branchId_prefix: { branchId: branch.id, prefix: s.prefix } },
-          update: { nameFr: s.nameFr, nameAr: s.nameAr },
+          update: {
+            nameFr: s.nameFr,
+            nameAr: s.nameAr,
+            icon: s.icon,
+            priorityWeight: s.priorityWeight,
+            avgServiceTime: s.avgTime,
+            descriptionFr: s.descriptionFr,
+            descriptionAr: s.descriptionAr,
+            subServicesFr: s.subServicesFr,
+            subServicesAr: s.subServicesAr,
+            displayOrder: s.displayOrder,
+            showOnKiosk: true,
+            isActive: true,
+          },
           create: {
             branchId: branch.id,
             prefix: s.prefix,
             nameFr: s.nameFr,
             nameAr: s.nameAr,
             icon: s.icon,
-            priorityWeight: s.weight,
+            priorityWeight: s.priorityWeight,
             avgServiceTime: s.avgTime,
+            descriptionFr: s.descriptionFr,
+            descriptionAr: s.descriptionAr,
+            subServicesFr: s.subServicesFr,
+            subServicesAr: s.subServicesAr,
+            displayOrder: s.displayOrder,
+            showOnKiosk: true,
             isActive: true,
           },
         }),
@@ -340,7 +417,7 @@ async function main() {
 
     // ── Completed tickets (historical, today) ──
     const now = new Date();
-    const serviceWeights = [40, 20, 15, 10, 10]; // % for A, B, C, D, E
+    const serviceWeights = [40, 25, 20, 15]; // % for A, B, C, D
     const statuses: ('completed' | 'no_show')[] = [];
 
     // Build status distribution
@@ -355,7 +432,7 @@ async function main() {
     });
 
     // Create completed + no-show tickets
-    const ticketCounters: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+    const ticketCounters: Record<string, number> = { A: 0, B: 0, C: 0, D: 0 };
     for (let i = 0; i < statuses.length; i++) {
       // Pick service based on weights
       const rand = Math.random() * 100;
