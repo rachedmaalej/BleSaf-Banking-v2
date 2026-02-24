@@ -2,15 +2,16 @@
   "name": "@blesaf/shared",
   "version": "1.0.0",
   "description": "Shared types, constants, and validation schemas for BléSaf",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./types": "./src/types.ts",
-    "./constants": "./src/constants.ts",
-    "./validation": "./src/validation.ts"
+    ".": "./dist/index.js",
+    "./types": "./dist/types.js",
+    "./constants": "./dist/constants.js",
+    "./validation": "./dist/validation.js"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "clean": "rimraf dist"
   },

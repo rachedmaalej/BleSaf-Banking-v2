@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "pnpm -r --parallel run dev",
-    "dev:api": "pnpm --filter @blesaf/api dev",
+    "dev:api": "pnpm --filter @blesaf/shared build && pnpm --filter @blesaf/api dev",
     "dev:web": "pnpm --filter @blesaf/web dev",
     "dev:worker": "pnpm --filter @blesaf/worker dev",
     "build": "pnpm -r run build",
