@@ -296,10 +296,11 @@ export interface ServiceQueueStats {
   nextTickets: string[]; // ticket numbers (max 3)
 }
 
-// Queue status for display
-export interface QueueStatus {
+// Branch queue state for display (renamed from QueueStatus to avoid clash with the QueueStatus union type from constants)
+export interface BranchQueueState {
   branchId: string;
   branchName: string;
+  queueStatus: 'open' | 'paused' | 'closed';
   counters: CounterDisplay[];
   waitingTickets: TicketDisplay[];
   services: ServiceDisplay[];

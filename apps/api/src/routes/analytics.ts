@@ -229,7 +229,7 @@ router.get('/branch/:branchId/top-services', requireRole('bank_admin', 'branch_m
  */
 router.get('/tenant/ranking', requireRole('bank_admin', 'branch_manager'), async (req, res, next) => {
   try {
-    const result = await analyticsService.getBranchRanking(req.tenantId!, req.user!.branchId);
+    const result = await analyticsService.getBranchRanking(req.tenantId!, req.user!.branchId ?? undefined);
 
     res.json({
       success: true,

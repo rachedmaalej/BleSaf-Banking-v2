@@ -9,7 +9,8 @@ import {
   TICKET_ACTION,
   CheckinInput,
   TicketStatus,
-  QueueStatus,
+  NotificationChannel,
+  BranchQueueState,
   TicketPosition,
   TicketDisplay,
   CounterDisplay,
@@ -345,7 +346,7 @@ export const queueService = {
         await notificationQueue.queueNotification({
           ticketId: ticket.id,
           messageType: 'your_turn',
-          channel: ticket.notificationChannel!,
+          channel: ticket.notificationChannel as NotificationChannel,
           recipient: ticket.customerPhone,
           templateData: {
             ticketNumber: ticket.ticketNumber,
@@ -497,7 +498,7 @@ export const queueService = {
         await notificationQueue.queueNotification({
           ticketId: ticket.id,
           messageType: 'your_turn',
-          channel: ticket.notificationChannel!,
+          channel: ticket.notificationChannel as NotificationChannel,
           recipient: ticket.customerPhone,
           templateData: {
             ticketNumber: ticket.ticketNumber,
@@ -998,7 +999,7 @@ export const queueService = {
   /**
    * Get branch queue status (public)
    */
-  async getBranchQueueStatus(branchId: string): Promise<QueueStatus> {
+  async getBranchQueueStatus(branchId: string): Promise<BranchQueueState> {
     const branch = await prisma.branch.findUnique({
       where: { id: branchId },
       select: { id: true, name: true, timezone: true, queueStatus: true },
@@ -1669,7 +1670,7 @@ export const queueService = {
           await notificationQueue.queueNotification({
             ticketId: ticketAtThreshold.id,
             messageType: 'almost_turn',
-            channel: ticketAtThreshold.notificationChannel!,
+            channel: ticketAtThreshold.notificationChannel as NotificationChannel,
             recipient: ticketAtThreshold.customerPhone,
             templateData: {
               ticketNumber: ticketAtThreshold.ticketNumber,

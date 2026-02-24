@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { queueApi } from '@/lib/api';
 import {
-  QueueStatus,
+  BranchQueueState,
   TicketPosition,
   TellerQueueView,
 } from '@blesaf/shared';
 
 interface QueueState {
   // Branch queue status (for display/manager)
-  branchStatus: QueueStatus | null;
+  branchStatus: BranchQueueState | null;
   isLoadingBranchStatus: boolean;
 
   // Ticket position (for customer)

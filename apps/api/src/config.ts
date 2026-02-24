@@ -23,8 +23,11 @@ const envSchema = z.object({
   TWILIO_PHONE_NUMBER: z.string().optional(),
 
   // WhatsApp - optional for dev
+  WHATSAPP_PHONE_NUMBER_ID: z.string().optional(),
   WHATSAPP_BUSINESS_ID: z.string().optional(),
   WHATSAPP_ACCESS_TOKEN: z.string().optional(),
+  WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().optional(),
+  WHATSAPP_WEBHOOK_SECRET: z.string().optional(),
 
   // Sentry - optional
   SENTRY_DSN: z.string().optional(),

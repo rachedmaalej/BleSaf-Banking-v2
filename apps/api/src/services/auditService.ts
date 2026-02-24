@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 import { logger } from '../lib/logger';
 
@@ -27,7 +28,7 @@ export const auditService = {
           oldValue: entry.oldValue ?? null,
           newValue: entry.newValue ?? null,
           changedBy: entry.changedBy,
-          metadata: entry.metadata ?? null,
+          metadata: entry.metadata != null ? (entry.metadata as unknown as Prisma.InputJsonValue) : undefined,
         },
       });
     } catch (err) {
@@ -52,7 +53,7 @@ export const auditService = {
           oldValue: entry.oldValue ?? null,
           newValue: entry.newValue ?? null,
           changedBy: entry.changedBy,
-          metadata: entry.metadata ?? null,
+          metadata: entry.metadata != null ? (entry.metadata as unknown as Prisma.InputJsonValue) : undefined,
         })),
       });
     } catch (err) {

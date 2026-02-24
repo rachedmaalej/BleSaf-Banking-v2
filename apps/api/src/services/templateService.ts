@@ -233,8 +233,8 @@ export const templateService = {
       entityId: string;
       action: string;
       field: string;
-      oldValue: unknown;
-      newValue: unknown;
+      oldValue: string | null;
+      newValue: string | null;
       changedBy: string;
       metadata: Record<string, unknown>;
     }> = [];
@@ -253,8 +253,8 @@ export const templateService = {
               entityId: service.id,
               action: 'sync',
               field,
-              oldValue: change!.old,
-              newValue: change!.new,
+              oldValue: change!.old != null ? String(change!.old) : null,
+              newValue: change!.new != null ? String(change!.new) : null,
               changedBy: userId,
               metadata: { sourceTemplateId: templateId, autoSync: true },
             });
