@@ -1,4 +1,7 @@
 {
+  "buildCommand": "pnpm --filter @blesaf/shared build && pnpm run build:ci",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install --frozen-lockfile",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
